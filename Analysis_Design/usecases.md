@@ -8,7 +8,7 @@
 | | Add Radius|
 ||Start-End
 ||Add price
-||Alcohol
+||Drinks
 ||Number of Guests|
 ||Description|
 ||Add Pictures|
