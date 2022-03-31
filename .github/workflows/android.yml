@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-
+    env:
+      working-directory: ./ProjectX
     runs-on: ubuntu-latest
 
     steps:
@@ -19,9 +20,9 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: gradle
-    - name: Enter correct dir
-      run: cd ProjectX
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      working-directory: ${{env.working-directory}}
     - name: Build with Gradle
       run: ./gradlew build
+      working-directory: ${{env.working-directory}}
