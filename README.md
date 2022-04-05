@@ -38,6 +38,13 @@
 
 # Setup
 
+## Backend
+
+- Make sure to have the latest version of npm and loopback installed
+- then navigate in cmd to "\<RepoRoot\>"/backend
+- First time: run command "npm install"
+- To start: run command "npm start"
+
 ## Database
 
 - install docker (For windows also: WSL 2)
