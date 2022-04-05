@@ -42,5 +42,5 @@
 
 - install docker (For windows also: WSL 2)
 - command: docker pull postgres
-- run postgres: docker run --name postgres -e POSTGRES_PASSWORD=prj4Group5 -d -p 5432:5432 postgresPrj4
+- run postgres: docker run --name postgresPrj4 -e POSTGRES_PASSWORD=prj4Group5 -d -p 5432:5432 postgres
 
