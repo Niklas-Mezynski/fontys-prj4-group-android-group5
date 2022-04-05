@@ -1,19 +1,19 @@
 CREATE TABLE ticket
 (
     id       varchar(256) NOT NULL,
-    event_id integer      NOT NULL,
-    user_id  integer      NOT NULL,
+    event_id varchar(128) NOT NULL,
+    user_id  varchar(128) NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE TABLE "user"
 (
-    id          integer      NOT NULL,
+    id          varchar(128) NOT NULL,
     firstName   varchar(40)  NOT NULL,
     lastName    varchar(40)  NOT NULL,
-    email       varchar(320)  NOT NULL UNIQUE,
+    email       varchar(320) NOT NULL UNIQUE,
     nick_name   varchar(40)  NOT NULL UNIQUE,
     birth_date  date         NOT NULL,
-    location    integer,
+    location    varchar(128),
     profile_pic varchar(1024),
     about_me    varchar(2048),
     salt        varchar(256) NOT NULL,
@@ -22,19 +22,19 @@ CREATE TABLE "user"
 );
 CREATE TABLE event
 (
-    id          integer       NOT NULL,
+    id          varchar(128)  NOT NULL,
     name        varchar(80)   NOT NULL,
-    location    integer       NOT NULL,
+    location    varchar(128)  NOT NULL,
     description varchar(2048) NOT NULL,
 --     pictures    integer,
     "start"     timestamp     NOT NULL,
     "end"       timestamp,
-    max_people  int           NOT NULL,
+    max_people  integer       NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE TABLE location
 (
-    id         integer          NOT NULL,
+    id         varchar(128)     NOT NULL,
     name       varchar(40)      NOT NULL,
     latitude   double precision NOT NULL,
     longitude  double precision NOT NULL,
@@ -43,14 +43,14 @@ CREATE TABLE location
 );
 CREATE TABLE pictures
 (
-    event_id integer       NOT NULL,
+    event_id varchar(128)  NOT NULL,
     url      varchar(1024) NOT NULL,
     PRIMARY KEY (event_id, url)
 );
 CREATE TABLE friends
 (
-    userA integer NOT NULL,
-    userB integer NOT NULL,
+    userA varchar(128) NOT NULL,
+    userB varchar(128) NOT NULL,
     PRIMARY KEY (userA, userB)
 );
 ALTER TABLE pictures
