@@ -67,6 +67,8 @@ export class UserUserLocationController {
       },
     }) userLocation: Omit<UserLocation, 'user_id'>,
   ): Promise<UserLocation> {
+    //Deleting the old location before creating a new one
+    await this.userRepository.userLocation(id).delete();
     return this.userRepository.userLocation(id).create(userLocation);
   }
 
@@ -83,13 +85,14 @@ export class UserUserLocationController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(UserLocation, {partial: true}),
+          schema: getModelSchemaRef(UserLocation, {partial: true, exclude: ['user_id']}),
         },
       },
     })
     userLocation: Partial<UserLocation>,
     @param.query.object('where', getWhereSchemaFor(UserLocation)) where?: Where<UserLocation>,
   ): Promise<Count> {
+    await this.userRepository.userLocation(id).create(userLocation);
     return this.userRepository.userLocation(id).patch(userLocation, where);
   }
 
