@@ -17,6 +17,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import { Helpers } from '../helpers/helper_functions';
 import {Event} from '../models';
 import {EventRepository} from '../repositories';
 
@@ -42,8 +43,9 @@ export class EventController {
         },
       },
     })
-    event: Omit<Event, 'id'>,
+    event: Event,
   ): Promise<Event> {
+    event.id = Helpers.generateUUID();
     return this.eventRepository.create(event);
   }
 
