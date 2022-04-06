@@ -35,6 +35,11 @@
 </tr>
 </table>
 
+# Deployment Environment:
+Api: aertac.tk:3000
+Db: aertac.tk:5432
+    -username: postgres
+    -password: prj4Group5
 
 # Setup
 
