@@ -26,19 +26,36 @@ INSERT INTO friends (usera, userb)
 VALUES ('34', '5243fwersdgerv'),
        ('12', '34');
 
-((SELECT f.usera as "friendId"
- FROM friends f
- where (userb = '34'))
-UNION
-(SELECT f.userb as "friendId"
- FROM friends f
- where (usera = '34')));
+-- SELECT "user".nick_name
+-- FROM ((SELECT f.usera as friendId
+--  FROM friends f
+--  where (userb = '34'))
+-- UNION
+-- (SELECT f.userb as friendId
+--  FROM friends f
+--  where (usera = '34'))) AS friends
+-- INNER JOIN "user" ON "user".id = friends.friendId;
 
-SELECT u.nick_name
-FROM "user" u inner join (((SELECT f.usera as friendId
+-- Custom function to get all friends from the database
+CREATE OR REPLACE function getFriendInfos(user_id varchar)
+RETURNS TABLE ( friend_id varchar, nick_name varchar)
+language plpgsql
+as
+$$
+Declare
+
+Begin
+   return QUERY SELECT "user".id as freind_id, "user".nick_name
+FROM ((SELECT f.usera as friendId
  FROM friends f
- where (userb = '34'))
+ where (userb = user_id))
 UNION
 (SELECT f.userb as friendId
  FROM friends f
- where (usera = '34'))) as friends) on u.id = friends.friendId
+ where (usera = user_id))) AS friends
+INNER JOIN "user" ON "user".id = friends.friendId;
+End;
+$$;
+
+
+-- SELECT * FROM getFriendInfos('34');

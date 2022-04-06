@@ -13,4 +13,11 @@ export class FriendsRepository extends DefaultCrudRepository<
   ) {
     super(Friends, dataSource);
   }
+
+  snens(userId:string, friendId:string) {
+    let sql:string = 'SELECT "user".nick_name FROM ((SELECT f.usera as friendId FROM friends f where (userb = ?)) UNION (SELECT f.userb as friendId FROM friends f where (usera = ?))) AS friends INNER JOIN "user" ON "user".id = friends.friendId;';
+
+    
+  }
+
 }
