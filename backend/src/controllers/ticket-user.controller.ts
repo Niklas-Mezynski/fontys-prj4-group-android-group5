@@ -7,21 +7,21 @@ import {
   getModelSchemaRef,
 } from '@loopback/rest';
 import {
-  UserLocation,
+  Ticket,
   User,
 } from '../models';
-import {UserLocationRepository} from '../repositories';
+import {TicketRepository} from '../repositories';
 
-export class UserLocationUserController {
+export class TicketUserController {
   constructor(
-    @repository(UserLocationRepository)
-    public userLocationRepository: UserLocationRepository,
+    @repository(TicketRepository)
+    public ticketRepository: TicketRepository,
   ) { }
 
-  @get('/user-locations/{id}/user', {
+  @get('/tickets/{id}/user', {
     responses: {
       '200': {
-        description: 'User belonging to UserLocation',
+        description: 'User belonging to Ticket',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(User)},
@@ -31,8 +31,8 @@ export class UserLocationUserController {
     },
   })
   async getUser(
-    @param.path.string('id') id: typeof UserLocation.prototype.user_id,
+    @param.path.string('id') id: typeof Ticket.prototype.id,
   ): Promise<User> {
-    return this.userLocationRepository.user(id);
+    return this.ticketRepository.User(id);
   }
 }

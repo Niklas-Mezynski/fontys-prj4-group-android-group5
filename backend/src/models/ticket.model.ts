@@ -1,4 +1,6 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {User} from './user.model';
+import {Event} from './event.model';
 
 @model()
 export class Ticket extends Entity {
@@ -9,19 +11,11 @@ export class Ticket extends Entity {
     required: true,
   })
   id: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  event_id: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
+  @belongsTo(() => User, {name: 'User'})
   user_id: string;
 
+  @belongsTo(() => Event, {name: 'Event'})
+  event_id: string;
 
   constructor(data?: Partial<Ticket>) {
     super(data);

@@ -23,7 +23,6 @@ CREATE TABLE event
 (
     id          varchar(128)  NOT NULL,
     name        varchar(80)   NOT NULL,
-    location    varchar(128)  NOT NULL,
     description varchar(2048) NOT NULL,
 --     pictures    integer,
     "start"     timestamp     NOT NULL,

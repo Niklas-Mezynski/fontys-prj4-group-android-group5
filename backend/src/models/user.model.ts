@@ -1,5 +1,6 @@
-import {Entity, model, property, hasOne} from '@loopback/repository';
+import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
 import {UserLocation} from './user-location.model';
+import {Ticket} from './ticket.model';
 
 @model()
 export class User extends Entity {
@@ -70,6 +71,9 @@ export class User extends Entity {
 
   @hasOne(() => UserLocation, {keyTo: 'user_id'})
   userLocation: UserLocation;
+
+  @hasMany(() => Ticket, {keyTo: 'user_id'})
+  tickets: Ticket[];
 
   constructor(data?: Partial<User>) {
     super(data);
