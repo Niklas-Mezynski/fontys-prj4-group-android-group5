@@ -34,3 +34,26 @@
     </ul></td>
 </tr>
 </table>
+
+# Deployment Environment:
+Api: aertac.tk:3000
+Db: aertac.tk:5432
+    -username: postgres
+    -password: prj4Group5
+
+# Setup
+
+## Backend
+
+- Make sure to have the latest version of npm and loopback installed
+- then navigate in cmd to "\<RepoRoot\>"/backend
+- First time: run command "npm install"
+- To start: run command "npm start"
+
+## Database
+
+- install docker (For windows also: WSL 2)
+- command: docker pull postgres
+- run postgres: docker run --name postgresPrj4 -e POSTGRES_PASSWORD=prj4Group5 -d -p 5432:5432 postgres
+- DbUser: postgres Password: prj4Group5
+
