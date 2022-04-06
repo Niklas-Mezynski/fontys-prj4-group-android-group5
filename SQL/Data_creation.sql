@@ -45,7 +45,7 @@ $$
 Declare
 
 Begin
-   return QUERY SELECT "user".id as freind_id, "user".nick_name
+   return QUERY SELECT DISTINCT "user".id as freind_id, "user".nick_name
 FROM ((SELECT f.usera as friendId
  FROM friends f
  where (userb = user_id))
