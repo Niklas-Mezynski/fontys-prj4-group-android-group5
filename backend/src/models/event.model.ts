@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Pictures} from './pictures.model';
 
 @model()
 export class Event extends Entity {
@@ -45,6 +46,8 @@ export class Event extends Entity {
   })
   max_people: number;
 
+  @hasMany(() => Pictures, {keyTo: 'event_id'})
+  pictures: Pictures[];
 
   constructor(data?: Partial<Event>) {
     super(data);

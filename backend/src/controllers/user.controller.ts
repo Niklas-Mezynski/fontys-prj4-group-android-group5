@@ -17,14 +17,19 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import { freemem } from 'os';
 import { Helpers } from '../helpers/helper_functions';
 import {User} from '../models';
-import {UserRepository} from '../repositories';
+import { UserRepository } from '../repositories';
+import { UserLocation } from '../models/user-location.model';
+import { UserLocationRepository } from '../repositories/user-location.repository';
 
 export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository : UserRepository,
+    @repository(UserLocationRepository)
+    public userLocationRepository : UserLocationRepository,
   ) {}
 
   @post('/users')
@@ -150,5 +155,23 @@ export class UserController {
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.userRepository.deleteById(id);
+  }
+
+  @get('/user-locations/{id}/user', {
+    responses: {
+      '200': {
+        description: 'User belonging to UserLocation',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(User)},
+          },
+        },
+      },
+    },
+  })
+  async getUser(
+    @param.path.string('id') id: typeof UserLocation.prototype.user_id,
+  ): Promise<User> {
+    return this.userLocationRepository.user(id);
   }
 }

@@ -13,7 +13,6 @@ CREATE TABLE "user"
     email       varchar(320) NOT NULL UNIQUE,
     nick_name   varchar(40)  NOT NULL UNIQUE,
     birth_date  date         NOT NULL,
-    location    varchar(128),
     profile_pic varchar(1024),
     about_me    varchar(2048),
     salt        varchar(256) NOT NULL,
@@ -32,14 +31,21 @@ CREATE TABLE event
     max_people  integer       NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE TABLE location
+CREATE TABLE userlocation
 (
-    id         varchar(128)     NOT NULL,
-    name       varchar(40)      NOT NULL,
+    user_id    varchar(128)     NOT NULL,
     latitude   double precision NOT NULL,
     longitude  double precision NOT NULL,
     created_on timestamp        NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (user_id)
+);
+CREATE TABLE eventlocation
+(
+    event_id   varchar(128)     NOT NULL,
+    latitude   double precision NOT NULL,
+    longitude  double precision NOT NULL,
+    created_on timestamp        NOT NULL,
+    PRIMARY KEY (event_id)
 );
 CREATE TABLE pictures
 (
@@ -55,10 +61,10 @@ CREATE TABLE friends
 );
 ALTER TABLE pictures
     ADD CONSTRAINT FKPictures14710 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
-ALTER TABLE "user"
-    ADD CONSTRAINT FKUser586969 FOREIGN KEY (location) REFERENCES location (id); -- ON DELETE SET NULL??
-ALTER TABLE event
-    ADD CONSTRAINT FKEvent894025 FOREIGN KEY (location) REFERENCES location (id); -- ON DELETE SET NULL??
+ALTER TABLE userlocation
+    ADD CONSTRAINT FKUserLocation586969 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+ALTER TABLE eventlocation
+    ADD CONSTRAINT FKEventLocation894025 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
 ALTER TABLE ticket
     ADD CONSTRAINT FKTicket579021 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 ALTER TABLE ticket
@@ -76,4 +82,5 @@ ALTER TABLE "user"
 
 ALTER TABLE event
     ADD CONSTRAINT event_start_in_future CHECK ( "start" > CURRENT_TIMESTAMP );
+
 

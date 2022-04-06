@@ -1,20 +1,14 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Location extends Entity {
+export class EventLocation extends Entity {
   @property({
     type: 'string',
     id: true,
     generated: false,
     required: true,
   })
-  id: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  name: string;
+  event_id: string;
 
   @property({
     type: 'number',
@@ -35,13 +29,13 @@ export class Location extends Entity {
   created_on: string;
 
 
-  constructor(data?: Partial<Location>) {
+  constructor(data?: Partial<EventLocation>) {
     super(data);
   }
 }
 
-export interface LocationRelations {
+export interface EventLocationRelations {
   // describe navigational properties here
 }
 
-export type LocationWithRelations = Location & LocationRelations;
+export type EventLocationWithRelations = EventLocation & EventLocationRelations;
