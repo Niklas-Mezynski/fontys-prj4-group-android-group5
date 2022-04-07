@@ -83,3 +83,24 @@ ALTER TABLE event
     ADD CONSTRAINT event_start_in_future CHECK ( "start" > CURRENT_TIMESTAMP );
 
 
+
+-- Custom function to get all friends from the database
+CREATE OR REPLACE function getFriendInfos(user_id varchar)
+RETURNS TABLE ( friend_id varchar, nick_name varchar)
+language plpgsql
+as
+$$
+Declare
+
+Begin
+   return QUERY SELECT DISTINCT "user".id as freind_id, "user".nick_name
+FROM ((SELECT f.usera as friendId
+ FROM friends f
+ where (userb = user_id))
+UNION
+(SELECT f.userb as friendId
+ FROM friends f
+ where (usera = user_id))) AS friends
+INNER JOIN "user" ON "user".id = friends.friendId;
+End;
+$$;
