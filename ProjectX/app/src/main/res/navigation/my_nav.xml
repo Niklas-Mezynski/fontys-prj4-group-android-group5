@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/login">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -25,4 +25,22 @@
         android:name="org.die6sheeshs.projectx.Profile"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+            android:id="@+id/login"
+            android:name="org.die6sheeshs.projectx.Login"
+            android:label="fragment_login"
+            tools:layout="@layout/fragment_login" >
+        <action
+                android:id="@+id/action_login_to_register"
+                app:destination="@id/register" />
+    </fragment>
+    <fragment
+            android:id="@+id/register"
+            android:name="org.die6sheeshs.projectx.Register"
+            android:label="fragment_register"
+            tools:layout="@layout/fragment_register" >
+        <action
+                android:id="@+id/action_register_to_login"
+                app:destination="@id/login" />
+    </fragment>
 </navigation>
