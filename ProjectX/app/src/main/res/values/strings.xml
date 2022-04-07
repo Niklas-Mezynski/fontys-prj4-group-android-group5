@@ -3,6 +3,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="register">Register</string>
+    <string name="email_nickname">Email/Nickname</string>
+    <string name="loginTextView">Login</string>
+    <string name="buttonLogin">Login</string>
+    <string name="switch_to_register">Create new Profile</string>
+    <string name="text_switch_to_register">No profile created yet? Create a new profile</string>
     <string name="birthdate">Birthdate</string>
     <string name="password">Password</string>
     <string name="about_me">About me...</string>

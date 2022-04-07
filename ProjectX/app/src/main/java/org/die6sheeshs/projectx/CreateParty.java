@@ -3,10 +3,15 @@ package org.die6sheeshs.projectx;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +19,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class CreateParty extends Fragment {
+
+    private View view;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +66,36 @@ public class CreateParty extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_party, container, false);
+        view = inflater.inflate(R.layout.fragment_create_party, container, false);
+        init();
+        return view;
     }
+
+    private void init() {
+        ScrollView scrollView = view.findViewById(R.id.party_list_scroll_view);
+        LinearLayout linearLayout = view.findViewById(R.id.party_list_linear_layout);
+
+        FragmentManager fragMan = getChildFragmentManager();
+        FragmentTransaction fragTransaction = fragMan.beginTransaction();
+
+        for (int i = 0; i < 5; i++) {
+            Fragment fragment = new PartyListItem();
+//            ((PartyListItem)fragment).setLocation("Deine Mums Haus"+i);
+
+            fragTransaction.add(linearLayout.getId(), fragment, "party#" + i);
+        }
+
+        fragTransaction.commit();
+//        TextView textView = new TextView(view.getContext());
+//        textView.setLayoutParams(linearLayout.getLayoutParams());
+//        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//        textView.setText("No parties planned yet");
+//
+//        linearLayout.addView(textView);
+    }
+
+    private int convertPixelToDP(int pixels) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels, getResources().getDisplayMetrics());
+    }
+
 }

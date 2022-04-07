@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                     replaceFragment(new Home());
                     break;
                 case R.id.ticketFragment:
-                    replaceFragment(new Ticket());
+                    replaceFragment(new Ticket_detail());
                     break;
                 case R.id.createParty:
                     replaceFragment(new CreateParty());

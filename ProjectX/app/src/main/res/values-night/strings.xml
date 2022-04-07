@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="register">Register</string>
-    <string name="birthdate">Birthdate</string>
+    <string name="email_nickname">Email/Nickname</string>
     <string name="password">Password</string>
+    <string name="loginTextView">Login</string>
+    <string name="buttonLogin">Login</string>
+    <string name="switch_to_register">Create new Profile</string>
+    <string name="text_switch_to_register">No profile created yet? Create a new profile</string>
+    <string name="birthdate">Birthdate</string>
     <string name="back_to_login">Back to login</string>
     <string name="date_format">YYYY-MM-DD</string>
     <string name="last_name">Last name</string>

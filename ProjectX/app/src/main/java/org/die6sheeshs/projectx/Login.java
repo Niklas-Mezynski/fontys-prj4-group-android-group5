@@ -1,13 +1,23 @@
 package org.die6sheeshs.projectx;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.fragment.app.Fragment;
+
+import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.restAPI.UserPersistence;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +30,11 @@ public class Login extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private View view;
+    private Button submit;
+    private EditText password;
+    private EditText email;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -59,7 +74,35 @@ public class Login extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        this.view = inflater.inflate(R.layout.fragment_login, container, false);
+        submit = view.findViewById(R.id.buttonLogin);
+        email = view.findViewById(R.id.loginEmailNickname);
+
+        UserPersistence userPersistence = new UserPersistence();
+        submit.setOnClickListener(listener -> {
+            Call<List<User>> allUsers = userPersistence.getAllUsers();
+            allUsers.enqueue(new Callback<List<User>>() {
+                @Override
+                public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                    if(!response.isSuccessful()){
+                        Log.e("API Response: ", String.valueOf(response.code()));
+                        return;
+                    }
+
+                    List<User> userList = response.body();
+                    for (User user: userList){
+                        Log.v("User found: ", user.getFirstName() + " " + user.getLastName());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<User>> call, Throwable t) {
+                    Log.e("failed", t.toString());
+                }
+            });
+        });
+
+
+        return view;
     }
 }
