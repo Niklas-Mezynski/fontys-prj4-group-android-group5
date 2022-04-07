@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS pictures CASCADE;
 DROP TABLE IF EXISTS friends CASCADE;
 
 
+-- Create tables
 CREATE TABLE ticket
 (
     id       varchar(256) NOT NULL,
@@ -44,7 +45,7 @@ CREATE TABLE userlocation
     user_id    varchar(128)     NOT NULL,
     latitude   double precision NOT NULL,
     longitude  double precision NOT NULL,
-    created_on timestamp        NOT NULL,
+    created_on timestamp        WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id)
 );
 CREATE TABLE eventlocation
@@ -52,7 +53,7 @@ CREATE TABLE eventlocation
     event_id   varchar(128)     NOT NULL,
     latitude   double precision NOT NULL,
     longitude  double precision NOT NULL,
-    created_on timestamp        NOT NULL,
+    created_on timestamp        WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (event_id)
 );
 CREATE TABLE pictures
@@ -67,6 +68,19 @@ CREATE TABLE friends
     userB varchar(128) NOT NULL,
     PRIMARY KEY (userA, userB)
 );
+
+
+CREATE TABLE requests
+(
+    user_id    varchar(128) NOT NULL,
+    event_id   varchar(128) NOT NULL,
+    created_on timestamp    WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, created_on)
+);
+
+
+
+-- Create relations
 ALTER TABLE pictures
     ADD CONSTRAINT FKPictures14710 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
 ALTER TABLE userlocation
@@ -90,7 +104,6 @@ ALTER TABLE "user"
 
 ALTER TABLE event
     ADD CONSTRAINT event_start_in_future CHECK ( "start" > CURRENT_TIMESTAMP );
-
 
 
 -- Custom function to get all friends from the database
