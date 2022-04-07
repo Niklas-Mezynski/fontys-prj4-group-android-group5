@@ -3,6 +3,7 @@ package org.die6sheeshs.projectx;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.LayoutInflater;
 import android.view.View;

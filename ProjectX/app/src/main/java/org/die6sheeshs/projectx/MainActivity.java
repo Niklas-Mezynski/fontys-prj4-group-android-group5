@@ -1,6 +1,7 @@
 package org.die6sheeshs.projectx;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,10 +19,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        findViewById(R.id.createParty);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(new Home());
+        replaceFragment(Register.newInstance("",""));
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()){
@@ -44,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.flFragment, fragment);
-        fragmentTransaction.commit();
+        fragmentManager.beginTransaction()
+                .replace(R.id.flFragment, fragment)
+                .commit();
     }
 }
