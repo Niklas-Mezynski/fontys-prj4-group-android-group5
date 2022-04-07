@@ -26,19 +26,15 @@ INSERT INTO friends (usera, userb)
 VALUES ('34', '5243fwersdgerv'),
        ('12', '34');
 
-((SELECT f.usera as "friendId"
- FROM friends f
- where (userb = '34'))
-UNION
-(SELECT f.userb as "friendId"
- FROM friends f
- where (usera = '34')));
+-- SELECT "user".nick_name
+-- FROM ((SELECT f.usera as friendId
+--  FROM friends f
+--  where (userb = '34'))
+-- UNION
+-- (SELECT f.userb as friendId
+--  FROM friends f
+--  where (usera = '34'))) AS friends
+-- INNER JOIN "user" ON "user".id = friends.friendId;
 
-SELECT u.nick_name
-FROM "user" u inner join (((SELECT f.usera as friendId
- FROM friends f
- where (userb = '34'))
-UNION
-(SELECT f.userb as friendId
- FROM friends f
- where (usera = '34'))) as friends) on u.id = friends.friendId
+
+-- SELECT * FROM getFriendInfos('34');
