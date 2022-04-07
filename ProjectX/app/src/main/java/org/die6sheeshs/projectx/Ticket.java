@@ -1,11 +1,13 @@
 package org.die6sheeshs.projectx;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ public class Ticket extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private View view;
 
     public Ticket() {
         // Required empty public constructor
@@ -61,35 +64,46 @@ public class Ticket extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        this.view = inflater.inflate(R.layout.fragment_ticket, container, false);
         init();
-        return inflater.inflate(R.layout.fragment_ticket, container, false);
+        return view;
     }
 
     private void init(){
-        ScrollView scrollView = getView().findViewById(R.id.scroll);
-        LinearLayout linearLayoutV = getView().findViewById(R.id.linlayV);
+        ScrollView scrollView = view.findViewById(R.id.scroll);
+        LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
+        TextView header = view.findViewById(R.id.header);
 
 
-        for(int i = 0;i<1;i++){
-            LinearLayout layout2 = new LinearLayout(getContext());
+        for(int i = 0;i<5;i++){
 
-            layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            layout2.setOrientation(LinearLayout.HORIZONTAL);
-            linearLayoutV.addView(layout2);
+            ImageView iv = new ImageView(getContext());
+            LinearLayout layoutH = new LinearLayout(getContext());
+            layoutH.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            layoutH.setOrientation(LinearLayout.HORIZONTAL);
+            linearLayoutV.addView(layoutH);
+
+            LinearLayout layoutV2 = new LinearLayout(getContext());
+            layoutV2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            layoutV2.setOrientation(LinearLayout.VERTICAL);
+            layoutH.addView(layoutV2);
+            layoutH.addView(iv);
+            layoutH.setPadding(0,0,0,10);
 
             TextView tv1 = new TextView(getContext());
-            tv1.setText("HALLO");
+            tv1.setText("Location");
+            tv1.setTypeface(tv1.getTypeface(), Typeface.BOLD);
             TextView tv2 = new TextView(getContext());
-            tv2.setText("HALLO1");
+            int price = 30;
+            tv2.setText(price+"€");
             TextView tv3 = new TextView(getContext());
-            tv3.setText("HALLO2");
-            TextView tv4 = new TextView(getContext());
-            tv4.setText("HALLO3");
+            tv3.setText("07.04.2022");
 
-            layout2.addView(tv1);
-            layout2.addView(tv2);
-            layout2.addView(tv3);
-            layout2.addView(tv4);
+            layoutV2.addView(tv1);
+            layoutV2.addView(tv2);
+            layoutV2.addView(tv3);
+
+            layoutH.setOnClickListener((l)-> header.setText("Your Tickets"));
         }
     }
 }
