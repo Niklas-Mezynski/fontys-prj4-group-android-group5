@@ -1,9 +1,7 @@
 package org.die6sheeshs.projectx;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Picture;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +12,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class PartyDetail extends Fragment {
@@ -72,11 +66,84 @@ public class PartyDetail extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_party_detail, container, false);
         initShareButton(v);
-        initPartyTitle(v);
         initLocationImages(v);
+        setPartyData(v);
 
         // Inflate the layout for this fragment
         return v;
+    }
+
+    private void setPartyData(View v) {
+        setPartyTitle(v, "EmS");
+        setPartyCity(v, "Viersen");
+        setPartyStreetHouseNum(v, "Am Hohen Busch",1);
+        setMaxParticipants(v, 123);
+        setTicksAvail(v, 123);
+        setPrice(v, 50.00);
+        setStart(v, LocalDateTime.now());
+        setEnd(v, LocalDateTime.now());
+        setDescription(v, "Liebe Freunde des morgendlichen Rühreis, \n" +
+                "\n" +
+                "wir haben uns sehr schweren Herzens dazu entschieden, das Eier mit Speck Festival nicht mehr weiter fortzusetzen.  \n" +
+                "\n" +
+                "Die Entscheidung ist in den letzten Wochen gereift und wir haben es uns wahrlich nicht leicht gemacht – aber ein Eier mit Speck ohne Tappi ist für uns nicht das was es einmal war. \n" +
+                "Ein weiteres Festival ohne unseren fehlenden Kompagnon würde sich einfach in so vielerlei Hinsicht falsch anfühlen. \n" +
+                "\n" +
+                "Wir blicken auf 14 tolle Jahre, auf großartige Momente und gemeinsame Erinnerungen zurück. \n" +
+                "\n" +
+                "Wir danken an dieser Stelle nochmal all den tollen Leuten die das Eier mit Speck einzigartig in der Festivallandschaft gemacht haben – unzähligen Helfern, Sponsoren, Partnern, der Stadt Viersen, Feuerwehr und DRK, den Bands und nicht zuletzt Euch Besuchern.  \n" +
+                "\n" +
+                "Denkt beim Frühstück mal gelegentlich an uns!  \n" +
+                "\n" +
+                "Eure Speckies");
+
+    }
+
+    private void setDescription(View v, String s) {
+        TextView title = (TextView) v.findViewById(R.id.descText);
+        title.setText(s);
+    }
+
+
+    private void setEnd(View v, LocalDateTime end){
+        TextView title = (TextView) v.findViewById(R.id.endText);
+        title.setText(end.toString());
+    }
+
+    private void setStart(View v, LocalDateTime start){
+        TextView title = (TextView) v.findViewById(R.id.startText);
+        title.setText(start.toString());
+    }
+
+    private void setPrice(View v, double price) {
+        TextView title = (TextView) v.findViewById(R.id.priceText);
+        title.setText(""+price);
+    }
+
+    private void setTicksAvail(View v, int i) {
+        TextView title = (TextView) v.findViewById(R.id.ticketsAvailText);
+        title.setText(""+i);
+    }
+
+    private void setMaxParticipants(View v, int i) {
+        TextView title = (TextView) v.findViewById(R.id.maxParticipantsText);
+        title.setText(""+i);
+
+    }
+
+    private void setPartyStreetHouseNum(View v, String s, int houseNum) {
+        TextView title = (TextView) v.findViewById(R.id.streetHou);
+        title.setText(s+", "+houseNum);
+    }
+
+    private void setPartyCity(View v, String s) {
+        TextView title = (TextView) v.findViewById(R.id.city);
+        title.setText(s);
+    }
+
+    private void setPartyTitle(View v, String s) {
+        TextView title = (TextView) v.findViewById(R.id.partyTitle);
+        title.setText(s);
     }
 
     private void initLocationImages(View v) {
@@ -90,10 +157,7 @@ public class PartyDetail extends Fragment {
         curImg.setImageBitmap(bmp);
     }
 
-    private void initPartyTitle(View v) {
-        TextView title = (TextView) v.findViewById(R.id.partyTitle);
-        title.setText(partyId.toString());
-    }
+
 
     private void initShareButton(View v){
         Button share = (Button) v.findViewById(R.id.shareButton);

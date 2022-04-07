@@ -93,13 +93,61 @@
                 app:layout_constraintBottom_toBottomOf="@+id/previousImgBtn" />
 
             <TextView
+                android:id="@+id/sergsrethsrth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="City"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/previousImgBtn" />
+
+            <TextView
+                android:id="@+id/city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="@+id/streetHou"
+                app:layout_constraintTop_toBottomOf="@+id/previousImgBtn" />
+
+            <View
+                android:id="@+id/divider34"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toBottomOf="@+id/sergsrethsrth" />
+
+            <TextView
+                android:id="@+id/streetHdrthdrthdrou"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="Street, Housenumber"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sergsrethsrth" />
+
+            <TextView
+                android:id="@+id/streetHou"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="@+id/maxParticipantsText"
+                app:layout_constraintTop_toBottomOf="@+id/sergsrethsrth" />
+
+            <View
+                android:id="@+id/divider33"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toBottomOf="@+id/streetHdrthdrthdrou" />
+
+            <TextView
                 android:id="@+id/textView29"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="Max. Participants"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/previousImgBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/streetHdrthdrthdrou" />
 
             <TextView
                 android:id="@+id/maxParticipantsText"
@@ -108,7 +156,7 @@
                 android:text="TextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/divider27"
-                app:layout_constraintTop_toBottomOf="@+id/previousImgBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/streetHdrthdrthdrou" />
 
             <View
                 android:id="@+id/divider29"
@@ -250,12 +298,13 @@
                 android:id="@+id/divider27"
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="4dp"
                 android:background="?android:attr/listDivider"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/descText"
-                app:layout_constraintStart_toEndOf="@+id/textView29"
-                app:layout_constraintTop_toBottomOf="@+id/divider26" />
+                app:layout_constraintStart_toEndOf="@+id/streetHdrthdrthdrou"
+                app:layout_constraintTop_toBottomOf="@+id/divider26"
+                app:layout_constraintVertical_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
