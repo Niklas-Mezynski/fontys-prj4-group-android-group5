@@ -45,11 +45,6 @@ export class User extends Entity {
   @property({
     type: 'string',
   })
-  location?: string;
-
-  @property({
-    type: 'string',
-  })
   profile_pic?: string;
 
   @property({
