@@ -9,8 +9,13 @@ export interface GeoPoint {
   lng: number;
 }
 
+export interface Address {
+  address: string;
+}
+
 export interface Geocoder {
-  geocode(address: string): Promise<GeoPoint[]>;
+  toCoordinates(address: string): Promise<GeoPoint[]>;
+  toAddress(lat: number, lng: number): Promise<Address[]>;
 }
 
 export class GeocoderProvider implements Provider<Geocoder> {

@@ -22,7 +22,21 @@ const config = {
         responsePath: '$.results[*].geometry.location',
       },
       functions: {
-        geocode: ['address'],
+        toCoordinates: ['address'],
+      },
+    },
+    {
+      template: {
+        method: 'GET',
+        url: 'https://maps.googleapis.com/maps/api/geocode/json',
+        query: {
+          latlng: '{lat},{lng}',
+          key: 'AIzaSyBqbaGO0CeLvfzhYyaBCAVFzYSfDWl6xJQ',
+        },
+        responsePath: '$.results[*].formatted_address',
+      },
+      functions: {
+        toAddress: ['lat', 'lng'],
       },
     },
   ],

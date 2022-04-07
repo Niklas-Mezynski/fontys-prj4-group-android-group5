@@ -18,7 +18,24 @@ export class GeocoderController {
   async toCoordinates(
     @param.path.string('address') address: string,
   ): Promise<string> {
-    const response = await this.geoService.geocode(address);
+    const response = await this.geoService.toCoordinates(address);
+    let json = JSON.stringify(response[0]);
+    return json;
+  }
+
+  @get('/toAddress/{lat},{lng}', {
+    responses: {
+      '200': {
+        description: 'Get address of coordinates',
+        // content: {'application/json': {schema: GeoSchema}},
+      },
+    },
+  })
+  async toAddress(
+    @param.path.number('lat') lat: number,
+    @param.path.number('lng') lng: number,
+  ): Promise<string> {
+    const response = await this.geoService.toAddress(lat, lng);
     let json = JSON.stringify(response[0]);
     return json;
   }
