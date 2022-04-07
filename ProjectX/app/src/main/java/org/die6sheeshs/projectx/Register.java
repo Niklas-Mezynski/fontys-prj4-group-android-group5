@@ -21,7 +21,11 @@ import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.restAPI.LocalDateTimeConverter;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
+import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 
@@ -99,7 +103,7 @@ public class Register extends Fragment {
         birthdateField = view.findViewById(R.id.birthdate_field);
         emailField = view.findViewById(R.id.email_field);
         passwordField = view.findViewById(R.id.password_field);
-        passwordField = view.findViewById(R.id.password_repeat_field);
+        password2Field = view.findViewById(R.id.password_repeat_field);
         gotoToLogin = view.findViewById(R.id.goto_login_view);
         submit = view.findViewById(R.id.submit_registration);
 
@@ -107,39 +111,16 @@ public class Register extends Fragment {
         UserPersistence userPersistence = new UserPersistence();
         submit.setOnClickListener(currentView -> {
 
-//            String firstName = firstNameField.getEditText().getText().toString();
-//            String lastName = firstNameField.getEditText().getText().toString();
-//            String nickname = firstNameField.getEditText().getText().toString();
-//            String email = firstNameField.getEditText().getText().toString();
-//            String password1 = firstNameField.getEditText().getText().toString();
-//            String password2 = firstNameField.getEditText().getText().toString();
-//            String dateString = birthdateField.getEditText().getText().toString();
-//            Date date = Date.valueOf(dateString);
-            Call<List<User>> allUsers = userPersistence.getAllUsers();
-            allUsers.enqueue(new Callback<List<User>>() {
-                @Override
-                public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                    if (!response.isSuccessful()) {
-                        Log.e("API Response", String.valueOf(response.code()));
-                        return;
-                    }
+            String firstName = firstNameField.getEditText().getText().toString();
+            String lastName = lastNameField.getEditText().getText().toString();
+            String nickname = nicknameField.getEditText().getText().toString();
+            String email = emailField.getEditText().getText().toString();
+            String password = passwordField.getEditText().getText().toString();
+            String password2 = password2Field.getEditText().getText().toString();
+            String dateString = birthdateField.getEditText().getText().toString();
 
-                    List<User> body = response.body();
-                    for (User user : body) {
-                        Log.v("Snens", user.getNick_name());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<User>> call, Throwable t) {
-                    Log.e("Failure getting users", t.toString());
-                }
-            });
-            LocalDateTime birthday = LocalDateTime.of(2002, 04, 19, 10, 0, 0);
-            userPersistence.createUser("Daniel", "Weinstein", "werofgk@kfw.de",
-                    "MCDanDanHD", birthday, "someUrl",
-                    "im cool", "123456789");
-
+            LocalDateTime birthday = LocalDateTime.parse(dateString + " 08:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            userPersistence.createUser(firstName, lastName, email, nickname, birthday, "picUrl", "About me", password);
 
         });
 

@@ -65,4 +65,18 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", nick_name='" + nick_name + '\'' +
+                ", birth_date=" + birth_date +
+                ", profile_pic='" + profile_pic + '\'' +
+                ", about_me='" + about_me + '\'' +
+                '}';
+    }
 }
