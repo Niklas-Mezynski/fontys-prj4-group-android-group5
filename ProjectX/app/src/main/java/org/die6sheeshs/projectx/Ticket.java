@@ -3,10 +3,12 @@ package org.die6sheeshs.projectx;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +61,35 @@ public class Ticket extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        init();
         return inflater.inflate(R.layout.fragment_ticket, container, false);
+    }
+
+    private void init(){
+        ScrollView scrollView = getView().findViewById(R.id.scroll);
+        LinearLayout linearLayoutV = getView().findViewById(R.id.linlayV);
+
+
+        for(int i = 0;i<1;i++){
+            LinearLayout layout2 = new LinearLayout(getContext());
+
+            layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            layout2.setOrientation(LinearLayout.HORIZONTAL);
+            linearLayoutV.addView(layout2);
+
+            TextView tv1 = new TextView(getContext());
+            tv1.setText("HALLO");
+            TextView tv2 = new TextView(getContext());
+            tv2.setText("HALLO1");
+            TextView tv3 = new TextView(getContext());
+            tv3.setText("HALLO2");
+            TextView tv4 = new TextView(getContext());
+            tv4.setText("HALLO3");
+
+            layout2.addView(tv1);
+            layout2.addView(tv2);
+            layout2.addView(tv3);
+            layout2.addView(tv4);
+        }
     }
 }
