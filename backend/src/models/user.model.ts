@@ -1,6 +1,7 @@
 import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
 import {UserLocation} from './user-location.model';
 import {Ticket} from './ticket.model';
+import {UserCredentials} from '../services';
 
 @model()
 export class User extends Entity {
@@ -73,6 +74,9 @@ export class User extends Entity {
   constructor(data?: Partial<User>) {
     super(data);
   }
+
+  // userCredentials: UserCredentials;
+
 }
 
 export interface UserRelations {
