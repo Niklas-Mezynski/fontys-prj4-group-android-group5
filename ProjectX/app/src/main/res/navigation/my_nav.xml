@@ -7,22 +7,22 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="org.die6sheeshs.projectx.Home"
+        android:name="org.die6sheeshs.projectx.fragments.Home"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/ticketFragment"
-        android:name="org.die6sheeshs.projectx.Ticket"
+        android:name="org.die6sheeshs.projectx.fragments.Ticket"
         android:label="fragment_ticket"
         tools:layout="@layout/fragment_ticket" />
     <fragment
         android:id="@+id/createParty"
-        android:name="org.die6sheeshs.projectx.CreateParty"
+        android:name="org.die6sheeshs.projectx.fragments.CreateParty"
         android:label="fragment_create_party"
         tools:layout="@layout/fragment_create_party" />
     <fragment
         android:id="@+id/profile"
-        android:name="org.die6sheeshs.projectx.Profile"
+        android:name="org.die6sheeshs.projectx.fragments.Profile"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
     <fragment

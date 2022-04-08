@@ -1,28 +1,39 @@
-package org.die6sheeshs.projectx;
+package org.die6sheeshs.projectx.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.Navigation;
 
+import org.die6sheeshs.projectx.fragments.CreateParty;
+import org.die6sheeshs.projectx.fragments.Home;
+import org.die6sheeshs.projectx.fragments.Profile;
+import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.fragments.Ticket_detail;
 import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static String authUserId = "";
 
     ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Simple user login verification for debugging purpose
+        if (authUserId == null || authUserId.isEmpty()) {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            startActivity(intent);
+        }
+
         setContentView(R.layout.activity_main);
         findViewById(R.id.createParty);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(Register.newInstance("",""));
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()){
@@ -41,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
             }
         return true;
         });
+
+
     }
 
     public void replaceFragment(Fragment fragment){

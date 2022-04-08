@@ -1,4 +1,4 @@
-package org.die6sheeshs.projectx;
+package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+
+import org.die6sheeshs.projectx.R;
 
 public class Ticket_detail extends Fragment {
     // TODO: Rename parameter arguments, choose names that match

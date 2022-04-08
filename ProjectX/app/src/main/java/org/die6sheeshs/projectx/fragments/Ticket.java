@@ -1,4 +1,4 @@
-package org.die6sheeshs.projectx;
+package org.die6sheeshs.projectx.fragments;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import org.die6sheeshs.projectx.R;
 
 /**
  * A simple {@link Fragment} subclass.

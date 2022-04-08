@@ -1,4 +1,4 @@
-package org.die6sheeshs.projectx;
+package org.die6sheeshs.projectx.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import org.die6sheeshs.projectx.R;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -1,21 +1,21 @@
-package org.die6sheeshs.projectx;
+package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import org.die6sheeshs.projectx.R;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PartyListItem#newInstance} factory method to
+ * Use the {@link Home#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PartyListItem extends Fragment {
-
-    private View view;
+public class Home extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +26,7 @@ public class PartyListItem extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public PartyListItem() {
+    public Home() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class PartyListItem extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment party_list_item.
+     * @return A new instance of fragment Home.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartyListItem newInstance(String param1, String param2) {
-        PartyListItem fragment = new PartyListItem();
+    public static Home newInstance(String param1, String param2) {
+        Home fragment = new Home();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,13 +61,6 @@ public class PartyListItem extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_party_list_item, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
-
-//    public void setLocation(String location) {
-//        TextView locationTextView = view.findViewById(R.id.textView_location);
-//        locationTextView.setText(location);
-//    }
-
 }

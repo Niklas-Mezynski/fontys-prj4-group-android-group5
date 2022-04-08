@@ -4,6 +4,7 @@ import org.die6sheeshs.projectx.entities.User;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -15,5 +16,5 @@ public interface UserApi {
     Call<List<User>> getUsers();
 
     @POST("users/")
-    Call<User> createUser(@Body User user);
+    Observable<User> createUser(@Body User user);
 }
