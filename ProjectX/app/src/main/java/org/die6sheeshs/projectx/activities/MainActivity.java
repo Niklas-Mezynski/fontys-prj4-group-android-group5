@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.navigation.NavigationBarView;
+
 import org.die6sheeshs.projectx.fragments.CreateParty;
 import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Simple user login verification for debugging purpose
         if (authUserId == null || authUserId.isEmpty()) {
-            Intent intent = new Intent(this, RegisterActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
 
@@ -35,31 +37,31 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.homeFragment:
-                    replaceFragment(new Home());
-                    break;
-                case R.id.ticketFragment:
-                    replaceFragment(new Ticket_detail());
-                    break;
-                case R.id.createParty:
-                    replaceFragment(new CreateParty());
-                    break;
-                case R.id.profile:
-                    replaceFragment(new Profile());
-                    break;
-            }
-        return true;
-        });
-
-
+        binding.bottomNavigationView.setOnItemSelectedListener(menuListener);
     }
 
-    public void replaceFragment(Fragment fragment){
+    public void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment)
                 .commit();
     }
+
+    private NavigationBarView.OnItemSelectedListener menuListener = item -> {
+        switch (item.getItemId()) {
+            case R.id.homeFragment:
+                replaceFragment(new Home());
+                break;
+            case R.id.ticketFragment:
+                replaceFragment(new Ticket_detail());
+                break;
+            case R.id.createParty:
+                replaceFragment(new CreateParty());
+                break;
+            case R.id.profile:
+                replaceFragment(new Profile());
+                break;
+        }
+        return true;
+    };
 }
