@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.job.JobScheduler;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 
@@ -12,6 +14,9 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.CustomTextWatcher;
+import org.die6sheeshs.projectx.helpers.IllegalUserInputException;
+import org.die6sheeshs.projectx.helpers.InputVerification;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.time.LocalDateTime;
@@ -33,6 +38,8 @@ public class RegisterActivity extends AppCompatActivity {
     private Button gotoToLogin;
     private Button submit;
 
+    UserPersistence userPersistence = new UserPersistence();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,40 +55,120 @@ public class RegisterActivity extends AppCompatActivity {
         gotoToLogin = findViewById(R.id.goto_login_view);
         submit = findViewById(R.id.submit_registration);
 
+        //Add listeners to the input fields which indicate if the input is valid
         addVerificationListeners();
-        //TODO verify the inputs
-        UserPersistence userPersistence = new UserPersistence();
+
+
         submit.setOnClickListener(currentView -> {
+            //TODO do the final verification of the input data
 
-            String firstName = firstNameField.getEditText().getText().toString();
-            String lastName = lastNameField.getEditText().getText().toString();
-            String nickname = nicknameField.getEditText().getText().toString();
-            String email = emailField.getEditText().getText().toString();
-            String password = passwordField.getEditText().getText().toString();
-            String password2 = password2Field.getEditText().getText().toString();
-            String dateString = birthdateField.getEditText().getText().toString();
+            submitUser();
+        });
 
-            LocalDateTime birthday = LocalDateTime.parse(dateString + " 08:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-            Observable<User> response = userPersistence.createUser(firstName, lastName, email, nickname, birthday, "picUrl", "About me", password);
-            response.subscribeOn(Schedulers.io())
-                    .doOnError((error) -> Log.v("Registration", "User POST error: " + error.getMessage()))
-                    .subscribe(user -> {
-                        //User registered successfully -> redirect him to the main activity
-                        MainActivity.authUserId = user.getId();
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
-                        Log.v("Registration", "New user created: " + user.getNick_name() + "   " + user.getId());
-                    });
+        gotoToLogin.setOnClickListener(view -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         });
 
 
     }
 
+    private void submitUser() {
+        String firstName = firstNameField.getEditText().getText().toString();
+        String lastName = lastNameField.getEditText().getText().toString();
+        String nickname = nicknameField.getEditText().getText().toString();
+        String email = emailField.getEditText().getText().toString();
+        String password = passwordField.getEditText().getText().toString();
+        String password2 = password2Field.getEditText().getText().toString();
+        String dateString = birthdateField.getEditText().getText().toString();
+        LocalDateTime birthday = LocalDateTime.parse(dateString + " 08:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        Observable<User> response = userPersistence.createUser(firstName, lastName, email, nickname, birthday, "picUrl", "About me", password);
+        response.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Registration", "User POST error: " + error.getMessage()))
+                .subscribe(user -> {
+                    //User registered successfully -> redirect him to the main activity
+                    MainActivity.authUserId = user.getId();
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    Log.v("Registration", "New user created: " + user.getNick_name() + "   " + user.getId());
+                });
+    }
+
     private void addVerificationListeners() {
-//        firstNameField.addOn
-        firstNameField.addOnEditTextAttachedListener(textInputLayout -> {
-            String input = textInputLayout.getEditText().getText().toString();
-            Log.v("Input change", input);
+
+        firstNameField.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.stringNotEmpty(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            firstNameField.setBoxBackgroundColor(bgColor);
+        });
+
+        lastNameField.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.stringNotEmpty(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            lastNameField.setBoxBackgroundColor(bgColor);
+        });
+
+        nicknameField.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.stringNotEmpty(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            nicknameField.setBoxBackgroundColor(bgColor);
+        });
+
+        birthdateField.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.dateWithoutTime(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            birthdateField.setBoxBackgroundColor(bgColor);
+        });
+
+        emailField.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.stringNotEmpty(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            emailField.setBoxBackgroundColor(bgColor);
+        });
+
+        passwordField.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.stringNotEmpty(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            passwordField.setBoxBackgroundColor(bgColor);
+            Log.v("Input change", editable.toString());
+        });
+
+        password2Field.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
+            int bgColor = getResources().getColor(R.color.none);
+            try {
+                InputVerification.stringNotEmpty(editable.toString());
+            } catch (IllegalUserInputException e) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            //Check if PW 1 and 2 are equal
+            if (!passwordField.getEditText().getText().toString().equals(editable.toString())) {
+                bgColor = getResources().getColor(R.color.errorRedAlpha);
+            }
+            password2Field.setBoxBackgroundColor(bgColor);
         });
     }
 }
