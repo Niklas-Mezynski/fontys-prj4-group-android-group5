@@ -25,7 +25,6 @@ CREATE TABLE "user"
     birth_date  date         NOT NULL,
     profile_pic varchar(1024),
     about_me    varchar(2048),
-    salt        varchar(256) NOT NULL,
     password    varchar(256) NOT NULL,
     PRIMARY KEY (id)
 );
