@@ -285,7 +285,7 @@ export class UserController {
     @inject(SecurityBindings.USER)
     currentUserProfile: User,
   ): Promise<string> {
-    return currentUserProfile.id;
+    return currentUserProfile.id + ' Snens ' + currentUserProfile.email;
   }
 
 //   @post('/signup', {

@@ -39,7 +39,7 @@ public class UserPersistence {
 
     public Observable<User> createUser(String firstName, String lastName, String email, String nick_name, LocalDateTime birth_date, String profile_pic, String about_me, String password) {
 
-        User user = new User(firstName, lastName, email, nick_name, birth_date, profile_pic, about_me, "someSalt", password);
+        User user = new User(firstName, lastName, email, nick_name, birth_date, profile_pic, about_me, password);
 //        Call<User> newUserCall = this.userApi.createUser(user);
 //        newUserCall.enqueue(new Callback<User>() {
 //            @Override
