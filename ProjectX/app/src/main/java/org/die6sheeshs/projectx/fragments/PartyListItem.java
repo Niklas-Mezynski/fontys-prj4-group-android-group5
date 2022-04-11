@@ -30,12 +30,14 @@ public class PartyListItem extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String INDEX_PARAM = "list_index";
     private Party party;
+    private View.OnClickListener buttonAction;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
 
-    public PartyListItem(Party party) {
+    public PartyListItem(Party party, View.OnClickListener buttonAction) {
         this.party = party;
+        this.buttonAction = buttonAction;
     }
 
     /**
@@ -46,8 +48,8 @@ public class PartyListItem extends Fragment {
      * @return A new instance of fragment party_list_item.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartyListItem newInstance(Party party) {
-        PartyListItem fragment = new PartyListItem(party);
+    public static PartyListItem newInstance(Party party, View.OnClickListener buttonAction) {
+        PartyListItem fragment = new PartyListItem(party, buttonAction);
         Bundle args = new Bundle();
         args.putString(INDEX_PARAM, "party");
         fragment.setArguments(args);
@@ -83,10 +85,11 @@ public class PartyListItem extends Fragment {
 
     private void setButtonAction() {
         LinearLayout wrapper = view.findViewById(R.id.linearLayout_wrapper);
-        wrapper.setOnClickListener(view -> {
-            Fragment frag = new PartyDetail(party.getId());
-            ((MainActivity)getActivity()).replaceFragment(frag);
-        });
+//        wrapper.setOnClickListener(view -> {
+//            Fragment frag = new PartyDetail(party.getId());
+//            ((MainActivity)getActivity()).replaceFragment(frag);
+//        });
+        wrapper.setOnClickListener(buttonAction);
     }
 
     private void setLocation(String location) {

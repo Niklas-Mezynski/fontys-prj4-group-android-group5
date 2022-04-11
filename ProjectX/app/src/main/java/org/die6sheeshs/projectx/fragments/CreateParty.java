@@ -113,7 +113,12 @@ public class CreateParty extends Fragment {
                         FragmentTransaction fragTransaction = fragMan.beginTransaction();
 
                         for (Party p : result) {
-                            Fragment fragment = new PartyListItem(p);
+                            System.out.println(p.getName() + ": " + p.getId());
+                            View.OnClickListener buttonAction = view -> {
+                                    Fragment frag = new PartyDetail(p.getId());
+                                    ((MainActivity)getActivity()).replaceFragment(frag);
+                                };
+                            Fragment fragment = new PartyListItem(p, buttonAction);
 
                             fragTransaction.add(linearLayout.getId(), fragment, "party#" + p.getId());
                         }

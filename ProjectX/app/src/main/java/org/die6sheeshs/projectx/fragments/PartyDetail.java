@@ -95,29 +95,31 @@ public class PartyDetail extends Fragment {
         party.subscribeOn(Schedulers.io())
                 .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
                 .subscribe(p ->{
+                    getActivity().runOnUiThread(() -> {
 
-                    Log.v("Party Detail", "Details fetched :"+p.getDescription());
-                    setPartyTitle(v, p.getName());
-                    setPartyCity(v, "Not implemented");//todo fetch location
-                    setPartyStreetHouseNum(v, "Not Implemented", 0);//todo fetch location
-                    setMaxParticipants(v, p.getMax_people());
-                    setTicksAvail(v, p.getMax_people()-123);//todo calc sold tickets
-                    setPrice(v, -999.999);//todo add price to relation
-                    setStart(v, p.getStart());
-                    setEnd(v, p.getEnd());
-                    setDescription(v, p.getDescription());
-
+                        Log.v("Party Detail", "Details fetched :" + p.getDescription());
+                        setPartyTitle(v, p.getName());
+                        setPartyCity(v, "Not implemented");//todo fetch location
+                        setPartyStreetHouseNum(v, "Not Implemented", 0);//todo fetch location
+                        setMaxParticipants(v, p.getMax_people());
+                        setTicksAvail(v, p.getMax_people() - 123);//todo calc sold tickets
+                        setPrice(v, -999.999);//todo add price to relation
+                        setStart(v, p.getStart());
+                        setEnd(v, p.getEnd());
+                        setDescription(v, p.getDescription());
+                    });
                 });
         Observable<EventLocation> loc = PartyPersistence.getInstance().getEventLocation(partyId);
         loc.subscribeOn(Schedulers.io())
                 .doOnError((error)-> Log.v("Party", "Party Error: " + error.getMessage()))
                 .subscribe(eLoc->{
-                    double lat, lng;
-                    lat = eLoc.getLatitude();
-                    lng = eLoc.getLongtitude();
-                    setPartyCity(v, lat+"");
-                    setPartyStreetHouseNum(v, lng+"", 0);
-
+                    getActivity().runOnUiThread(() -> {
+                        double lat, lng;
+                        lat = eLoc.getLatitude();
+                        lng = eLoc.getLongtitude();
+                        setPartyCity(v, lat + "");
+                        setPartyStreetHouseNum(v, lng + "", 0);
+                    });
 
                 });
 
