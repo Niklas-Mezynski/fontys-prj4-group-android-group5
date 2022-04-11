@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.helpers.SessionManager;
@@ -109,8 +110,11 @@ public class Tickets extends Fragment {
                                 System.out.println(party.getId());
                                 FragmentManager fragMan = getChildFragmentManager();
                                 FragmentTransaction fragTransaction = fragMan.beginTransaction();
-
-                                Fragment fragment = new PartyListItem(party);
+                                View.OnClickListener buttonAction = view -> {
+                                    Fragment frag = new TicketDetail(party);
+                                    ((MainActivity)getActivity()).replaceFragment(frag);
+                                };
+                                Fragment fragment = new PartyListItem(party,buttonAction);
 
                                 fragTransaction.add(linearLayoutV.getId(), fragment, "party#" + party.getId());
 

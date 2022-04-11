@@ -8,8 +8,9 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Party;
 
-public class Ticket_detail extends Fragment {
+public class TicketDetail extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -19,9 +20,11 @@ public class Ticket_detail extends Fragment {
     private String mParam1;
     private String mParam2;
     private View view;
+    private Party party;
 
-    public Ticket_detail() {
+    public TicketDetail(Party party) {
         // Required empty public constructor
+        this.party = party;
     }
 
     /**
@@ -33,8 +36,8 @@ public class Ticket_detail extends Fragment {
      * @return A new instance of fragment Profile.
      */
     // TODO: Rename and change types and number of parameters
-    public static Ticket_detail newInstance(String param1, String param2) {
-        Ticket_detail fragment = new Ticket_detail();
+    public static TicketDetail newInstance(String param1, String param2,Party party) {
+        TicketDetail fragment = new TicketDetail(party);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
