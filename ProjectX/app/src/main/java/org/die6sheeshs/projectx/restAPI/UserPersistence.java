@@ -3,6 +3,8 @@ package org.die6sheeshs.projectx.restAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.die6sheeshs.projectx.entities.LoginRequest;
+import org.die6sheeshs.projectx.entities.TokenEntity;
 import org.die6sheeshs.projectx.entities.User;
 
 import java.time.LocalDateTime;
@@ -64,5 +66,11 @@ public class UserPersistence {
 //        });
         Observable<User> observable = userApi.createUser(user);
         return observable;
+    }
+
+    public Observable<TokenEntity> userLogin(String email, String password){
+        LoginRequest user = new LoginRequest(email, password);
+        Observable<TokenEntity> ob = userApi.login(user);
+        return ob;
     }
 }
