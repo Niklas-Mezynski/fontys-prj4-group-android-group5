@@ -32,6 +32,7 @@ CREATE TABLE "user"
 CREATE TABLE event
 (
     id          varchar(128)  NOT NULL,
+	user_id     varchar(128)  NOT NULL,
     name        varchar(80)   NOT NULL,
     description varchar(2048) NOT NULL,
 --     pictures    integer,
@@ -95,6 +96,12 @@ ALTER TABLE friends
     ADD CONSTRAINT FKFriends788075 FOREIGN KEY (userA) REFERENCES "user" (id) ON DELETE CASCADE;
 ALTER TABLE friends
     ADD CONSTRAINT FKFriends788076 FOREIGN KEY (userB) REFERENCES "user" (id) ON DELETE CASCADE;
+ALTER TABLE requests
+	ADD CONSTRAINT FKRequests34535 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+ALTER TABLE requests
+	ADD CONSTRAINT FKRequests45367 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
+ALTER TABLE event
+	ADD CONSTRAINT FKEvent89432 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 
 
 -- Check constraints
