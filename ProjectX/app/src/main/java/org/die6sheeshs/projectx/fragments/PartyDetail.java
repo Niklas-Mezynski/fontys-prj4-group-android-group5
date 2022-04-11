@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 
 public class PartyDetail extends Fragment {
@@ -104,6 +106,18 @@ public class PartyDetail extends Fragment {
                     setStart(v, p.getStart());
                     setEnd(v, p.getEnd());
                     setDescription(v, p.getDescription());
+
+                });
+        Observable<EventLocation> loc = PartyPersistence.getInstance().getEventLocation(partyId);
+        loc.subscribeOn(Schedulers.io())
+                .doOnError((error)-> Log.v("Party", "Party Error: " + error.getMessage()))
+                .subscribe(eLoc->{
+                    double lat, lng;
+                    lat = eLoc.getLatitude();
+                    lng = eLoc.getLongtitude();
+                    setPartyCity(v, lat+"");
+                    setPartyStreetHouseNum(v, lng+"", 0);
+
 
                 });
 

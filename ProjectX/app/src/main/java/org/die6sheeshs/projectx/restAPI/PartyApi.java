@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.User;
 
@@ -22,5 +23,8 @@ public interface PartyApi {
 
     @POST("events/")
     Observable<Party> createParty(@Body Party party);
+
+    @GET("events/{id}/event-location")
+    Observable<EventLocation> getEventLocation(@Path("id") String id);
 
 }
