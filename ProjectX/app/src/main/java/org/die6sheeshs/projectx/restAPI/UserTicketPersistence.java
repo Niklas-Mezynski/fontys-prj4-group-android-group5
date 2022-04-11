@@ -18,7 +18,13 @@ public class UserTicketPersistence {
     private Retrofit retrofit;
     private UserTicketApi userTicketApi;
 
-    public UserTicketPersistence() {
+    private static final UserTicketPersistence instance = new UserTicketPersistence();
+
+    public static UserTicketPersistence getInstance(){
+        return instance;
+    }
+
+    private UserTicketPersistence() {
         String baseUrl = PropertyService.readProperty("baseUrl");
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
@@ -33,11 +39,11 @@ public class UserTicketPersistence {
         this.userTicketApi = retrofit.create(UserTicketApi.class);
     }
 
-    Observable<List<Ticket>> getTickets(String id){
+    public Observable<List<Ticket>> getTickets(String id){
         return userTicketApi.getTickets(id);
     }
 
-    void deleteTicket(String id){
+    public void deleteTicket(String id){
         userTicketApi.deleteTicket(id);
     }
 }
