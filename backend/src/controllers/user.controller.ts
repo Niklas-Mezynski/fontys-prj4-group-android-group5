@@ -39,6 +39,20 @@ import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { genSalt, hash } from 'bcryptjs';
 import _ from 'lodash';
 
+@model()
+export class LoginResponse {
+  @property({
+    type: 'string',
+    required: true,
+  })
+  token: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  user_id: string;
+}
 
 @model()
 export class NewUserRequest extends User {
@@ -234,20 +248,15 @@ export class UserController {
     return this.userLocationRepository.user(id);
   }
 
+  
+
   @post('/users/login', {
     responses: {
       '200': {
         description: 'Token',
         content: {
           'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                token: {
-                  type: 'string',
-                },
-              },
-            },
+            schema: getModelSchemaRef(LoginResponse),
           },
         },
       },
@@ -255,7 +264,7 @@ export class UserController {
   })
   async login(
     @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<{ token: string }> {
+  ): Promise<LoginResponse> {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     // convert a User object into a UserProfile object (reduced set of properties)
@@ -263,7 +272,10 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-    return { token };
+    let loginResponse = new LoginResponse();
+    loginResponse.token = token;
+    loginResponse.user_id = userProfile.id;
+    return loginResponse;
   }
 
   @authenticate('jwt')
@@ -283,9 +295,9 @@ export class UserController {
   })
   async whoAmI(
     @inject(SecurityBindings.USER)
-    currentUserProfile: User,
+    currentUserProfile: UserProfile ,
   ): Promise<string> {
-    return currentUserProfile.id + ' Snens ' + currentUserProfile.email;
+    return currentUserProfile.id;
   }
 
 //   @post('/signup', {

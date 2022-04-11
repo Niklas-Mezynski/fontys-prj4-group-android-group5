@@ -19,20 +19,31 @@ import {
   User,
   Ticket,
 } from '../models';
-import {UserRepository} from '../repositories';
+import { UserRepository } from '../repositories';
+import { authenticate, TokenService } from '@loopback/authentication';
+import { inject } from '@loopback/core';
+import {
+  Credentials,
+  MyUserService,
+  TokenServiceBindings,
+  UserServiceBindings,
+} from '@loopback/authentication-jwt';
+import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
+
 
 export class UserTicketController {
   constructor(
     @repository(UserRepository) protected userRepository: UserRepository,
   ) { }
 
+  @authenticate('jwt') // Add this annotation in order to secure it using JWT
   @get('/users/{id}/tickets', {
     responses: {
       '200': {
         description: 'Array of User has many Ticket',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Ticket)},
+            schema: { type: 'array', items: getModelSchemaRef(Ticket) },
           },
         },
       },
@@ -40,8 +51,15 @@ export class UserTicketController {
   })
   async find(
     @param.path.string('id') id: string,
+    @inject(SecurityBindings.USER)   // Add these two lines to get the user profile by the JWT token in the header
+    currentUserProfile: UserProfile, //
     @param.query.object('filter') filter?: Filter<Ticket>,
   ): Promise<Ticket[]> {
+    //In this case: verify that the requesting user is equal to the user_id in the request
+    //Maybe do other verifications here
+    if (currentUserProfile[securityId] != id) {
+      throw new Error("You don't have permission to access this resource");
+    }
     return this.userRepository.tickets(id).find(filter);
   }
 
@@ -49,7 +67,7 @@ export class UserTicketController {
     responses: {
       '200': {
         description: 'User model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Ticket)}},
+        content: { 'application/json': { schema: getModelSchemaRef(Ticket) } },
       },
     },
   })
@@ -74,7 +92,7 @@ export class UserTicketController {
     responses: {
       '200': {
         description: 'User.Ticket PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -83,7 +101,7 @@ export class UserTicketController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Ticket, {partial: true}),
+          schema: getModelSchemaRef(Ticket, { partial: true }),
         },
       },
     })
@@ -97,7 +115,7 @@ export class UserTicketController {
     responses: {
       '200': {
         description: 'User.Ticket DELETE success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
