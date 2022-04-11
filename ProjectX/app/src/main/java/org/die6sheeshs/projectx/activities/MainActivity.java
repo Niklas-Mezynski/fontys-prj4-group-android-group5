@@ -17,9 +17,6 @@ import org.die6sheeshs.projectx.fragments.Ticket_detail;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String authUserId = "";
-    public static String userToken = "";
-
     ActivityMainBinding binding;
 
     @Override

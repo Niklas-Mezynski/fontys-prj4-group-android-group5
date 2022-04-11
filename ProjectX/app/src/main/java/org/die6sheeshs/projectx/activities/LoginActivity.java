@@ -3,14 +3,16 @@ package org.die6sheeshs.projectx.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.TokenEntity;
-import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import io.reactivex.Observable;
@@ -22,8 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button gotoRegister;
     private EditText passwordField;
     private EditText emailField;
-
-    UserPersistence userPersistence = UserPersistence.getInstance();
+    private TextView invalidPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +35,15 @@ public class LoginActivity extends AppCompatActivity {
         gotoRegister = findViewById(R.id.goto_register_view);
         emailField = findViewById(R.id.loginEmailNickname);
         passwordField = findViewById(R.id.loginPassword);
+        invalidPassword = findViewById(R.id.invalid_password);
 
         gotoRegister.setOnClickListener(view -> {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
         });
 
-        UserPersistence userPersistence = UserPersistence.getInstance();
         submit.setOnClickListener(listener -> {
+            invalidPassword.setVisibility(View.GONE);
             submitLogin();
         });
     }
@@ -50,16 +52,17 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
 
-        Observable<TokenEntity> ob = userPersistence.userLogin(email, password);
+        Observable<TokenEntity> ob = UserPersistence.getInstance().userLogin(email, password);
         ob.subscribeOn(Schedulers.io())
-                .doOnError((error) -> Log.v("Login, User POST error: ", error.getMessage()))
-                .subscribe(token -> {
+                .subscribe((token -> {
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                     Log.v("snens", token.getToken());
-                    MainActivity.userToken = token.getToken();
+                    SessionManager.getInstance().saveAuthToken(token.getToken());
+                }), error -> {
+                    runOnUiThread(() -> invalidPassword.setVisibility(View.VISIBLE));
+                    Log.v("Login error", " " + error.getMessage());
                 });
-
 
     }
 
