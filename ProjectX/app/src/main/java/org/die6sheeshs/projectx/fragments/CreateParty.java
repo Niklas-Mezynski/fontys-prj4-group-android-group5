@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,10 +11,16 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.helpers.PropertyService;
+
+import java.time.LocalDateTime;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,9 +87,10 @@ public class CreateParty extends Fragment {
         FragmentManager fragMan = getChildFragmentManager();
         FragmentTransaction fragTransaction = fragMan.beginTransaction();
 
+        // TODO: Replace with actual events
         for (int i = 0; i < 5; i++) {
-            Fragment fragment = new PartyListItem();
-//            ((PartyListItem)fragment).setLocation("Deine Mums Haus"+i);
+            Party party = new Party("Party"+i, "Description", LocalDateTime.now(), LocalDateTime.now(), 1);
+            Fragment fragment = new PartyListItem(party);
 
             fragTransaction.add(linearLayout.getId(), fragment, "party#" + i);
         }
@@ -94,10 +102,6 @@ public class CreateParty extends Fragment {
 //        textView.setText("No parties planned yet");
 //
 //        linearLayout.addView(textView);
-    }
-
-    private int convertPixelToDP(int pixels) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels, getResources().getDisplayMetrics());
     }
 
 }

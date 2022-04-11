@@ -39,8 +39,8 @@ public class UserTicketPersistence {
         this.userTicketApi = retrofit.create(UserTicketApi.class);
     }
 
-    public Observable<List<Ticket>> getTickets(String id){
-        return userTicketApi.getTickets(id);
+    public Observable<List<Ticket>> getTickets(String id,String jwt){
+        return userTicketApi.getTickets(id,jwt);
     }
 
     public void deleteTicket(String id){

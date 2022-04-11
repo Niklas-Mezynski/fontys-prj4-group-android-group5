@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/ticketFragment"
-        android:name="org.die6sheeshs.projectx.fragments.Ticket"
+        android:name="org.die6sheeshs.projectx.fragments.Tickets"
         android:label="fragment_ticket"
         tools:layout="@layout/fragment_ticket" />
     <fragment

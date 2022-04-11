@@ -1,25 +1,36 @@
 package org.die6sheeshs.projectx.fragments;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.UserTicketPersistence;
+
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Ticket#newInstance} factory method to
+ * Use the {@link Tickets#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Ticket extends Fragment {
+public class Tickets extends Fragment {
+
+    UserTicketPersistence userTicketPersistence = UserTicketPersistence.getInstance();
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,7 +42,7 @@ public class Ticket extends Fragment {
     private String mParam2;
     private View view;
 
-    public Ticket() {
+    public Tickets() {
         // Required empty public constructor
     }
 
@@ -44,8 +55,8 @@ public class Ticket extends Fragment {
      * @return A new instance of fragment Ticket.
      */
     // TODO: Rename and change types and number of parameters
-    public static Ticket newInstance(String param1, String param2) {
-        Ticket fragment = new Ticket();
+    public static Tickets newInstance(String param1, String param2) {
+        Tickets fragment = new Tickets();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -75,37 +86,18 @@ public class Ticket extends Fragment {
         ScrollView scrollView = view.findViewById(R.id.scroll);
         LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
         TextView header = view.findViewById(R.id.header);
+        String id = SessionManager.getInstance().getUserId();
+        String jwt = SessionManager.getInstance().getToken();
+        Observable<List<Ticket>> response = userTicketPersistence.getTickets(id,jwt);
+        response.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Getting List of tickets", "User Tickets GET error: " + error.getMessage()))
+                .subscribe(tickets -> {
+                    getActivity().runOnUiThread(()->{
+                        for (Ticket t :tickets) {
+                            //for each ticket get the party id then fetch information from party
 
-
-        for(int i = 0;i<5;i++){
-
-            ImageView iv = new ImageView(getContext());
-            LinearLayout layoutH = new LinearLayout(getContext());
-            layoutH.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            layoutH.setOrientation(LinearLayout.HORIZONTAL);
-            linearLayoutV.addView(layoutH);
-
-            LinearLayout layoutV2 = new LinearLayout(getContext());
-            layoutV2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            layoutV2.setOrientation(LinearLayout.VERTICAL);
-            layoutH.addView(layoutV2);
-            layoutH.addView(iv);
-            layoutH.setPadding(0,0,0,10);
-
-            TextView tv1 = new TextView(getContext());
-            tv1.setText("Location");
-            tv1.setTypeface(tv1.getTypeface(), Typeface.BOLD);
-            TextView tv2 = new TextView(getContext());
-            int price = 30;
-            tv2.setText(price+"€");
-            TextView tv3 = new TextView(getContext());
-            tv3.setText("07.04.2022");
-
-            layoutV2.addView(tv1);
-            layoutV2.addView(tv2);
-            layoutV2.addView(tv3);
-
-            layoutH.setOnClickListener((l)-> header.setText("Your Tickets"));
-        }
+                        }
+                    });
+                });
     }
 }
