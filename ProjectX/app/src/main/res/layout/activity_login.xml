@@ -57,7 +57,7 @@
                 android:text="@string/buttonLogin"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/loginPassword"
+                app:layout_constraintTop_toBottomOf="@+id/invalid_password"
                 tools:ignore="DuplicateSpeakableTextCheck"
                 android:layout_marginTop="16dp" />
 
@@ -84,6 +84,18 @@
                 app:layout_constraintBottom_toTopOf="@+id/goto_register_view"
                 android:layout_marginBottom="16dp"
                 android:textAlignment="center" />
+
+        <TextView
+                android:text="@string/invalid_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/invalid_password"
+                app:layout_constraintTop_toBottomOf="@+id/loginPassword"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/errorRed"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

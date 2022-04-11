@@ -17,6 +17,7 @@ import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.CustomTextWatcher;
 import org.die6sheeshs.projectx.helpers.IllegalUserInputException;
 import org.die6sheeshs.projectx.helpers.InputVerification;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.time.LocalDateTime;
@@ -87,8 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
                 .doOnError((error) -> Log.v("Registration", "User POST error: " + error.getMessage()))
                 .subscribe(user -> {
                     //User registered successfully -> redirect him to the main activity
-                    MainActivity.authUserId = user.getId();
-                    Intent intent = new Intent(this, MainActivity.class);
+                    SessionManager.getInstance().setUserId(user.getId());
+                    Intent intent = new Intent(this, LoginActivity.class);
                     startActivity(intent);
                     Log.v("Registration", "New user created: " + user.getNick_name() + "   " + user.getId());
                 });
@@ -154,7 +155,6 @@ public class RegisterActivity extends AppCompatActivity {
                 bgColor = getResources().getColor(R.color.errorRedAlpha);
             }
             passwordField.setBoxBackgroundColor(bgColor);
-            Log.v("Input change", editable.toString());
         });
 
         password2Field.getEditText().addTextChangedListener((CustomTextWatcher) editable -> {
