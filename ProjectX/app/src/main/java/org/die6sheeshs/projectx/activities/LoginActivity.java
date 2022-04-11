@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.entities.TokenEntity;
+import org.die6sheeshs.projectx.entities.LoginResponse;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
@@ -52,13 +52,18 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
 
-        Observable<TokenEntity> ob = UserPersistence.getInstance().userLogin(email, password);
+        Observable<LoginResponse> ob = UserPersistence.getInstance().userLogin(email, password);
         ob.subscribeOn(Schedulers.io())
                 .subscribe((token -> {
+                    //Storing the user's session information
+                    SessionManager.getInstance().saveAuthToken(token.getToken());
+                    SessionManager.getInstance().setUserId(token.getUser_id());
+
+                    //Starting the main activity
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
-                    Log.v("snens", token.getToken());
-                    SessionManager.getInstance().saveAuthToken(token.getToken());
+                    Log.v("New JWT token", token.getToken());
+                    Log.v("Logged in user: ", SessionManager.getInstance().getUserId());
                 }), error -> {
                     runOnUiThread(() -> invalidPassword.setVisibility(View.VISIBLE));
                     Log.v("Login error", " " + error.getMessage());
