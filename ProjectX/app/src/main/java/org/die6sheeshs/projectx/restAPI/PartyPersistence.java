@@ -46,8 +46,8 @@ public class PartyPersistence {
         return this.partyApi.getParties();
     }
 
-    public Observable<Party> getParty(UUID uuid){
-        return this.partyApi.getParty(uuid.toString());
+    public Observable<Party> getParty(String uuid){
+        return this.partyApi.getParty(uuid);
     }
 
     public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people) {

@@ -38,11 +38,11 @@ public class PartyDetail extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private UUID partyId;
+    private String partyId;
 
     private View partyDetail;
 
-    public PartyDetail(UUID partyID){
+    public PartyDetail(String partyID){
         partyId = partyID;
     }
 
@@ -55,7 +55,7 @@ public class PartyDetail extends Fragment {
      * @return A new instance of fragment CreateParty.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartyDetail newInstance(String param1, String param2, UUID partyId) {
+    public static PartyDetail newInstance(String param1, String param2, String partyId) {
         PartyDetail fragment = new PartyDetail(partyId);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
