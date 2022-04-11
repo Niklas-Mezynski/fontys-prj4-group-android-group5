@@ -5,6 +5,7 @@ import org.die6sheeshs.projectx.entities.Ticket;
 import java.util.List;
 import io.reactivex.Observable;
 
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -15,6 +16,6 @@ public interface UserTicketApi {
     @GET("users/{id}/tickets")
     Observable<List<Ticket>> getTickets(@Path("id") String id,@Header("Authorization")String token);
 
-    @GET("users/{id}/tickets")
+    @DELETE("users/{id}/tickets")
     void deleteTicket(@Path("id") String id);
 }
