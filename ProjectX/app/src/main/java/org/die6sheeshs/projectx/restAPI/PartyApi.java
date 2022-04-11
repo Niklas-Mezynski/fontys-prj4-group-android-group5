@@ -14,7 +14,7 @@ import retrofit2.http.POST;
 public interface PartyApi {
 
     @GET("events/")
-    Call<List<Party>> getParties();
+    Observable<List<Party>> getParties();
 
     @POST("events/")
     Observable<Party> createParty(@Body Party party);

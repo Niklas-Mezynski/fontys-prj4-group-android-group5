@@ -41,7 +41,7 @@ public class PartyPersistence {
         this.partyApi = retrofit.create(PartyApi.class);
     }
 
-    public Call<List<Party>> getAllParties() {
+    public Observable<List<Party>> getAllParties() {
         return this.partyApi.getParties();
     }
 
