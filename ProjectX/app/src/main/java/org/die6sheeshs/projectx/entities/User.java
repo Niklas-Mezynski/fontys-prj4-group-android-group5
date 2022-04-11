@@ -11,10 +11,9 @@ public class User {
     private LocalDateTime birth_date;
     private String profile_pic;
     private String about_me;
-    private String salt;
     private String password;
 
-    public User(String firstName, String lastName, String email, String nick_name, LocalDateTime birth_date, String profile_pic, String about_me, String salt, String password) {
+    public User(String firstName, String lastName, String email, String nick_name, LocalDateTime birth_date, String profile_pic, String about_me, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -22,7 +21,6 @@ public class User {
         this.birth_date = birth_date;
         this.profile_pic = profile_pic;
         this.about_me = about_me;
-        this.salt = salt;
         this.password = password;
     }
 
@@ -57,11 +55,7 @@ public class User {
     public String getAbout_me() {
         return about_me;
     }
-
-    public String getSalt() {
-        return salt;
-    }
-
+    
     public String getPassword() {
         return password;
     }
