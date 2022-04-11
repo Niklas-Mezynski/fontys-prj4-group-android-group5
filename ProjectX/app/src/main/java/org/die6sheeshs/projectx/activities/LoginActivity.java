@@ -9,15 +9,11 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.entities.TokenEntity;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
-import java.util.List;
-import java.util.Observable;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,6 +21,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button gotoRegister;
     private EditText passwordField;
     private EditText emailField;
+
+    UserPersistence userPersistence = new UserPersistence();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +43,24 @@ public class LoginActivity extends AppCompatActivity {
         submit.setOnClickListener(listener -> {
             submitLogin();
         });
-
     }
 
     private void submitLogin(){
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        Observable<TokenEntity> ob = userPersistence.userLogin(email, password);
+        ob.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Login, User POST error: ", error.getMessage()))
+                .subscribe(token -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    Log.v("snens", token.getToken());
+                    MainActivity.userToken = token.getToken();
+                });
+
+
     }
+
+
 }

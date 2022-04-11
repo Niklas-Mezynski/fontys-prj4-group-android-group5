@@ -1,17 +1,17 @@
-INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, salt, password)
-VALUES ('5243fwersdgerv', 'Hans', 'Peter', 'peter@gmail.com', 'Milfhunter69', '2004-04-04', 'gerwgerg', 'fgwefwef');
+INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password)
+VALUES ('5243fwersdgerv', 'Hans', 'Peter', 'peter@gmail.com', 'Milfhunter69', '2004-04-04', 'fgwefwef');
 
-INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, salt, password)
-VALUES ('12', 'Hans', 'Peter', 'f3@gmail.com', 'eggert', '2004-04-04', 'gerwgerg', 'fgwefwef');
+INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password)
+VALUES ('12', 'Hans', 'Peter', 'f3@gmail.com', 'eggert', '2004-04-04', 'fgwefwef');
 
-INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, salt, password)
-VALUES ('34', 'Hans', 'Peter', 'fw@gmail.com', 'pralle', '2004-04-04', 'gerwgerg', 'fgwefwef');
+INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password)
+VALUES ('34', 'Hans', 'Peter', 'fw@gmail.com', 'pralle', '2004-04-04', 'fgwefwef');
 
 INSERT INTO userlocation (user_id, latitude, longitude, created_on)
 VALUES ('5243fwersdgerv', 0.69, -1.87, current_timestamp);
 
-INSERT INTO event (id, name, description, start, "end", max_people)
-VALUES ('abc', 'Fette party', 'SAUFEEEEEn', '2025-04-04', '2025-04-05', 187);
+INSERT INTO event (id, user_id, name, description, start, "end", max_people)
+VALUES ('abc', '12', 'Fette party', 'SAUFEEEEEn', '2025-04-04', '2025-04-05', 187);
 
 INSERT INTO eventlocation (event_id, latitude, longitude, created_on)
 VALUES ('abc', 0.69, -1.87, current_timestamp);
