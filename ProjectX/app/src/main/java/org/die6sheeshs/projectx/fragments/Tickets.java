@@ -31,6 +31,7 @@ public class Tickets extends Fragment {
 
     UserTicketPersistence userTicketPersistence = UserTicketPersistence.getInstance();
 
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -86,14 +87,15 @@ public class Tickets extends Fragment {
         LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
         TextView header = view.findViewById(R.id.header);
         String id = SessionManager.getInstance().getUserId();
-        Observable<List<Ticket>> response = userTicketPersistence.getTickets(id);
+        String jwt = SessionManager.getInstance().getToken();
+        Observable<List<Ticket>> response = userTicketPersistence.getTickets(id,jwt);
         response.subscribeOn(Schedulers.io())
                 .doOnError((error) -> Log.v("Getting List of tickets", "User Tickets GET error: " + error.getMessage()))
                 .subscribe(tickets -> {
                     getActivity().runOnUiThread(()->{
-                        for (Ticket t :tickets
-                             ) {
+                        for (Ticket t :tickets) {
                             //for each ticket get the party id then fetch information from party
+
                         }
                     });
                 });
