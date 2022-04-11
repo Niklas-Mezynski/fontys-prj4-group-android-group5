@@ -3,6 +3,8 @@ package org.die6sheeshs.projectx.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,21 +93,31 @@ public class Tickets extends Fragment {
         TextView header = view.findViewById(R.id.header);
         String id = SessionManager.getInstance().getUserId();
         String jwt = SessionManager.getInstance().getToken();
+        System.out.println("vor api call");
+        System.out.println(id);
         Observable<List<Ticket>> response = userTicketPersistence.getTickets(id,jwt);
         response.subscribeOn(Schedulers.io())
-                .doOnError((error) -> Log.v("Getting List of tickets", "User Tickets GET error: " + error.getMessage()))
-                .subscribe(tickets -> {
-                    getActivity().runOnUiThread(()->{
-                        for (Ticket t :tickets) {
-                            //for each ticket get the party id then fetch information from party
-                            Observable<Party> response2 = partyPersistence.getParty(t.getEvent_id());
-                            response2.subscribeOn(Schedulers.io())
-                                    .doOnError((error) -> Log.v("Getting Party based Id", "User Party GET error: " + error.getMessage()))
-                                    .subscribe(party ->{
+            .doOnError((error) -> Log.v("Getting List of tickets", "User Tickets GET error: " + error.getMessage()))
+            .subscribe(tickets -> {
+                for (Ticket t :tickets) {
+                    Observable<Party> response2 = partyPersistence.getParty(t.getEvent_id());
+                    response2.subscribeOn(Schedulers.io())
+                        .doOnError((error) -> Log.v("Getting Party based Id", "User Party GET error: " + error.getMessage()))
+                        .subscribe(party ->{
+                            getActivity().runOnUiThread(()->{
+                                //get information from party and add list item to linearLayout
+                                System.out.println(party.getId());
+                                FragmentManager fragMan = getChildFragmentManager();
+                                FragmentTransaction fragTransaction = fragMan.beginTransaction();
 
-                                    });
-                        }
-                    });
-                });
+                                Fragment fragment = new PartyListItem(party);
+
+                                fragTransaction.add(linearLayoutV.getId(), fragment, "party#" + party.getId());
+
+                                fragTransaction.commit();
+                            });
+                        });
+                }
+            });
     }
 }

@@ -82,7 +82,7 @@ public class PartyListItem extends Fragment {
     private void initButton() {
         LinearLayout wrapper = view.findViewById(R.id.linearLayout_wrapper);
         wrapper.setOnClickListener(view -> {
-            Fragment frag = new PartyDetail(UUID.fromString(party.getId()));
+            Fragment frag = new PartyDetail(party.getId());
             ((MainActivity)getActivity()).replaceFragment(frag);
         });
     }
