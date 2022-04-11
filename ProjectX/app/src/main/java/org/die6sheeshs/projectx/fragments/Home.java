@@ -80,7 +80,6 @@ public class Home extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_home, container, false);
-        textView2 = view.findViewById(R.id.textView2);
         scrollView = view.findViewById(R.id.scrollViewHome);
         Observable<List<Party>> partyObservable = PartyPersistence.getInstance().getAllParties();
 
