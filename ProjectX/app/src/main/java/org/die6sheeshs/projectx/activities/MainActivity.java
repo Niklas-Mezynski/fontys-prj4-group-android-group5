@@ -27,10 +27,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Simple user login verification for debugging purpose
-        if (authUserId == null || authUserId.isEmpty()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
+//        if (authUserId == null || authUserId.isEmpty()) {
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//        }
 
         setContentView(R.layout.activity_main);
         findViewById(R.id.createParty);
