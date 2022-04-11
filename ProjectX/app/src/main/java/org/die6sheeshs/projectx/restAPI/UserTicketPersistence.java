@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,10 +16,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UserTicketPersistence {
     private Retrofit retrofit;
-    private final String baseUrl = "http://10.0.2.2:3000/";
     private UserTicketApi userTicketApi;
 
     public UserTicketPersistence() {
+        String baseUrl = PropertyService.readProperty("baseUrl");
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
                 .create();
