@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 
 public class PartyDetail extends Fragment {
@@ -38,11 +40,11 @@ public class PartyDetail extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private UUID partyId;
+    private String partyId;
 
     private View partyDetail;
 
-    public PartyDetail(UUID partyID){
+    public PartyDetail(String partyID){
         partyId = partyID;
     }
 
@@ -55,7 +57,7 @@ public class PartyDetail extends Fragment {
      * @return A new instance of fragment CreateParty.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartyDetail newInstance(String param1, String param2, UUID partyId) {
+    public static PartyDetail newInstance(String param1, String param2, String partyId) {
         PartyDetail fragment = new PartyDetail(partyId);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -104,6 +106,18 @@ public class PartyDetail extends Fragment {
                     setStart(v, p.getStart());
                     setEnd(v, p.getEnd());
                     setDescription(v, p.getDescription());
+
+                });
+        Observable<EventLocation> loc = PartyPersistence.getInstance().getEventLocation(partyId);
+        loc.subscribeOn(Schedulers.io())
+                .doOnError((error)-> Log.v("Party", "Party Error: " + error.getMessage()))
+                .subscribe(eLoc->{
+                    double lat, lng;
+                    lat = eLoc.getLatitude();
+                    lng = eLoc.getLongtitude();
+                    setPartyCity(v, lat+"");
+                    setPartyStreetHouseNum(v, lng+"", 0);
+
 
                 });
 

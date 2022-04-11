@@ -3,6 +3,7 @@ package org.die6sheeshs.projectx.restAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.User;
 
@@ -46,8 +47,8 @@ public class PartyPersistence {
         return this.partyApi.getParties();
     }
 
-    public Observable<Party> getParty(UUID uuid){
-        return this.partyApi.getParty(uuid.toString());
+    public Observable<Party> getParty(String uuid){
+        return this.partyApi.getParty(uuid);
     }
 
     public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people) {
@@ -56,5 +57,9 @@ public class PartyPersistence {
 
         Observable<Party> observable = partyApi.createParty(p);
         return observable;
+    }
+
+    public Observable<EventLocation> getEventLocation(String id){
+        return this.partyApi.getEventLocation(id);
     }
 }

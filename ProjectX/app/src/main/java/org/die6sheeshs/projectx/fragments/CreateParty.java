@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.helpers.PropertyService;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +38,7 @@ import java.time.LocalDateTime;
 public class CreateParty extends Fragment {
 
     private View view;
+    private PartyPersistence partyPersistence = PartyPersistence.getInstance();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -84,24 +93,36 @@ public class CreateParty extends Fragment {
         ScrollView scrollView = view.findViewById(R.id.party_list_scroll_view);
         LinearLayout linearLayout = view.findViewById(R.id.party_list_linear_layout);
 
-        FragmentManager fragMan = getChildFragmentManager();
-        FragmentTransaction fragTransaction = fragMan.beginTransaction();
-
         // TODO: Replace with actual events
-        for (int i = 0; i < 5; i++) {
-            Party party = new Party("Party"+i, "Description", LocalDateTime.now(), LocalDateTime.now(), 1);
-            Fragment fragment = new PartyListItem(party);
-
-            fragTransaction.add(linearLayout.getId(), fragment, "party#" + i);
-        }
-
-        fragTransaction.commit();
-//        TextView textView = new TextView(view.getContext());
-//        textView.setLayoutParams(linearLayout.getLayoutParams());
-//        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//        textView.setText("No parties planned yet");
+        Observable<List<Party>> response = partyPersistence.getAllParties();
+        response
+                .subscribeOn(Schedulers.io())
+                .doOnError(error -> {
+//                    TextView textView = new TextView(view.getContext());
+//                    textView.setLayoutParams(linearLayout.getLayoutParams());
+//                    textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//                    textView.setText("No parties planned yet");
 //
-//        linearLayout.addView(textView);
+//                    linearLayout.addView(textView);
+                    Log.v("Getting List of parties", "All Parties GET error: " + error.getMessage());
+                })
+                .subscribe(result -> {
+                    getActivity().runOnUiThread(() -> {
+
+                        FragmentManager fragMan = getChildFragmentManager();
+                        FragmentTransaction fragTransaction = fragMan.beginTransaction();
+
+                        for (Party p : result) {
+                            Fragment fragment = new PartyListItem(p);
+
+                            fragTransaction.add(linearLayout.getId(), fragment, "party#" + p.getId());
+                        }
+
+                        fragTransaction.commit();
+
+                    });
+                });
+
     }
 
 }

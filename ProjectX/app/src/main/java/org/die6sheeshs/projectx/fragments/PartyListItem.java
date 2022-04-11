@@ -13,6 +13,8 @@ import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -66,17 +68,23 @@ public class PartyListItem extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_party_list_item, container, false);
 
-        setLocation(party.getName());
-
-        initButton();
+        initContent(party);
 
         return view;
     }
 
-    private void initButton() {
+    private void initContent(Party party) {
+        setButtonAction();
+        setLocation(party.getName());
+        setPrice(0D);
+        setStartDate(party.getStart());
+        setEndDate(party.getEnd());
+    }
+
+    private void setButtonAction() {
         LinearLayout wrapper = view.findViewById(R.id.linearLayout_wrapper);
         wrapper.setOnClickListener(view -> {
-            Fragment frag = new PartyDetail(UUID.randomUUID());
+            Fragment frag = new PartyDetail(party.getId());
             ((MainActivity)getActivity()).replaceFragment(frag);
         });
     }
@@ -86,6 +94,21 @@ public class PartyListItem extends Fragment {
         locationTextView.setText(location);
     }
 
-    private void setPrice(Double )
+    private void setPrice(Double price) {
+        TextView priceTextView = (TextView) view.findViewById(R.id.textView_price);
+        priceTextView.setText(String.format("%.2f €", price));
+    }
+
+    private void setStartDate(LocalDateTime startDate) {
+        TextView startDateTextView = (TextView) view.findViewById(R.id.textView_startDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        startDateTextView.setText(startDate.format(formatter));
+    }
+
+    private void setEndDate(LocalDateTime endDate) {
+        TextView endDateTextView = (TextView) view.findViewById(R.id.textView_endDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        endDateTextView.setText(endDate.format(formatter));
+    }
 
 }
