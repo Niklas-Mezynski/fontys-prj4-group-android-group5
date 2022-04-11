@@ -20,4 +20,5 @@
     <string name="first_name">First name</string>
     <string name="nickname">Nickname</string>
     <string name="invalid_login">Invalid email password combination</string>
+    <string name="party_name">Name</string>
 </resources>

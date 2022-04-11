@@ -15,6 +15,7 @@ import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.PartyDetail;
 import org.die6sheeshs.projectx.fragments.Profile;
 import org.die6sheeshs.projectx.fragments.Ticket_detail;
+import org.die6sheeshs.projectx.fragments.Tickets;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.util.UUID;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new Home());
                 break;
             case R.id.ticketFragment:
-                replaceFragment(new Ticket_detail());
+                replaceFragment(new Tickets());
                 break;
             case R.id.createParty:
                 replaceFragment(new CreateParty());
