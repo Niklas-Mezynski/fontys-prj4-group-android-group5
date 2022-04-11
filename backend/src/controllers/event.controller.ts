@@ -1,8 +1,11 @@
 import {
+  AnyObject,
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
+  model,
+  property,
   repository,
   Where,
 } from '@loopback/repository';
@@ -18,19 +21,35 @@ import {
   response,
 } from '@loopback/rest';
 import { Helpers } from '../helpers/helper_functions';
-import {Event} from '../models';
-import {EventRepository} from '../repositories';
+import { Event } from '../models';
+import { EventRepository } from '../repositories';
+
+
+@model()
+export class EventWithLocation extends Event {
+  @property({
+    type: 'number',
+    required: true,
+  })
+  latitude: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  longitude: number;
+}
 
 export class EventController {
   constructor(
     @repository(EventRepository)
-    public eventRepository : EventRepository,
-  ) {}
+    public eventRepository: EventRepository,
+  ) { }
 
   @post('/events')
   @response(200, {
     description: 'Event model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Event)}},
+    content: { 'application/json': { schema: getModelSchemaRef(Event) } },
   })
   async create(
     @requestBody({
@@ -52,7 +71,7 @@ export class EventController {
   @get('/events/count')
   @response(200, {
     description: 'Event model count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async count(
     @param.where(Event) where?: Where<Event>,
@@ -67,7 +86,7 @@ export class EventController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Event, {includeRelations: true}),
+          items: getModelSchemaRef(Event, { includeRelations: true }),
         },
       },
     },
@@ -81,13 +100,13 @@ export class EventController {
   @patch('/events')
   @response(200, {
     description: 'Event PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Event, {partial: true}),
+          schema: getModelSchemaRef(Event, { partial: true }),
         },
       },
     })
@@ -102,13 +121,13 @@ export class EventController {
     description: 'Event model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Event, {includeRelations: true}),
+        schema: getModelSchemaRef(Event, { includeRelations: true }),
       },
     },
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Event, {exclude: 'where'}) filter?: FilterExcludingWhere<Event>
+    @param.filter(Event, { exclude: 'where' }) filter?: FilterExcludingWhere<Event>
   ): Promise<Event> {
     return this.eventRepository.findById(id, filter);
   }
@@ -122,7 +141,7 @@ export class EventController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Event, {partial: true}),
+          schema: getModelSchemaRef(Event, { partial: true }),
         },
       },
     })
@@ -149,4 +168,26 @@ export class EventController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.eventRepository.deleteById(id);
   }
+
+
+  @get('/eventsByLocationRadius/{lat},{lon},{radius}')
+  @response(200, {
+    description: 'Event model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(EventWithLocation, { includeRelations: true }),
+      },
+    },
+  })
+  async findByLocation(
+    @param.path.number('lat') lat: number,
+    @param.path.number('lon') lon: number,
+    @param.path.number('radius') radius: number,
+    @param.filter(Event, { exclude: 'where' }) filter?: FilterExcludingWhere<Event>
+  ): Promise<AnyObject> {
+    let sql: string = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius});`;
+    let queryResult = await this.eventRepository.execute(sql);
+    return queryResult;
+  }
 }
+
