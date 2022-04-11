@@ -40,7 +40,7 @@ public class UserTicketPersistence {
     }
 
     public Observable<List<Ticket>> getTickets(String id,String jwt){
-        return userTicketApi.getTickets(id,jwt);
+        return userTicketApi.getTickets(id, jwt);
     }
 
     public void deleteTicket(String id){

@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         ob.subscribeOn(Schedulers.io())
                 .subscribe((token -> {
                     //Storing the user's session information
-                    SessionManager.getInstance().saveAuthToken(token.getToken());
+                    SessionManager.getInstance().saveAuthToken("Bearer " + token.getToken());
                     SessionManager.getInstance().setUserId(token.getUser_id());
 
                     //Starting the main activity
