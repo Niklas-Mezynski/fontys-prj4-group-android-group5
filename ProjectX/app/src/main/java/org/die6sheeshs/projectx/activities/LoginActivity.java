@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.TokenEntity;
+import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import io.reactivex.Observable;
@@ -22,7 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordField;
     private EditText emailField;
 
-    UserPersistence userPersistence = new UserPersistence();
+    UserPersistence userPersistence = UserPersistence.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        UserPersistence userPersistence = new UserPersistence();
+        UserPersistence userPersistence = UserPersistence.getInstance();
         submit.setOnClickListener(listener -> {
             submitLogin();
         });

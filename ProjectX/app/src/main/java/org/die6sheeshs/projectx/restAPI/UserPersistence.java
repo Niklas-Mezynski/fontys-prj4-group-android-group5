@@ -17,11 +17,18 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UserPersistence {
+
+    private static final UserPersistence instance = new UserPersistence();
+
+    public static UserPersistence getInstance(){
+        return instance;
+    }
+
     private Retrofit retrofit;
     private final String baseUrl = "http://10.0.2.2:3000/";
     private UserApi userApi;
 
-    public UserPersistence() {
+    private UserPersistence() {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
                 .create();

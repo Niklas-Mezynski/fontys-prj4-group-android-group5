@@ -14,6 +14,7 @@ import org.die6sheeshs.projectx.fragments.CreateParty;
 import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
 import org.die6sheeshs.projectx.fragments.Ticket_detail;
+import org.die6sheeshs.projectx.helpers.PropertyService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 //            Intent intent = new Intent(this, LoginActivity.class);
 //            startActivity(intent);
 //        }
+
+        PropertyService.registerContext(this);
 
         setContentView(R.layout.activity_main);
         findViewById(R.id.createParty);
