@@ -80,7 +80,6 @@ public class PartyDetail extends Fragment {
         return v;
     }
 
-    PartyPersistence pp = new PartyPersistence();
 
     private void setPartyData(View v) {
 

@@ -27,7 +27,7 @@ public class PartyPersistence {
     private final String baseUrl = "http://aertac.tk:3000/";
     private PartyApi partyApi;
 
-    public PartyPersistence() {
+    private PartyPersistence() {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
                 .create();

@@ -38,7 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button gotoToLogin;
     private Button submit;
 
-    UserPersistence userPersistence = new UserPersistence();
+    UserPersistence userPersistence = UserPersistence.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
