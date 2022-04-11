@@ -1,8 +1,10 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
@@ -20,7 +23,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class PartyDetail extends Fragment {
 
@@ -83,7 +88,13 @@ public class PartyDetail extends Fragment {
 
     private void setPartyData(View v) {
 
-        Call<List<Party>> party = PartyPersistence.getInstance().getAllParties();
+        Observable<List<Party>> party = PartyPersistence.getInstance().getAllParties();
+        party.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
+                .subscribe(p ->{
+
+                    Log.v("Party Detail", "Details fetched ");
+                });
 
 
 
