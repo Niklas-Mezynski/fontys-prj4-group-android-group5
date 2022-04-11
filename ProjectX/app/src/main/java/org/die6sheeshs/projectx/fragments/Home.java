@@ -1,14 +1,28 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
+
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +39,10 @@ public class Home extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private View view;
+    private TextView textView2;
+    private RelativeLayout relativeLayout;
+    private ScrollView scrollView;
 
     public Home() {
         // Required empty public constructor
@@ -61,6 +79,26 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        this.view = inflater.inflate(R.layout.fragment_home, container, false);
+        textView2 = view.findViewById(R.id.textView2);
+        scrollView = view.findViewById(R.id.scrollViewHome);
+        Observable<List<Party>> partyObservable = PartyPersistence.getInstance().getAllParties();
+
+        String id = SessionManager.getInstance().getUserId();
+        String jwt = SessionManager.getInstance().getToken();
+
+        CardView cardView = new CardView(view.getContext());
+        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        scrollView.setLayoutParams(relativeLayoutParams);
+
+        RelativeLayout relativeLayout = new RelativeLayout(view.getContext());
+        scrollView.addView(relativeLayout);
+        textView2.setText("hello");
+
+//        Toast toast = new Toast(getContext());
+//        toast.setText("Hello");
+
+
+        return view;
     }
 }
