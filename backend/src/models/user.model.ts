@@ -2,6 +2,7 @@ import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
 import {UserLocation} from './user-location.model';
 import {Ticket} from './ticket.model';
 import {UserCredentials} from '../services';
+import {Event} from './event.model';
 
 @model()
 export class User extends Entity {
@@ -57,12 +58,6 @@ export class User extends Entity {
     type: 'string',
     required: true,
   })
-  salt: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
   password: string;
 
   @hasOne(() => UserLocation, {keyTo: 'user_id'})
@@ -70,6 +65,9 @@ export class User extends Entity {
 
   @hasMany(() => Ticket, {keyTo: 'user_id'})
   tickets: Ticket[];
+
+  @hasMany(() => Event, {keyTo: 'user_id'})
+  events: Event[];
 
   constructor(data?: Partial<User>) {
     super(data);

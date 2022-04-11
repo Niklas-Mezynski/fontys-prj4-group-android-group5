@@ -1,5 +1,7 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.LoginRequest;
+import org.die6sheeshs.projectx.entities.TokenEntity;
 import org.die6sheeshs.projectx.entities.User;
 
 import java.util.List;
@@ -17,4 +19,7 @@ public interface UserApi {
 
     @POST("users/")
     Observable<User> createUser(@Body User user);
+
+    @POST("users/login")
+    Observable<TokenEntity> login(@Body LoginRequest loginRequest);
 }

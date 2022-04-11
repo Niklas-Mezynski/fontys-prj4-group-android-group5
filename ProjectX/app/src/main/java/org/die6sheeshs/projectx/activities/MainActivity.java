@@ -1,6 +1,5 @@
 package org.die6sheeshs.projectx.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,16 +8,17 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.navigation.NavigationBarView;
 
+import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
 import org.die6sheeshs.projectx.fragments.CreateParty;
 import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
-import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.fragments.Ticket_detail;
-import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     public static String authUserId = "";
+    public static String userToken = "";
 
     ActivityMainBinding binding;
 
