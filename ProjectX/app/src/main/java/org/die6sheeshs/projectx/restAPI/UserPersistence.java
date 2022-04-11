@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import org.die6sheeshs.projectx.entities.LoginRequest;
 import org.die6sheeshs.projectx.entities.LoginResponse;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,10 +26,12 @@ public class UserPersistence {
     }
 
     private Retrofit retrofit;
-    private final String baseUrl = "http://aertac.tk:3000/";
+    private final String baseUrl;
     private UserApi userApi;
 
     private UserPersistence() {
+        baseUrl = PropertyService.readProperty("baseUrl");
+//        baseUrl = "http://10.0.2.2:3000/";
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
                 .create();

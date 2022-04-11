@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.LoginResponse;
+import org.die6sheeshs.projectx.helpers.PropertyService;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
@@ -30,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        PropertyService.registerContext(this);
 
         submit = findViewById(R.id.buttonLogin);
         gotoRegister = findViewById(R.id.goto_register_view);

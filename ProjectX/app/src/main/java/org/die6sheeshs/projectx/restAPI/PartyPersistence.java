@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +27,7 @@ public class PartyPersistence {
     }
 
     private Retrofit retrofit;
-    private final String baseUrl = "http://aertac.tk:3000/";
+    private final String baseUrl = PropertyService.readProperty("baseUrl");
     private PartyApi partyApi;
 
     private PartyPersistence() {
