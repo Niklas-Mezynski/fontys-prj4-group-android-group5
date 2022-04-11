@@ -1,8 +1,10 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +15,18 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class PartyDetail extends Fragment {
 
@@ -83,7 +89,23 @@ public class PartyDetail extends Fragment {
 
     private void setPartyData(View v) {
 
-        Call<List<Party>> party = PartyPersistence.getInstance().getAllParties();
+        Observable<Party> party = PartyPersistence.getInstance().getParty(partyId);
+        party.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
+                .subscribe(p ->{
+
+                    Log.v("Party Detail", "Details fetched :"+p.getDescription());
+                    setPartyTitle(v, p.getName());
+                    setPartyCity(v, "Not implemented");//todo fetch location
+                    setPartyStreetHouseNum(v, "Not Implemented", 0);//todo fetch location
+                    setMaxParticipants(v, p.getMax_people());
+                    setTicksAvail(v, p.getMax_people()-123);//todo calc sold tickets
+                    setPrice(v, -999.999);//todo add price to relation
+                    setStart(v, p.getStart());
+                    setEnd(v, p.getEnd());
+                    setDescription(v, p.getDescription());
+
+                });
 
 
 
@@ -122,12 +144,14 @@ public class PartyDetail extends Fragment {
 
     private void setEnd(View v, LocalDateTime end){
         TextView title = (TextView) v.findViewById(R.id.endText);
-        title.setText(end.toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        title.setText(end.format(formatter));
     }
 
     private void setStart(View v, LocalDateTime start){
         TextView title = (TextView) v.findViewById(R.id.startText);
-        title.setText(start.toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        title.setText(start.format(formatter));
     }
 
     private void setPrice(View v, double price) {

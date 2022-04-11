@@ -10,11 +10,15 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface PartyApi {
 
+    @GET("events/{id}")
+    Observable<Party> getParty(@Path("id") String id);
+
     @GET("events/")
-    Call<List<Party>> getParties();
+    Observable<List<Party>> getParties();
 
     @POST("events/")
     Observable<Party> createParty(@Body Party party);

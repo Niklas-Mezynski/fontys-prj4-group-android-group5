@@ -8,6 +8,7 @@ import org.die6sheeshs.projectx.entities.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import io.reactivex.Observable;
 import retrofit2.Call;
@@ -41,8 +42,12 @@ public class PartyPersistence {
         this.partyApi = retrofit.create(PartyApi.class);
     }
 
-    public Call<List<Party>> getAllParties() {
+    public Observable<List<Party>> getAllParties() {
         return this.partyApi.getParties();
+    }
+
+    public Observable<Party> getParty(UUID uuid){
+        return this.partyApi.getParty(uuid.toString());
     }
 
     public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people) {

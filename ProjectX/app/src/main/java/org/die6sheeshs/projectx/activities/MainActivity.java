@@ -18,9 +18,6 @@ import org.die6sheeshs.projectx.helpers.PropertyService;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String authUserId = "";
-    public static String userToken = "";
-
     ActivityMainBinding binding;
 
     @Override
