@@ -13,6 +13,8 @@ import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -72,17 +74,17 @@ public class PartyListItem extends Fragment {
     }
 
     private void initContent(Party party) {
-        initButton();
+        setButtonAction();
         setLocation(party.getName());
         setPrice(0D);
-        setStartDate(party.getStart().toString());
-        setEndDate(party.getEnd().toString());
+        setStartDate(party.getStart());
+        setEndDate(party.getEnd());
     }
 
-    private void initButton() {
+    private void setButtonAction() {
         LinearLayout wrapper = view.findViewById(R.id.linearLayout_wrapper);
         wrapper.setOnClickListener(view -> {
-            Fragment frag = new PartyDetail(UUID.fromString(party.getId()));
+            Fragment frag = new PartyDetail(party.getId());
             ((MainActivity)getActivity()).replaceFragment(frag);
         });
     }
@@ -97,14 +99,16 @@ public class PartyListItem extends Fragment {
         priceTextView.setText(String.format("%.2f €", price));
     }
 
-    private void setStartDate(String startDate) {
+    private void setStartDate(LocalDateTime startDate) {
         TextView startDateTextView = (TextView) view.findViewById(R.id.textView_startDate);
-        startDateTextView.setText(startDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        startDateTextView.setText(startDate.format(formatter));
     }
 
-    private void setEndDate(String endDate) {
+    private void setEndDate(LocalDateTime endDate) {
         TextView endDateTextView = (TextView) view.findViewById(R.id.textView_endDate);
-        endDateTextView.setText(endDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        endDateTextView.setText(endDate.format(formatter));
     }
 
 }

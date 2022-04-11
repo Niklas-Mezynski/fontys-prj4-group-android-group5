@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new Ticket_detail());
                 break;
             case R.id.createParty:
-                //replaceFragment(new CreateParty());
-                replaceFragment(new PartyDetail("20a17700-7980-4393-8f60-2fd4d6fec376"));
+                replaceFragment(new CreateParty());
+//                replaceFragment(new PartyDetail("20a17700-7980-4393-8f60-2fd4d6fec376"));
                 break;
             case R.id.profile:
                 replaceFragment(new Profile());

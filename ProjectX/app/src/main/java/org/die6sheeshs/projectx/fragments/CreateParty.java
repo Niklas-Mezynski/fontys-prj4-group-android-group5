@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
@@ -96,7 +97,15 @@ public class CreateParty extends Fragment {
         Observable<List<Party>> response = partyPersistence.getAllParties();
         response
                 .subscribeOn(Schedulers.io())
-                .doOnError(error -> Log.v("Getting List of parties", "All Parties GET error: " + error.getMessage()))
+                .doOnError(error -> {
+//                    TextView textView = new TextView(view.getContext());
+//                    textView.setLayoutParams(linearLayout.getLayoutParams());
+//                    textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//                    textView.setText("No parties planned yet");
+//
+//                    linearLayout.addView(textView);
+                    Log.v("Getting List of parties", "All Parties GET error: " + error.getMessage());
+                })
                 .subscribe(result -> {
                     getActivity().runOnUiThread(() -> {
 
@@ -113,19 +122,7 @@ public class CreateParty extends Fragment {
 
                     });
                 });
-//        for (int i = 0; i < 5; i++) {
-//            Party party = new Party("Party"+(i+1), "Description", LocalDateTime.now(), LocalDateTime.now(), 1);
-//            Fragment fragment = new PartyListItem(party);
-//
-//            fragTransaction.add(linearLayout.getId(), fragment, "party#" + i);
-//        }
 
-//        TextView textView = new TextView(view.getContext());
-//        textView.setLayoutParams(linearLayout.getLayoutParams());
-//        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//        textView.setText("No parties planned yet");
-//
-//        linearLayout.addView(textView);
     }
 
 }
