@@ -1,7 +1,8 @@
-import {Entity, model, property, hasMany, hasOne} from '@loopback/repository';
+import {Entity, model, property, hasMany, hasOne, belongsTo} from '@loopback/repository';
 import {Pictures} from './pictures.model';
 import {EventLocation} from './event-location.model';
 import {Ticket} from './ticket.model';
+import {User} from './user.model';
 
 @model()
 export class Event extends Entity {
@@ -12,7 +13,6 @@ export class Event extends Entity {
     required: true,
   })
   id: string;
-
   @property({
     type: 'string',
     required: true,
@@ -50,6 +50,9 @@ export class Event extends Entity {
 
   @hasMany(() => Ticket, {keyTo: 'event_id'})
   tickets: Ticket[];
+
+  @belongsTo(() => User, {name: 'EventUser'})
+  user_id: string;
 
   constructor(data?: Partial<Event>) {
     super(data);

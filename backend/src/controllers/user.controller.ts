@@ -283,9 +283,9 @@ export class UserController {
   })
   async whoAmI(
     @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
+    currentUserProfile: User,
   ): Promise<string> {
-    return currentUserProfile[securityId];
+    return currentUserProfile.id;
   }
 
 //   @post('/signup', {

@@ -13,3 +13,5 @@ export * from './event-ticket.controller';
 export * from './ticket-event.controller';
 export * from './friends.controller';
 export * from './geocoder.controller';
+export * from './user-event.controller';
+export * from './event-user.controller';

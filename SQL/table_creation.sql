@@ -31,7 +31,7 @@ CREATE TABLE "user"
 CREATE TABLE event
 (
     id          varchar(128)  NOT NULL,
-	user_id     varchar(128)  NOT NULL,
+    user_id     varchar(128)  NOT NULL,
     name        varchar(80)   NOT NULL,
     description varchar(2048) NOT NULL,
 --     pictures    integer,
@@ -45,7 +45,7 @@ CREATE TABLE userlocation
     user_id    varchar(128)     NOT NULL,
     latitude   double precision NOT NULL,
     longitude  double precision NOT NULL,
-    created_on timestamp        WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id)
 );
 CREATE TABLE eventlocation
@@ -53,7 +53,7 @@ CREATE TABLE eventlocation
     event_id   varchar(128)     NOT NULL,
     latitude   double precision NOT NULL,
     longitude  double precision NOT NULL,
-    created_on timestamp        WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (event_id)
 );
 CREATE TABLE pictures
@@ -74,10 +74,9 @@ CREATE TABLE requests
 (
     user_id    varchar(128) NOT NULL,
     event_id   varchar(128) NOT NULL,
-    created_on timestamp    WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, created_on)
 );
-
 
 
 -- Create relations
@@ -96,11 +95,11 @@ ALTER TABLE friends
 ALTER TABLE friends
     ADD CONSTRAINT FKFriends788076 FOREIGN KEY (userB) REFERENCES "user" (id) ON DELETE CASCADE;
 ALTER TABLE requests
-	ADD CONSTRAINT FKRequests34535 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+    ADD CONSTRAINT FKRequests34535 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 ALTER TABLE requests
-	ADD CONSTRAINT FKRequests45367 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
+    ADD CONSTRAINT FKRequests45367 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
 ALTER TABLE event
-	ADD CONSTRAINT FKEvent89432 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+    ADD CONSTRAINT FKEvent89432 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 
 
 -- Check constraints
@@ -114,21 +113,25 @@ ALTER TABLE event
 
 -- Custom function to get all friends from the database
 CREATE OR REPLACE function getFriendInfos(user_id varchar)
-RETURNS TABLE ( friend_id varchar, nick_name varchar)
-language plpgsql
+    RETURNS TABLE
+            (
+                friend_id varchar,
+                nick_name varchar
+            )
+    language plpgsql
 as
 $$
 Declare
 
 Begin
-   return QUERY SELECT DISTINCT "user".id as freind_id, "user".nick_name
-FROM ((SELECT f.usera as friendId
- FROM friends f
- where (userb = user_id))
-UNION
-(SELECT f.userb as friendId
- FROM friends f
- where (usera = user_id))) AS friends
-INNER JOIN "user" ON "user".id = friends.friendId;
+    return QUERY SELECT DISTINCT "user".id as freind_id, "user".nick_name
+                 FROM ((SELECT f.usera as friendId
+                        FROM friends f
+                        where (userb = user_id))
+                       UNION
+                       (SELECT f.userb as friendId
+                        FROM friends f
+                        where (usera = user_id))) AS friends
+                          INNER JOIN "user" ON "user".id = friends.friendId;
 End;
 $$;
