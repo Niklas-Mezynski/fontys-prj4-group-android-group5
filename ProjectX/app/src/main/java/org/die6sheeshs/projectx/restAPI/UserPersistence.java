@@ -25,7 +25,7 @@ public class UserPersistence {
     }
 
     private Retrofit retrofit;
-    private final String baseUrl = "http://10.0.2.2:3000/";
+    private final String baseUrl = "http://aertac.tk:3000/";
     private UserApi userApi;
 
     private UserPersistence() {
