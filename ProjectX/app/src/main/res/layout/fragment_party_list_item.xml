@@ -43,14 +43,14 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/textView_startDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="30.08.2022"
                 android:textStyle="italic" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView_endDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="open end"
@@ -59,7 +59,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textView_price"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"

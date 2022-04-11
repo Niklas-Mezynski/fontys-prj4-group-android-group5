@@ -13,8 +13,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.UserTicketPersistence;
 
 import java.util.List;
@@ -30,6 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 public class Tickets extends Fragment {
 
     UserTicketPersistence userTicketPersistence = UserTicketPersistence.getInstance();
+    PartyPersistence partyPersistence = PartyPersistence.getInstance();
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -95,7 +98,12 @@ public class Tickets extends Fragment {
                     getActivity().runOnUiThread(()->{
                         for (Ticket t :tickets) {
                             //for each ticket get the party id then fetch information from party
+                            Observable<Party> response2 = partyPersistence.getParty(t.getEvent_id());
+                            response2.subscribeOn(Schedulers.io())
+                                    .doOnError((error) -> Log.v("Getting Party based Id", "User Party GET error: " + error.getMessage()))
+                                    .subscribe(party ->{
 
+                                    });
                         }
                     });
                 });
