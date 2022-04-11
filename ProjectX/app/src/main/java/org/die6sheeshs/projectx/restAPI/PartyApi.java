@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.User;
 
@@ -23,4 +24,6 @@ public interface PartyApi {
     @POST("events/")
     Observable<Party> createParty(@Body Party party);
 
+    @GET("events/{lat},{lon},{radius}")
+    Observable<EventWithLocation> getPartyByLocation(@Path("lat") double user_lat, @Path("lon") double user_lon, @Path("radius") int search_radius);
 }

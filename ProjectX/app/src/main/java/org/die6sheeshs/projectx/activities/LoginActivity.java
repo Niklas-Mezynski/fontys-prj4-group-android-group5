@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
     private void submitLogin() {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
-
         Observable<LoginResponse> ob = UserPersistence.getInstance().userLogin(email, password);
         ob.subscribeOn(Schedulers.io())
                 .subscribe((token -> {

@@ -135,3 +135,36 @@ Begin
                           INNER JOIN "user" ON "user".id = friends.friendId;
 End;
 $$;
+
+CREATE OR REPLACE function getNearbyEvents(user_lat double precision, user_lon double precision,
+                                           radiusInKm integer)
+    RETURNS TABLE
+            (
+                id          varchar(128),
+                user_id     varchar(128),
+                name        varchar(80),
+                description varchar(2048),
+                "start"     timestamp,
+                "end"       timestamp,
+                max_people  integer,
+                latitude    double precision,
+                longitude   double precision
+            )
+    language plpgsql
+as
+$$
+Declare
+
+Begin
+
+    return QUERY SELECT event.id, event.user_id, event.name, event.description, event.start, event."end", event.max_people, e.latitude, e.longitude
+    FROM event
+             inner join eventlocation e on event.id = e.event_id
+    WHERE (sqrt((111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) *
+                (111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) +
+                (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm;
+End;
+$$;
+
+-- SELECT * FROM getNearbyEvents(0.69, -1.87, 50);
+
