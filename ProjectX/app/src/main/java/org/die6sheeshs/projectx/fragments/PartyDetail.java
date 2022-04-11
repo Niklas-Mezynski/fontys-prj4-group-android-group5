@@ -13,9 +13,14 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+
+import retrofit2.Call;
 
 public class PartyDetail extends Fragment {
 
@@ -75,7 +80,16 @@ public class PartyDetail extends Fragment {
         return v;
     }
 
+    PartyPersistence pp = new PartyPersistence();
+
     private void setPartyData(View v) {
+
+        Call<List<Party>> party = PartyPersistence.getInstance().getAllParties();
+
+
+
+
+
         setPartyTitle(v, "EmS");
         setPartyCity(v, "Viersen");
         setPartyStreetHouseNum(v, "Am Hohen Busch",1);
