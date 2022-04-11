@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void submitLogin(){
+    private void submitLogin() {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
 
@@ -68,7 +68,6 @@ public class LoginActivity extends AppCompatActivity {
                     runOnUiThread(() -> invalidPassword.setVisibility(View.VISIBLE));
                     Log.v("Login error", " " + error.getMessage());
                 });
-
     }
 
 
