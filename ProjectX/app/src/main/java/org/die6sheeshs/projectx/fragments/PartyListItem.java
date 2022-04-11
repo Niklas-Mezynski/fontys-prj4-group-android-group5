@@ -66,17 +66,23 @@ public class PartyListItem extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_party_list_item, container, false);
 
-        setLocation(party.getName());
-
-        initButton();
+        initContent(party);
 
         return view;
+    }
+
+    private void initContent(Party party) {
+        initButton();
+        setLocation(party.getName());
+        setPrice(0D);
+        setStartDate(party.getStart().toString());
+        setEndDate(party.getEnd().toString());
     }
 
     private void initButton() {
         LinearLayout wrapper = view.findViewById(R.id.linearLayout_wrapper);
         wrapper.setOnClickListener(view -> {
-            Fragment frag = new PartyDetail(UUID.randomUUID());
+            Fragment frag = new PartyDetail(UUID.fromString(party.getId()));
             ((MainActivity)getActivity()).replaceFragment(frag);
         });
     }
@@ -86,6 +92,19 @@ public class PartyListItem extends Fragment {
         locationTextView.setText(location);
     }
 
-    private void setPrice(Double )
+    private void setPrice(Double price) {
+        TextView priceTextView = (TextView) view.findViewById(R.id.textView_price);
+        priceTextView.setText(String.format("%.2f €", price));
+    }
+
+    private void setStartDate(String startDate) {
+        TextView startDateTextView = (TextView) view.findViewById(R.id.textView_startDate);
+        startDateTextView.setText(startDate);
+    }
+
+    private void setEndDate(String endDate) {
+        TextView endDateTextView = (TextView) view.findViewById(R.id.textView_endDate);
+        endDateTextView.setText(endDate);
+    }
 
 }
