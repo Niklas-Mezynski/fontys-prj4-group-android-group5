@@ -46,7 +46,7 @@ public class PartyPersistence implements RetrofitPersistence {
 
     public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price, EventLocation eventLocation) {
 
-        Party p = new Party(name, description, start, end, max_people, price, eventLocation);
+        Party p = new Party(name, description, start, end, max_people, price);
 
         Observable<Party> observable = partyApi.createParty(p);
         return observable;
