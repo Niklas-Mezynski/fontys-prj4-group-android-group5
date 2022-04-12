@@ -3,6 +3,7 @@ import {Pictures} from './pictures.model';
 import {EventLocation} from './event-location.model';
 import {Ticket} from './ticket.model';
 import {User} from './user.model';
+import {TicketRequest} from './ticket-request.model';
 
 @model()
 export class Event extends Entity {
@@ -53,6 +54,9 @@ export class Event extends Entity {
 
   @belongsTo(() => User, {name: 'EventUser'})
   user_id: string;
+
+  @hasMany(() => TicketRequest, {keyTo: 'event_id'})
+  ticketRequests: TicketRequest[];
 
   constructor(data?: Partial<Event>) {
     super(data);
