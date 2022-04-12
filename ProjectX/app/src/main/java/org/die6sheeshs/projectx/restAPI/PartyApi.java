@@ -3,6 +3,8 @@ package org.die6sheeshs.projectx.restAPI;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.entities.User;
 
 import java.util.List;
 
@@ -29,4 +31,9 @@ public interface PartyApi {
     @GET("events/{id}/event-location")
     Observable<EventLocation> getEventLocation(@Path("id") String id);
 
+    @GET("events/{id}/user")
+    Observable<User> getOwner(@Path("id") String partyId);
+
+    @GET("events/{id}/tickets")
+    Observable<List<Ticket>> getTicketsOfParty(@Path("id") String partyId);
 }

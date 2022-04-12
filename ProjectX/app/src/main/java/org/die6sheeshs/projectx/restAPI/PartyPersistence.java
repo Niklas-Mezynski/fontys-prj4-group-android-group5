@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 
@@ -57,5 +58,13 @@ public class PartyPersistence implements RetrofitPersistence {
     @Override
     public void refreshApi() {
         this.partyApi = RetrofitService.getInstance().getRetrofitClient().create(PartyApi.class);
+    }
+
+    public Observable<User> getOwner(String partyId) {
+        return this.partyApi.getOwner(partyId);
+    }
+
+    public Observable<List<Ticket>> getTickets(String partyId){
+        return this.partyApi.getTicketsOfParty(partyId);
     }
 }
