@@ -58,8 +58,6 @@ export class UserTicketController {
   ): Promise<Ticket[]> {
     //In this case: verify that the requesting user is equal to the user_id in the request
     //Maybe do other verifications here
-    console.log("jwt id " + currentUserProfile[securityId]);
-    console.log("get id " + id);
     if (currentUserProfile[securityId] != id) {
       throw new Error("You don't have permission to access this resource");
     }
