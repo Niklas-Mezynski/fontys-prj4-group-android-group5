@@ -14,8 +14,14 @@ VALUES ('5243fwersdgerv', 0.69, -1.87, current_timestamp);
 INSERT INTO event (id, user_id, name, description, start, "end", max_people)
 VALUES ('abc', '12', 'Fette party', 'SAUFEEEEEn', '2025-04-04', '2025-04-05', 187);
 
+INSERT INTO event (id, user_id, name, description, start, "end", max_people)
+VALUES ('def', 'ddef2cdb-11d1-4a8d-b14d-1f98dca11ea0', 'Andere fette party', 'Suff suff suff', '2025-04-04', '2025-04-05', 420);
+
 INSERT INTO eventlocation (event_id, latitude, longitude, created_on)
 VALUES ('abc', 0.69, -1.87, current_timestamp);
+
+INSERT INTO eventlocation (event_id, latitude, longitude, created_on)
+VALUES ('def', 51.27, 6.6188, current_timestamp);
 
 INSERT INTO pictures (event_id, url)
 VALUES ('abc', 'someurl.com/penis');
@@ -27,6 +33,9 @@ VALUES ('peter', 'abc', '5243fwersdgerv'),
 INSERT INTO friends (usera, userb)
 VALUES ('34', '5243fwersdgerv'),
        ('12', '34');
+
+INSERT INTO ticketrequest (user_id, event_id)
+VALUES ('12', 'abc', current_timestamp);
 
 SELECT *
 FROM event inner join eventlocation e on event.id = e.event_id

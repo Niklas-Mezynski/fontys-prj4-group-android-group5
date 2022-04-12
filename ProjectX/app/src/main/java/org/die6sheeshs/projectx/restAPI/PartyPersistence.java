@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
+import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
@@ -40,6 +41,10 @@ public class PartyPersistence implements RetrofitPersistence {
         return this.partyApi.getParties();
     }
 
+    public Observable<List<EventWithLocation>> getPartiesByLocation(double lat, double lon, int radius) {
+        return this.partyApi.getPartyByLocation(lat, lon, radius);
+    }
+
     public Observable<Party> getParty(String uuid){
         return this.partyApi.getParty(uuid, "{\"include\":[\"eventLocation\"]}");
     }
@@ -71,5 +76,9 @@ public class PartyPersistence implements RetrofitPersistence {
 
     public Observable<List<Count>> getCountTicketsOfParty(String partyId){
         return this.partyApi.getCountTicketsOfParty(partyId);
+    }
+
+    public Observable<List<Party>> getPartiesFromUser(String id){
+        return this.partyApi.getPartiesFromUser(id);
     }
 }

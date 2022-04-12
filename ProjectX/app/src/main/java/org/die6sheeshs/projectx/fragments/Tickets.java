@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
@@ -20,7 +18,7 @@ import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
-import org.die6sheeshs.projectx.restAPI.UserTicketPersistence;
+import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class Tickets extends Fragment {
 
-    UserTicketPersistence userTicketPersistence = UserTicketPersistence.getInstance();
+    TicketPersistence ticketPersistence = TicketPersistence.getInstance();
     PartyPersistence partyPersistence = PartyPersistence.getInstance();
 
 
@@ -92,7 +90,7 @@ public class Tickets extends Fragment {
         LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
         String id = SessionManager.getInstance().getUserId();
         String jwt = SessionManager.getInstance().getToken();
-        Observable<List<Ticket>> response = userTicketPersistence.getTickets(id, jwt);
+        Observable<List<Ticket>> response = ticketPersistence.getTickets(id, jwt);
         response.subscribeOn(Schedulers.io())
                 .subscribe(tickets -> {
                     for (Ticket t : tickets) {
@@ -101,11 +99,10 @@ public class Tickets extends Fragment {
                                 .subscribe(party -> {
                                     getActivity().runOnUiThread(() -> {
                                         //get information from party and add list item to linearLayout
-                                        System.out.println(party.getId());
                                         FragmentManager fragMan = getChildFragmentManager();
                                         FragmentTransaction fragTransaction = fragMan.beginTransaction();
                                         View.OnClickListener buttonAction = view -> {
-                                            Fragment frag = new TicketDetail(party);
+                                            Fragment frag = new TicketDetail(party,t);
                                             ((MainActivity) getActivity()).replaceFragment(frag);
                                         };
                                         Fragment fragment = new PartyListItem(party, buttonAction);

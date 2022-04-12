@@ -1,6 +1,5 @@
 package org.die6sheeshs.projectx.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,34 +7,30 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
-import org.die6sheeshs.projectx.helpers.PropertyService;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link CreateParty#newInstance} factory method to
+ * Use the {@link PartyOverview#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CreateParty extends Fragment {
+public class PartyOverview extends Fragment {
 
     private View view;
     private PartyPersistence partyPersistence = PartyPersistence.getInstance();
@@ -49,7 +44,7 @@ public class CreateParty extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public CreateParty() {
+    public PartyOverview() {
         // Required empty public constructor
     }
 
@@ -62,8 +57,8 @@ public class CreateParty extends Fragment {
      * @return A new instance of fragment CreateParty.
      */
     // TODO: Rename and change types and number of parameters
-    public static CreateParty newInstance(String param1, String param2) {
-        CreateParty fragment = new CreateParty();
+    public static PartyOverview newInstance(String param1, String param2) {
+        PartyOverview fragment = new PartyOverview();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -84,28 +79,28 @@ public class CreateParty extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_create_party, container, false);
-        init();
+
+        view = inflater.inflate(R.layout.fragment_party_overview, container, false);
+        initializeList();
+        initializeCreateButton();
+
         return view;
     }
 
-    private void init() {
-        ScrollView scrollView = view.findViewById(R.id.party_list_scroll_view);
-        LinearLayout linearLayout = view.findViewById(R.id.party_list_linear_layout);
+    private void initializeCreateButton() {
+        Button createPartyButton = view.findViewById(R.id.button_new_party);
+        createPartyButton.setOnClickListener(view -> {
+            Fragment frag = new PartyCreate();
+            ((MainActivity)getActivity()).replaceFragment(frag);
+        });
+    }
 
-        // TODO: Replace with actual events
-        Observable<List<Party>> response = partyPersistence.getAllParties();
+    private void initializeList() {
+        LinearLayout linearLayout = view.findViewById(R.id.party_list_linear_layout);
+        String id = SessionManager.getInstance().getUserId();
+        Observable<List<Party>> response = partyPersistence.getPartiesFromUser(id);
         response
                 .subscribeOn(Schedulers.io())
-                .doOnError(error -> {
-//                    TextView textView = new TextView(view.getContext());
-//                    textView.setLayoutParams(linearLayout.getLayoutParams());
-//                    textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//                    textView.setText("No parties planned yet");
-//
-//                    linearLayout.addView(textView);
-                    Log.v("Getting List of parties", "All Parties GET error: " + error.getMessage());
-                })
                 .subscribe(result -> {
                     getActivity().runOnUiThread(() -> {
 
@@ -115,9 +110,9 @@ public class CreateParty extends Fragment {
                         for (Party p : result) {
                             System.out.println(p.getName() + ": " + p.getId());
                             View.OnClickListener buttonAction = view -> {
-                                    Fragment frag = new PartyDetail(p.getId());
-                                    ((MainActivity)getActivity()).replaceFragment(frag);
-                                };
+                                Fragment frag = new PartyDetail(p.getId());
+                                ((MainActivity)getActivity()).replaceFragment(frag);
+                            };
                             Fragment fragment = new PartyListItem(p, buttonAction);
 
                             fragTransaction.add(linearLayout.getId(), fragment, "party#" + p.getId());
@@ -126,8 +121,15 @@ public class CreateParty extends Fragment {
                         fragTransaction.commit();
 
                     });
+                }, error -> {
+//                    TextView textView = new TextView(view.getContext());
+//                    textView.setLayoutParams(linearLayout.getLayoutParams());
+//                    textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//                    textView.setText("No parties planned yet");
+//
+//                    linearLayout.addView(textView);
+                    Log.v("Getting List of parties", "All Parties GET error: " + error.getMessage());
                 });
-
     }
 
 }

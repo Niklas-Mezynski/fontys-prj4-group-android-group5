@@ -1,17 +1,25 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 
 import java.time.format.DateTimeFormatter;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public class TicketDetail extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -25,10 +33,14 @@ public class TicketDetail extends Fragment {
     private String mParam2;
     private View view;
     private Party party;
-
-    public TicketDetail(Party party) {
+    private Ticket t;
+    private TicketPersistence ticketPersistence= TicketPersistence.getInstance();
+    
+    public TicketDetail(Party party,Ticket t) {
         // Required empty public constructor
         this.party = party;
+        this.t = t;
+        System.out.println("ticket id: "+t.getId());
     }
 
     /**
@@ -40,8 +52,8 @@ public class TicketDetail extends Fragment {
      * @return A new instance of fragment Profile.
      */
     // TODO: Rename and change types and number of parameters
-    public static TicketDetail newInstance(String param1, String param2,Party party) {
-        TicketDetail fragment = new TicketDetail(party);
+    public static TicketDetail newInstance(String param1, String param2,Party party,Ticket t) {
+        TicketDetail fragment = new TicketDetail(party,t);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -79,5 +91,17 @@ public class TicketDetail extends Fragment {
         start.setText(party.getStart().format(formatter));
         TextView end = view.findViewById(R.id.endT);
         end.setText(party.getEnd().format(formatter));
+
+        Button cancel = view.findViewById(R.id.cancel);
+        cancel.setOnClickListener((l)-> {
+            Observable<Void> resp = ticketPersistence.deleteTicket(t.getId());
+            resp.subscribeOn(Schedulers.io())
+                    .subscribe(v ->{
+                        getActivity().runOnUiThread(()->{
+                            Fragment frag = new Tickets();
+                            ((MainActivity) getActivity()).replaceFragment(frag);
+                        });
+                    },(error)->Log.v("Error deleting ticket","User Ticket DELETE error "+error.getMessage()));
+        });
     }
 }

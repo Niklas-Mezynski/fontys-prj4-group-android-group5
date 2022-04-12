@@ -1,11 +1,12 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, HasManyRepositoryFactory, HasOneRepositoryFactory, BelongsToAccessor} from '@loopback/repository';
 import {LocalDbDataSource} from '../datasources';
-import {Event, EventRelations, Pictures, EventLocation, Ticket, User} from '../models';
+import {Event, EventRelations, Pictures, EventLocation, Ticket, User, TicketRequest} from '../models';
 import {PicturesRepository} from './pictures.repository';
 import {EventLocationRepository} from './event-location.repository';
 import {TicketRepository} from './ticket.repository';
 import {UserRepository} from './user.repository';
+import {TicketRequestRepository} from './ticket-request.repository';
 
 export class EventRepository extends DefaultCrudRepository<
   Event,
@@ -21,10 +22,13 @@ export class EventRepository extends DefaultCrudRepository<
 
   public readonly EventUser: BelongsToAccessor<User, typeof Event.prototype.id>;
 
+  public readonly ticketRequests: HasManyRepositoryFactory<TicketRequest, typeof Event.prototype.id>;
+
   constructor(
-    @inject('datasources.localDB') dataSource: LocalDbDataSource, @repository.getter('PicturesRepository') protected picturesRepositoryGetter: Getter<PicturesRepository>, @repository.getter('EventLocationRepository') protected eventLocationRepositoryGetter: Getter<EventLocationRepository>, @repository.getter('TicketRepository') protected ticketRepositoryGetter: Getter<TicketRepository>, @repository.getter('UserRepository') protected userRepositoryGetter: Getter<UserRepository>,
+    @inject('datasources.localDB') dataSource: LocalDbDataSource, @repository.getter('PicturesRepository') protected picturesRepositoryGetter: Getter<PicturesRepository>, @repository.getter('EventLocationRepository') protected eventLocationRepositoryGetter: Getter<EventLocationRepository>, @repository.getter('TicketRepository') protected ticketRepositoryGetter: Getter<TicketRepository>, @repository.getter('UserRepository') protected userRepositoryGetter: Getter<UserRepository>, @repository.getter('TicketRequestRepository') protected ticketRequestRepositoryGetter: Getter<TicketRequestRepository>,
   ) {
     super(Event, dataSource);
+    this.ticketRequests = this.createHasManyRepositoryFactoryFor('ticketRequests', ticketRequestRepositoryGetter,);
     this.EventUser = this.createBelongsToAccessorFor('EventUser', userRepositoryGetter,);
     this.registerInclusionResolver('EventUser', this.EventUser.inclusionResolver);
     this.tickets = this.createHasManyRepositoryFactoryFor('tickets', ticketRepositoryGetter,);

@@ -45,7 +45,7 @@ export class UserTicketRequestController {
     return this.userRepository.ticketRequests(id).find(filter);
   }
 
-  @post('/users/{id}/ticket-requests', {
+  @post('/users/{userId}/ticket-requests', {
     responses: {
       '200': {
         description: 'User model instance',
@@ -54,20 +54,19 @@ export class UserTicketRequestController {
     },
   })
   async create(
-    @param.path.string('id') id: typeof User.prototype.id,
+    @param.path.string('userId') userId: typeof User.prototype.id,
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(TicketRequest, {
             title: 'NewTicketRequestInUser',
-            exclude: ['event_id'],
-            optional: ['user_id']
+			exclude: ['user_id']
           }),
         },
       },
-    }) ticketRequest: Omit<TicketRequest, 'event_id'>,
+    }) ticketRequest: TicketRequest,
   ): Promise<TicketRequest> {
-    return this.userRepository.ticketRequests(id).create(ticketRequest);
+    return this.userRepository.ticketRequests(userId).create(ticketRequest);
   }
 
   @patch('/users/{id}/ticket-requests', {
