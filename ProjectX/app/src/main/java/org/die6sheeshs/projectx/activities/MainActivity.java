@@ -10,7 +10,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
-import org.die6sheeshs.projectx.fragments.CreateParty;
+import org.die6sheeshs.projectx.fragments.PartyOverview;
 import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
 import org.die6sheeshs.projectx.fragments.Tickets;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new Tickets());
                 break;
             case R.id.createParty:
-                replaceFragment(new CreateParty());
+                replaceFragment(new PartyOverview());
 //                replaceFragment(new PartyDetail("20a17700-7980-4393-8f60-2fd4d6fec376"));
                 break;
             case R.id.profile:

@@ -17,9 +17,9 @@
         tools:layout="@layout/fragment_ticket" />
     <fragment
         android:id="@+id/createParty"
-        android:name="org.die6sheeshs.projectx.fragments.CreateParty"
+        android:name="org.die6sheeshs.projectx.fragments.PartyOverview"
         android:label="fragment_create_party"
-        tools:layout="@layout/fragment_create_party" />
+        tools:layout="@layout/fragment_party_overview" />
     <fragment
         android:id="@+id/profile"
         android:name="org.die6sheeshs.projectx.fragments.Profile"
