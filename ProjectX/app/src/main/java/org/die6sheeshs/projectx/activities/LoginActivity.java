@@ -14,6 +14,7 @@ import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.LoginResponse;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.RetrofitService;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import io.reactivex.Observable;
@@ -58,8 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         ob.subscribeOn(Schedulers.io())
                 .subscribe((token -> {
                     //Storing the user's session information
-                    SessionManager.getInstance().saveAuthToken("Bearer " + token.getToken());
+                    SessionManager.getInstance().saveAuthToken(token.getToken());
                     SessionManager.getInstance().setUserId(token.getUser_id());
+                    RetrofitService.getInstance().addAuthInterceptor();
 
                     //Starting the main activity
                     Intent intent = new Intent(this, MainActivity.class);

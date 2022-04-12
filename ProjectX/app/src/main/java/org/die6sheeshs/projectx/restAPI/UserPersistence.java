@@ -6,43 +6,32 @@ import com.google.gson.GsonBuilder;
 import org.die6sheeshs.projectx.entities.LoginRequest;
 import org.die6sheeshs.projectx.entities.LoginResponse;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.AuthInterceptor;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class UserPersistence {
+public class UserPersistence implements RetrofitPersistence {
 
     private static final UserPersistence instance = new UserPersistence();
 
-    public static UserPersistence getInstance(){
+    public static UserPersistence getInstance() {
         return instance;
     }
 
-    private Retrofit retrofit;
-    private final String baseUrl;
     private UserApi userApi;
 
     private UserPersistence() {
-        baseUrl = PropertyService.readProperty("baseUrl");
-//        baseUrl = "http://10.0.2.2:3000/";
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
-                .create();
-        this.retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-
-
-        this.userApi = retrofit.create(UserApi.class);
+        this.userApi = RetrofitService.getInstance().getRetrofitClient().create(UserApi.class);
+        RetrofitService.getInstance().addPersistence(this);
     }
 
     public Call<List<User>> getAllUsers() {
@@ -50,37 +39,20 @@ public class UserPersistence {
     }
 
     public Observable<User> createUser(String firstName, String lastName, String email, String nick_name, LocalDateTime birth_date, String profile_pic, String about_me, String password) {
-
         User user = new User(firstName, lastName, email, nick_name, birth_date, profile_pic, about_me, password);
-//        Call<User> newUserCall = this.userApi.createUser(user);
-//        newUserCall.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                if (!response.isSuccessful()) {
-//                    try {
-//                        Log.e("API Response", response.errorBody().string());
-//                    } catch (IOException e) {
-//                        Log.e("API Response", String.valueOf(response.code()));
-//                    }
-//                    return;
-//                }
-//                User body = response.body();
-//                Log.v("New User Created:", body.getId());
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Log.e("Failure getting users", t.toString());
-//            }
-//        });
+
         Observable<User> observable = userApi.createUser(user);
         return observable;
     }
 
-    public Observable<LoginResponse> userLogin(String email, String password){
+    public Observable<LoginResponse> userLogin(String email, String password) {
         LoginRequest user = new LoginRequest(email, password);
         Observable<LoginResponse> ob = userApi.login(user);
         return ob;
+    }
+
+    @Override
+    public void refreshApi() {
+        this.userApi = RetrofitService.getInstance().getRetrofitClient().create(UserApi.class);
     }
 }
