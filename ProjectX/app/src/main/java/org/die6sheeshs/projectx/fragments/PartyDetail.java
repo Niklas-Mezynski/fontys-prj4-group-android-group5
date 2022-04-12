@@ -143,21 +143,17 @@ public class PartyDetail extends Fragment {
                         setEnd(v, p.getEnd());
                         setDescription(v, p.getDescription());
 
-                    });
-                });
-        Observable<EventLocation> loc = PartyPersistence.getInstance().getEventLocation(partyId);
-        loc.subscribeOn(Schedulers.io())
-                .doOnError((error)-> Log.v("Party", "Party Error: " + error.getMessage()))
-                .subscribe(eLoc->{
-                    getActivity().runOnUiThread(() -> {
+                        EventLocation eLoc = p.getEventLocation();
+
                         double lat, lng;
                         lat = eLoc.getLatitude();
                         lng = eLoc.getLongtitude();
                         setPartyCity(v, lat + "");
                         setPartyStreetHouseNum(v, lng + "", 0);//todo fetch address from location
-                    });
 
+                    });
                 });
+
 
 
 

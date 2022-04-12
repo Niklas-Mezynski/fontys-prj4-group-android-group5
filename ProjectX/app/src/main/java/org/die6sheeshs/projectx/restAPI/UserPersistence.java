@@ -51,6 +51,10 @@ public class UserPersistence implements RetrofitPersistence {
         return ob;
     }
 
+    public Observable<User> getUserData(String id){
+        return this.userApi.getUserById(id);
+    }
+
     @Override
     public void refreshApi() {
         this.userApi = RetrofitService.getInstance().getRetrofitClient().create(UserApi.class);
