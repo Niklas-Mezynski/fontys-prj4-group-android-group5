@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -11,13 +12,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
@@ -107,6 +112,7 @@ public class PartyDetail extends Fragment {
                         setStart(v, p.getStart());
                         setEnd(v, p.getEnd());
                         setDescription(v, p.getDescription());
+
                     });
                 });
         Observable<EventLocation> loc = PartyPersistence.getInstance().getEventLocation(partyId);
@@ -122,33 +128,15 @@ public class PartyDetail extends Fragment {
                     });
 
                 });
+        Observable<User> userBelongingToEvent = PartyPersistence.getInstance().getOwner(partyId);
+        userBelongingToEvent.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()))
+                .subscribe( eUser -> {
+                    getActivity().runOnUiThread(() -> {
+                        initRequestButton(v, eUser.getId());
+                    });
+                });
 
-
-
-
-
-        setPartyTitle(v, "EmS");
-        setPartyCity(v, "Viersen");
-        setPartyStreetHouseNum(v, "Am Hohen Busch",1);
-        setMaxParticipants(v, 123);
-        setTicksAvail(v, 123);
-        setPrice(v, 50.00);
-        setStart(v, LocalDateTime.now());
-        setEnd(v, LocalDateTime.now());
-        setDescription(v, "Liebe Freunde des morgendlichen Rühreis, \n" +
-                "\n" +
-                "wir haben uns sehr schweren Herzens dazu entschieden, das Eier mit Speck Festival nicht mehr weiter fortzusetzen.  \n" +
-                "\n" +
-                "Die Entscheidung ist in den letzten Wochen gereift und wir haben es uns wahrlich nicht leicht gemacht – aber ein Eier mit Speck ohne Tappi ist für uns nicht das was es einmal war. \n" +
-                "Ein weiteres Festival ohne unseren fehlenden Kompagnon würde sich einfach in so vielerlei Hinsicht falsch anfühlen. \n" +
-                "\n" +
-                "Wir blicken auf 14 tolle Jahre, auf großartige Momente und gemeinsame Erinnerungen zurück. \n" +
-                "\n" +
-                "Wir danken an dieser Stelle nochmal all den tollen Leuten die das Eier mit Speck einzigartig in der Festivallandschaft gemacht haben – unzähligen Helfern, Sponsoren, Partnern, der Stadt Viersen, Feuerwehr und DRK, den Bands und nicht zuletzt Euch Besuchern.  \n" +
-                "\n" +
-                "Denkt beim Frühstück mal gelegentlich an uns!  \n" +
-                "\n" +
-                "Eure Speckies");
 
     }
 
@@ -219,10 +207,38 @@ public class PartyDetail extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //todo share with friends
                 new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
-                //System.out.println("HELLO");
             }
         });
+    }
+
+    private void initRequestButton(View v, String partyOwnerUUID){
+        String currentUUID = SessionManager.getInstance().getUserId();
+        Button btn = (Button) v.findViewById(R.id.sendReqBtn);
+        if(currentUUID.equals(partyOwnerUUID)){
+            btn.setText("Cancel Party");
+            btn.setBackgroundColor(Color.RED);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Cancel Party")
+                            .setMessage("Do you really want to cancel your party?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //todo cancel party
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                }
+            });
+        }else{
+            //todo send party request
+            btn.setText("Let me in!");
+        }
+
     }
 
 }
