@@ -7,13 +7,15 @@ public class Party {
     private String id, name, description;
     private LocalDateTime start, end;
     private int max_people;
+    private EventLocation eventLocation;
     private double price;
-    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price){
+    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price, EventLocation eventLocation){
         this.name = name;
         this.description = description;
         this.start = start;
         this.end = end;
         this.max_people = max_people;
+        this.eventLocation = eventLocation;
         this.price = price;
     }
 
@@ -65,14 +67,6 @@ public class Party {
         this.max_people = max_people;
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     @Override
     public String toString(){
 
@@ -84,5 +78,21 @@ public class Party {
                 "end=" +this.getEnd()+ "\n"+
                 "max_people=" + this.getMax_people()+ "\n"+
                 "}";
+    }
+
+    public EventLocation getEventLocation() {
+        return eventLocation;
+    }
+
+    public void setEventLocation(EventLocation eventLocation) {
+        this.eventLocation = eventLocation;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
