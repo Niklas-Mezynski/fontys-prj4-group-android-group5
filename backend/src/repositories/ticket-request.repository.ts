@@ -1,14 +1,13 @@
 import {inject, Getter} from '@loopback/core';
 import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
 import {LocalDbDataSource} from '../datasources';
-import {TicketRequest, TicketRequestRelations, User} from '../models';
+import {TicketRequest, TicketRequestRelations, User, Event} from '../models';
 import {UserRepository} from './user.repository';
 import {EventRepository} from './event.repository';
 
 export class TicketRequestRepository extends DefaultCrudRepository<
   TicketRequest,
   typeof TicketRequest.prototype.user_id,
-  typeof TicketRequest.prototype.event_id,
   TicketRequestRelations
 > {
 
@@ -24,10 +23,6 @@ export class TicketRequestRepository extends DefaultCrudRepository<
   }
 
   public findByUserId(user_id: string) {
-    return this.findOne({where: {user_id}});
-  }
-
-  public findByEventId(event_id: string) {
-    return this.findOne({where: {event_id}});
+    return this.find({where: {user_id}});
   }
 }

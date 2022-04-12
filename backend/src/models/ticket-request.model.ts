@@ -26,7 +26,7 @@ export class TicketRequest extends Entity {
   })
   event_id: string;
 
-  constructor(data?: Partial<Requests>) {
+  constructor(data?: Partial<TicketRequest>) {
     super(data);
   }
 }
