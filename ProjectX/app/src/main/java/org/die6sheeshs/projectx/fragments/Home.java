@@ -5,16 +5,22 @@ import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
@@ -40,9 +46,8 @@ public class Home extends Fragment {
     private String mParam1;
     private String mParam2;
     private View view;
-    private TextView textView2;
-    private RelativeLayout relativeLayout;
-    private ScrollView scrollView;
+    private PartyPersistence partyPersistence = PartyPersistence.getInstance();
+    private SeekBar seekBar;
 
     public Home() {
         // Required empty public constructor
@@ -80,24 +85,40 @@ public class Home extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_home, container, false);
-        scrollView = view.findViewById(R.id.scrollViewHome);
-        Observable<List<Party>> partyObservable = PartyPersistence.getInstance().getAllParties();
-
-        String id = SessionManager.getInstance().getUserId();
-        String jwt = SessionManager.getInstance().getToken();
-
-        CardView cardView = new CardView(view.getContext());
-        RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        scrollView.setLayoutParams(relativeLayoutParams);
-
-        RelativeLayout relativeLayout = new RelativeLayout(view.getContext());
-        scrollView.addView(relativeLayout);
-        textView2.setText("hello");
-
-//        Toast toast = new Toast(getContext());
-//        toast.setText("Hello");
-
-
+        init();
         return view;
+    }
+
+    public void init(){
+        //ScrollView scrollView = view.findViewById(R.id.);
+        LinearLayout linearLayout = view.findViewById(R.id.linlayVHome);
+        seekBar = view.findViewById(R.id.seekBarHome);
+
+        // TODO: Replace with actual events
+        Observable<List<Party>> response = partyPersistence.getAllParties();
+        response
+                .subscribeOn(Schedulers.io())
+                .subscribe(result -> {
+                    getActivity().runOnUiThread(() -> {
+
+                        FragmentManager fragmentManager = getChildFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                        for (Party p : result) {
+                            //System.out.println(p.getName() + ": " + p.getId());
+                            View.OnClickListener buttonAction = view -> {
+                                Fragment frag = new PartyDetail(p.getId());
+                                ((MainActivity)getActivity()).replaceFragment(frag);
+                            };
+                            Fragment fragment = new PartyListItem(p, buttonAction);
+
+                            fragmentTransaction.add(linearLayout.getId(), fragment, "party#" + p.getId());
+                        }
+
+                        fragmentTransaction.commit();
+
+                    });
+                },(error) -> Log.v("Getting List of Parties", "Parties GET error: " + error.getMessage()));
+
     }
 }
