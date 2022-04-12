@@ -25,16 +25,7 @@ public class RetrofitService {
 
     public RetrofitService() {
         baseUrl = PropertyService.readProperty("baseUrl");
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
-                .create();
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new AuthInterceptor()).build();
-        this.retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(okHttpClient)
-                .build();
+        buildRetrofitClient();
 
     }
 
@@ -47,9 +38,17 @@ public class RetrofitService {
     }
 
     public void addAuthInterceptor() {
+        buildRetrofitClient();
+        refreshAllApis();
+    }
+
+    private void buildRetrofitClient() {
+        //Adding a custom GSON builder that can reformat our dates
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
                 .create();
+
+        //Adding the AuthInterceptor which adds the JWT token to the header of each HTTP request
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new AuthInterceptor()).build();
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -57,7 +56,6 @@ public class RetrofitService {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-        refreshAllApis();
     }
 
     public void addPersistence(RetrofitPersistence persistence) {
