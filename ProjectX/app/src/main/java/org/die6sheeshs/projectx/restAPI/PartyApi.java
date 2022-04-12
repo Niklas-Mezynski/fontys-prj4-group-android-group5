@@ -1,5 +1,7 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
@@ -11,11 +13,12 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface PartyApi {
 
     @GET("events/{id}")
-    Observable<Party> getParty(@Path("id") String id);
+    Observable<Party> getParty(@Path("id") String id, @Query("filter") String meetingFilter);
 
     @GET("events/")
     Observable<List<Party>> getParties();
