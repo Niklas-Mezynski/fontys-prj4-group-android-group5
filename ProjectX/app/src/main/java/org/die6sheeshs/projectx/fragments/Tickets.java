@@ -89,13 +89,9 @@ public class Tickets extends Fragment {
     }
 
     private void init() {
-        ScrollView scrollView = view.findViewById(R.id.scroll);
         LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
-        TextView header = view.findViewById(R.id.header);
         String id = SessionManager.getInstance().getUserId();
         String jwt = SessionManager.getInstance().getToken();
-        System.out.println("vor api call");
-        System.out.println(id);
         Observable<List<Ticket>> response = userTicketPersistence.getTickets(id, jwt);
         response.subscribeOn(Schedulers.io())
                 .subscribe(tickets -> {

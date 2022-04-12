@@ -4,17 +4,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Party;
 
+import java.time.format.DateTimeFormatter;
+
 public class TicketDetail extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -59,7 +63,21 @@ public class TicketDetail extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_ticket_detail, container, false);
-
+        init();
         return view;
+    }
+
+    private void init(){
+        TextView name = view.findViewById(R.id.nameT);
+        name.setText(party.getName());
+        TextView price = view.findViewById(R.id.priceT);
+        price.setText("PRICE IN BACKEND MUST BE ADDED");
+        TextView address = view.findViewById(R.id.addressT);
+        address.setText("ADRESS IN BACKEND MUST BE ADDED");
+        TextView start = view.findViewById(R.id.startT);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        start.setText(party.getStart().format(formatter));
+        TextView end = view.findViewById(R.id.endT);
+        end.setText(party.getEnd().format(formatter));
     }
 }
