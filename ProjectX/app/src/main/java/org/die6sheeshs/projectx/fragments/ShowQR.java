@@ -126,7 +126,7 @@ public class ShowQR extends Fragment {
                 });
 
 
-        setQRCode(v, "Hallo mein name ist ralfiger ralf");
+        setQRCode(v, ticket.getId());
 
 
     }
