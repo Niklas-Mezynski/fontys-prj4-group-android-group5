@@ -77,4 +77,8 @@ public class PartyPersistence implements RetrofitPersistence {
     public Observable<List<Count>> getCountTicketsOfParty(String partyId){
         return this.partyApi.getCountTicketsOfParty(partyId);
     }
+
+    public Observable<List<Party>> getPartiesFromUser(String id){
+        return this.partyApi.getPartiesFromUser(id);
+    }
 }

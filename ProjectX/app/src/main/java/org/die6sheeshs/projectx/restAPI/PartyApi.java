@@ -43,4 +43,7 @@ public interface PartyApi {
 
     @GET("events/{id}/tickets/count")
     Observable<List<Count>> getCountTicketsOfParty(@Path("id") String partyId);
+
+    @GET("users/{id}/events")
+    Observable<List<Party>> getPartiesFromUser(@Path("id") String id);
 }

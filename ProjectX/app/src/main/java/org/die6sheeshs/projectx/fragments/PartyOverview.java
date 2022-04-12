@@ -17,6 +17,7 @@ import android.widget.ScrollView;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.util.List;
@@ -96,8 +97,8 @@ public class PartyOverview extends Fragment {
 
     private void initializeList() {
         LinearLayout linearLayout = view.findViewById(R.id.party_list_linear_layout);
-        Observable<List<Party>> response = partyPersistence.getAllParties();
-
+        String id = SessionManager.getInstance().getUserId();
+        Observable<List<Party>> response = partyPersistence.getPartiesFromUser(id);
         response
                 .subscribeOn(Schedulers.io())
                 .subscribe(result -> {
