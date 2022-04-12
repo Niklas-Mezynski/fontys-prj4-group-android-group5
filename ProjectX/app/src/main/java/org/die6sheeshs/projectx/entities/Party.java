@@ -7,12 +7,14 @@ public class Party {
     private String id, name, description;
     private LocalDateTime start, end;
     private int max_people;
-    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people){
+    private double price;
+    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price){
         this.name = name;
         this.description = description;
         this.start = start;
         this.end = end;
         this.max_people = max_people;
+        this.price = price;
     }
 
     public String getId() {
@@ -61,6 +63,14 @@ public class Party {
 
     public void setMax_people(int max_people) {
         this.max_people = max_people;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     @Override

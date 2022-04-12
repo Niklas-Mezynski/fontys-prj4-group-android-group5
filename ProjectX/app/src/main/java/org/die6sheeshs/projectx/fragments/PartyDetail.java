@@ -48,8 +48,6 @@ public class PartyDetail extends Fragment {
     private String mParam2;
     private String partyId;
 
-    final int[] maxParticipants = new int[1];
-    final int[] availTicketsF = new int[1];
 
     private View partyDetail;
 
@@ -100,22 +98,47 @@ public class PartyDetail extends Fragment {
 
 
     private void setPartyData(View v) {
-
+        int ticksAvailABC = 0;
 
         Observable<Party> party = PartyPersistence.getInstance().getParty(partyId);
         party.subscribeOn(Schedulers.io())
                 .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
                 .subscribe(p ->{
+
+
+                    Observable<List<Count>> countTickets = PartyPersistence.getInstance().getCountTicketsOfParty(partyId);
+                    countTickets.subscribeOn(Schedulers.io())
+                            .doOnError((error) -> Log.v("Party", "Error on count"+error.getMessage()))
+                            .subscribe(counts -> {
+
+                                Observable<User> userBelongingToEvent = PartyPersistence.getInstance().getOwner(partyId);
+                                userBelongingToEvent.subscribeOn(Schedulers.io())
+                                        .doOnError((error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()))
+                                        .subscribe( eUser -> {
+                                            getActivity().runOnUiThread(() -> {
+                                                initRequestButton(v, eUser.getId(), p.getMax_people() - counts.stream().findFirst().get().getCount());
+                                            });
+                                        });
+
+                                getActivity().runOnUiThread(()->{
+                                    int availTickets = -1;
+                                    if(counts.size() == 1){
+                                        Count first = counts.get(0);
+                                        availTickets = first.getCount();
+                                    }
+                                    setTicksAvail(v, p.getMax_people() - availTickets);
+                                });
+                            });
+
+
+
+
                     getActivity().runOnUiThread(() -> {
 
                         Log.v("Party Detail", "Details fetched :" + p.getDescription());
                         setPartyTitle(v, p.getName());
-                        setPartyCity(v, "Not implemented");//todo fetch location
-                        setPartyStreetHouseNum(v, "Not Implemented", 0);//todo fetch location
                         setMaxParticipants(v, p.getMax_people());
-                        maxParticipants[0] = p.getMax_people();
-                        setTicksAvail(v, p.getMax_people() - 123);//todo calc sold tickets
-                        setPrice(v, -999.999);//todo add price to relation
+                        setPrice(v, p.getPrice());
                         setStart(v, p.getStart());
                         setEnd(v, p.getEnd());
                         setDescription(v, p.getDescription());
@@ -131,30 +154,12 @@ public class PartyDetail extends Fragment {
                         lat = eLoc.getLatitude();
                         lng = eLoc.getLongtitude();
                         setPartyCity(v, lat + "");
-                        setPartyStreetHouseNum(v, lng + "", 0);
+                        setPartyStreetHouseNum(v, lng + "", 0);//todo fetch address from location
                     });
 
                 });
-        Observable<User> userBelongingToEvent = PartyPersistence.getInstance().getOwner(partyId);
-        userBelongingToEvent.subscribeOn(Schedulers.io())
-                .doOnError((error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()))
-                .subscribe( eUser -> {
-                    getActivity().runOnUiThread(() -> {
-                        initRequestButton(v, eUser.getId());
-                    });
-                });
-        Observable<List<Count>> countTickets = PartyPersistence.getInstance().getCountTicketsOfParty(partyId);
-        countTickets.subscribeOn(Schedulers.io())
-                .doOnError((error) -> Log.v("Party", "Error on count"+error.getMessage()))
-                .subscribe(counts -> {
-                   int availTickets = -1;
-                   if(counts.size() == 1){
-                       Count first = counts.get(0);
-                       availTickets = first.getCount();
-                   }
-                   setTicksAvail(v, maxParticipants[0]- availTickets);
-                   availTicketsF[0] = availTickets;
-                });
+
+
 
 
     }
@@ -232,7 +237,7 @@ public class PartyDetail extends Fragment {
         });
     }
 
-    private void initRequestButton(View v, String partyOwnerUUID){
+    private void initRequestButton(View v, String partyOwnerUUID, int availTickets){
         String currentUUID = SessionManager.getInstance().getUserId();
         Button btn = (Button) v.findViewById(R.id.sendReqBtn);
         if(currentUUID.equals(partyOwnerUUID)){
@@ -254,7 +259,7 @@ public class PartyDetail extends Fragment {
                 }
             });
         }else{
-            if(availTicketsF[0] > 0){
+            if(availTickets > 0){
                 //todo send party request
                 btn.setText("Let me in!");
             }else{
