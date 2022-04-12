@@ -1,4 +1,5 @@
 import {
+  AnyObject,
   Count,
   CountSchema,
   Filter,
@@ -14,7 +15,9 @@ import {
   patch,
   post,
   requestBody,
+  response,
 } from '@loopback/rest';
+import { count } from 'console';
 import {
   Event,
   Ticket,
@@ -106,5 +109,16 @@ export class EventTicketController {
     @param.query.object('where', getWhereSchemaFor(Ticket)) where?: Where<Ticket>,
   ): Promise<Count> {
     return this.eventRepository.tickets(id).delete(where);
+  }
+
+  @get('/events/{id}/tickets/count')
+  @response(200, {
+    description: 'Tickets for Event count',
+    content: { 'application/json': { schema: CountSchema } },
+  })
+  async count(
+    @param.path.string('id') id: string,
+  ): Promise<AnyObject> {
+    return this.eventRepository.execute("select COUNT(*) from ticket where event_id = '"+id+"'");
   }
 }
