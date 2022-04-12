@@ -35,7 +35,7 @@ public class TicketDetail extends Fragment {
     private Party party;
     private Ticket t;
     private TicketPersistence ticketPersistence= TicketPersistence.getInstance();
-    
+
     public TicketDetail(Party party,Ticket t) {
         // Required empty public constructor
         this.party = party;
@@ -102,6 +102,12 @@ public class TicketDetail extends Fragment {
                             ((MainActivity) getActivity()).replaceFragment(frag);
                         });
                     },(error)->Log.v("Error deleting ticket","User Ticket DELETE error "+error.getMessage()));
+        });
+
+        Button show = view.findViewById(R.id.qr);
+        show.setOnClickListener((l)->{
+            Fragment frag = new ShowQR(t);
+            ((MainActivity) getActivity()).replaceFragment(frag);
         });
     }
 }
