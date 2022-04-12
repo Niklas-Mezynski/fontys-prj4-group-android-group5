@@ -7,18 +7,25 @@
     tools:context=".fragments.Home" >
 
     <SeekBar
-        android:id="@+id/seekBarHome"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:max="100"
-        android:progress="3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.485"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+            android:id="@+id/seekBarHome"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:max="100"
+            android:progress="5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_kilometers"
+            android:layout_marginEnd="16dp" />
+
+    <TextView
+            android:text="5 km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_kilometers"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/scrollViewHome"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="16dp" />
 
     <ScrollView
         android:layout_width="match_parent"
