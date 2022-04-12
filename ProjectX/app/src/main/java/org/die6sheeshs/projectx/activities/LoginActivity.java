@@ -12,8 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.LoginResponse;
+import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.RetrofitService;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
@@ -55,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private void submitLogin() {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
+
         Observable<LoginResponse> ob = UserPersistence.getInstance().userLogin(email, password);
         ob.subscribeOn(Schedulers.io())
                 .subscribe((token -> {
