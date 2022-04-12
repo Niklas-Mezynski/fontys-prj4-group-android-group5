@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.Ticket;
 
 import java.util.List;
@@ -19,5 +20,5 @@ public interface UserTicketApi {
     Observable<List<Ticket>> getTickets(@Path("id") String id);
 
     @DELETE("users/{id}/tickets")
-    void deleteTicket(@Path("id") String id);
+    Observable<Count> deleteTicket(@Path("id") String id);
 }

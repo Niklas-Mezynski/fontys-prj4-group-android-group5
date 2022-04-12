@@ -101,11 +101,10 @@ public class Tickets extends Fragment {
                                 .subscribe(party -> {
                                     getActivity().runOnUiThread(() -> {
                                         //get information from party and add list item to linearLayout
-                                        System.out.println(party.getId());
                                         FragmentManager fragMan = getChildFragmentManager();
                                         FragmentTransaction fragTransaction = fragMan.beginTransaction();
                                         View.OnClickListener buttonAction = view -> {
-                                            Fragment frag = new TicketDetail(party);
+                                            Fragment frag = new TicketDetail(party,t);
                                             ((MainActivity) getActivity()).replaceFragment(frag);
                                         };
                                         Fragment fragment = new PartyListItem(party, buttonAction);

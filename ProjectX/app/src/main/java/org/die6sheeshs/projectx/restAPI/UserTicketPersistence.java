@@ -3,6 +3,7 @@ package org.die6sheeshs.projectx.restAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 
@@ -37,8 +38,8 @@ public class UserTicketPersistence implements RetrofitPersistence {
         return userTicketApi.getTickets(id);
     }
 
-    public void deleteTicket(String id) {
-        userTicketApi.deleteTicket(id);
+    public Observable<Count> deleteTicket(String id) {
+        return userTicketApi.deleteTicket(id);
     }
 
     @Override
