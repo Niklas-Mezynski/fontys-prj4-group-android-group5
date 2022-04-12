@@ -12,11 +12,9 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
-import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
-import org.die6sheeshs.projectx.restAPI.UserTicketPersistence;
 
 import java.time.format.DateTimeFormatter;
 
@@ -37,6 +35,7 @@ public class TicketDetail extends Fragment {
     private Party party;
     private Ticket t;
     private TicketPersistence ticketPersistence= TicketPersistence.getInstance();
+
     public TicketDetail(Party party,Ticket t) {
         // Required empty public constructor
         this.party = party;
@@ -103,6 +102,12 @@ public class TicketDetail extends Fragment {
                             ((MainActivity) getActivity()).replaceFragment(frag);
                         });
                     },(error)->Log.v("Error deleting ticket","User Ticket DELETE error "+error.getMessage()));
+        });
+
+        Button show = view.findViewById(R.id.qr);
+        show.setOnClickListener((l)->{
+            Fragment frag = new ShowQR(t);
+            ((MainActivity) getActivity()).replaceFragment(frag);
         });
     }
 }

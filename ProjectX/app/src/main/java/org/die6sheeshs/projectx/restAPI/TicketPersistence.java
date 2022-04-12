@@ -1,5 +1,9 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.Ticket;
+
+import java.util.List;
+
 import io.reactivex.Observable;
 
 public class TicketPersistence implements RetrofitPersistence{
@@ -19,6 +23,10 @@ public class TicketPersistence implements RetrofitPersistence{
 
     public Observable<Void> deleteTicket(String id){
         return ticketApi.deleteTicket(id);
+    }
+
+    public Observable<List<Ticket>> getTickets(String id, String jwt) {
+        return ticketApi.getTickets(id);
     }
 
     @Override

@@ -1,9 +1,16 @@
 package org.die6sheeshs.projectx.fragments;
 
+import static org.die6sheeshs.projectx.activities.MainActivity.PERMISSIONS_FINE_LOCATION;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,8 +26,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
@@ -48,6 +58,9 @@ public class Home extends Fragment {
     private View view;
     private PartyPersistence partyPersistence = PartyPersistence.getInstance();
     private SeekBar seekBar;
+    private MainActivity mainActivity;
+    private LinearLayout linearLayout;
+    private TextView tv_kilometers;
 
     public Home() {
         // Required empty public constructor
@@ -91,13 +104,60 @@ public class Home extends Fragment {
 
     public void init(){
         //ScrollView scrollView = view.findViewById(R.id.);
-        LinearLayout linearLayout = view.findViewById(R.id.linlayVHome);
+        linearLayout = view.findViewById(R.id.linlayVHome);
         seekBar = view.findViewById(R.id.seekBarHome);
+        tv_kilometers = view.findViewById(R.id.tv_kilometers);
 
-        // TODO: Replace with actual events
-        Observable<List<Party>> response = partyPersistence.getAllParties();
-        response
-                .subscribeOn(Schedulers.io())
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                tv_kilometers.setText(seekBar.getProgress() + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_kilometers.setText(seekBar.getProgress() + " km");
+                linearLayout.removeAllViews();
+                updateLocation(seekBar.getProgress());
+            }
+        });
+
+        this.mainActivity = (MainActivity) getActivity();
+
+        updateLocation(5);
+    }
+
+    private void updateLocation(int radius) {
+        //Get user permission
+        //Get current location from the fused client
+        if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            //Get the location
+            mainActivity.fusedLocationProviderClient.getLastLocation().addOnSuccessListener(mainActivity, location -> {
+                //Location successfully fetched
+                if (location != null) {
+                    Log.v("Location success", String.format("Lat: %f   Long: %f", location.getLatitude(), location.getLongitude()));
+                    listParties(location, radius);
+                } else {
+                    Log.v("Location null", "Location object is null");
+                    Toast.makeText(mainActivity, "There was an error getting your current location, please try again", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.v("Permissions", "No location permission granted yet");
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
+            }
+        }
+    }
+
+    private void listParties(Location userLocation, int radius) {
+        Observable<List<EventWithLocation>> response = partyPersistence.getPartiesByLocation(userLocation.getLatitude(), userLocation.getLongitude(), radius);
+        response.subscribeOn(Schedulers.io())
                 .subscribe(result -> {
                     getActivity().runOnUiThread(() -> {
 
@@ -108,7 +168,7 @@ public class Home extends Fragment {
                             //System.out.println(p.getName() + ": " + p.getId());
                             View.OnClickListener buttonAction = view -> {
                                 Fragment frag = new PartyDetail(p.getId());
-                                ((MainActivity)getActivity()).replaceFragment(frag);
+                                (mainActivity).replaceFragment(frag);
                             };
                             Fragment fragment = new PartyListItem(p, buttonAction);
 
@@ -119,6 +179,5 @@ public class Home extends Fragment {
 
                     });
                 },(error) -> Log.v("Getting List of Parties", "Parties GET error: " + error.getMessage()));
-
     }
 }
