@@ -63,7 +63,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         submit.setOnClickListener(currentView -> {
             //TODO do the final verification of the input data
-
             submitUser();
         });
 
@@ -83,7 +82,6 @@ public class RegisterActivity extends AppCompatActivity {
         String password = passwordField.getEditText().getText().toString();
         String password2 = password2Field.getEditText().getText().toString();
         String dateString = birthdateField.getEditText().getText().toString();
-        LocalDate birthdayDate = LocalDate.parse(dateString);
 //        LocalDateTime birthday = LocalDateTime.parse(dateString + " 08:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         LocalDateTime birthday = null;
         try {

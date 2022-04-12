@@ -15,7 +15,7 @@ INSERT INTO event (id, user_id, name, description, start, "end", max_people)
 VALUES ('abc', '12', 'Fette party', 'SAUFEEEEEn', '2025-04-04', '2025-04-05', 187);
 
 INSERT INTO event (id, user_id, name, description, start, "end", max_people)
-VALUES ('def', 'ddef2cdb-11d1-4a8d-b14d-1f98dca11ea0', 'Andere fette party', 'Suff suff suff', '2025-04-04', '2025-04-05', 420);
+VALUES ('def', 'db7c3024-d53d-4bcf-85df-718cc5198b90', 'Andere fette party', 'Suff suff suff', '2025-04-04', '2025-04-05', 420);
 
 INSERT INTO eventlocation (event_id, latitude, longitude, created_on)
 VALUES ('abc', 0.69, -1.87, current_timestamp);
@@ -34,7 +34,7 @@ INSERT INTO friends (usera, userb)
 VALUES ('34', '5243fwersdgerv'),
        ('12', '34');
 
-INSERT INTO ticketrequest (user_id, event_id)
+INSERT INTO ticketrequest (user_id, event_id, created_on)
 VALUES ('12', 'abc', current_timestamp);
 
 SELECT *
