@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -11,13 +12,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
@@ -41,6 +47,7 @@ public class PartyDetail extends Fragment {
     private String mParam1;
     private String mParam2;
     private String partyId;
+
 
     private View partyDetail;
 
@@ -89,24 +96,53 @@ public class PartyDetail extends Fragment {
     }
 
 
+
     private void setPartyData(View v) {
+        int ticksAvailABC = 0;
 
         Observable<Party> party = PartyPersistence.getInstance().getParty(partyId);
         party.subscribeOn(Schedulers.io())
                 .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
                 .subscribe(p ->{
+
+
+                    Observable<List<Count>> countTickets = PartyPersistence.getInstance().getCountTicketsOfParty(partyId);
+                    countTickets.subscribeOn(Schedulers.io())
+                            .doOnError((error) -> Log.v("Party", "Error on count"+error.getMessage()))
+                            .subscribe(counts -> {
+
+                                Observable<User> userBelongingToEvent = PartyPersistence.getInstance().getOwner(partyId);
+                                userBelongingToEvent.subscribeOn(Schedulers.io())
+                                        .doOnError((error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()))
+                                        .subscribe( eUser -> {
+                                            getActivity().runOnUiThread(() -> {
+                                                initRequestButton(v, eUser.getId(), p.getMax_people() - counts.stream().findFirst().get().getCount());
+                                            });
+                                        });
+
+                                getActivity().runOnUiThread(()->{
+                                    int availTickets = -1;
+                                    if(counts.size() == 1){
+                                        Count first = counts.get(0);
+                                        availTickets = first.getCount();
+                                    }
+                                    setTicksAvail(v, p.getMax_people() - availTickets);
+                                });
+                            });
+
+
+
+
                     getActivity().runOnUiThread(() -> {
 
                         Log.v("Party Detail", "Details fetched :" + p.getDescription());
                         setPartyTitle(v, p.getName());
-                        setPartyCity(v, "Not implemented");//todo fetch location
-                        setPartyStreetHouseNum(v, "Not Implemented", 0);//todo fetch location
                         setMaxParticipants(v, p.getMax_people());
-                        setTicksAvail(v, p.getMax_people() - 123);//todo calc sold tickets
-                        setPrice(v, -999.999);//todo add price to relation
+                        setPrice(v, p.getPrice());
                         setStart(v, p.getStart());
                         setEnd(v, p.getEnd());
                         setDescription(v, p.getDescription());
+
                     });
                 });
         Observable<EventLocation> loc = PartyPersistence.getInstance().getEventLocation(partyId);
@@ -118,37 +154,13 @@ public class PartyDetail extends Fragment {
                         lat = eLoc.getLatitude();
                         lng = eLoc.getLongtitude();
                         setPartyCity(v, lat + "");
-                        setPartyStreetHouseNum(v, lng + "", 0);
+                        setPartyStreetHouseNum(v, lng + "", 0);//todo fetch address from location
                     });
 
                 });
 
 
 
-
-
-        setPartyTitle(v, "EmS");
-        setPartyCity(v, "Viersen");
-        setPartyStreetHouseNum(v, "Am Hohen Busch",1);
-        setMaxParticipants(v, 123);
-        setTicksAvail(v, 123);
-        setPrice(v, 50.00);
-        setStart(v, LocalDateTime.now());
-        setEnd(v, LocalDateTime.now());
-        setDescription(v, "Liebe Freunde des morgendlichen Rühreis, \n" +
-                "\n" +
-                "wir haben uns sehr schweren Herzens dazu entschieden, das Eier mit Speck Festival nicht mehr weiter fortzusetzen.  \n" +
-                "\n" +
-                "Die Entscheidung ist in den letzten Wochen gereift und wir haben es uns wahrlich nicht leicht gemacht – aber ein Eier mit Speck ohne Tappi ist für uns nicht das was es einmal war. \n" +
-                "Ein weiteres Festival ohne unseren fehlenden Kompagnon würde sich einfach in so vielerlei Hinsicht falsch anfühlen. \n" +
-                "\n" +
-                "Wir blicken auf 14 tolle Jahre, auf großartige Momente und gemeinsame Erinnerungen zurück. \n" +
-                "\n" +
-                "Wir danken an dieser Stelle nochmal all den tollen Leuten die das Eier mit Speck einzigartig in der Festivallandschaft gemacht haben – unzähligen Helfern, Sponsoren, Partnern, der Stadt Viersen, Feuerwehr und DRK, den Bands und nicht zuletzt Euch Besuchern.  \n" +
-                "\n" +
-                "Denkt beim Frühstück mal gelegentlich an uns!  \n" +
-                "\n" +
-                "Eure Speckies");
 
     }
 
@@ -219,10 +231,44 @@ public class PartyDetail extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //todo share with friends
                 new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
-                //System.out.println("HELLO");
             }
         });
+    }
+
+    private void initRequestButton(View v, String partyOwnerUUID, int availTickets){
+        String currentUUID = SessionManager.getInstance().getUserId();
+        Button btn = (Button) v.findViewById(R.id.sendReqBtn);
+        if(currentUUID.equals(partyOwnerUUID)){
+            btn.setText("Cancel Party");
+            btn.setBackgroundColor(Color.RED);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Cancel Party")
+                            .setMessage("Do you really want to cancel your party?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    //todo cancel party
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                }
+            });
+        }else{
+            if(availTickets > 0){
+                //todo send party request
+                btn.setText("Let me in!");
+            }else{
+                btn.setBackgroundColor(Color.rgb(80,80,80));
+                btn.setText("Party is full");
+            }
+
+        }
+
     }
 
 }

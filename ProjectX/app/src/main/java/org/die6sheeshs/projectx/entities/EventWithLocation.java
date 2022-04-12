@@ -6,13 +6,11 @@ import java.time.LocalDateTime;
 
 public class EventWithLocation extends Party {
 
-    private double latitude, longitude;
+    double latitude, longitude;
 
-    private EventWithLocation(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double latitude, double longitude) {
-        super(name, description, start, end, max_people);
-
-        this.latitude = latitude;
-        this.longitude = longitude;
+    private EventWithLocation(String name, String description, LocalDateTime start, LocalDateTime end, double price, int max_people, double latitude, double longitude) {
+        super(name, description, start, end, max_people, price, new EventLocation(latitude, longitude, LocalDateTime.now(), ""));
+        super.getEventLocation().setEvent_id(super.getId());
     }
 
     public double getLongitude() {

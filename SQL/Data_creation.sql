@@ -28,6 +28,9 @@ INSERT INTO friends (usera, userb)
 VALUES ('34', '5243fwersdgerv'),
        ('12', '34');
 
+INSERT INTO ticketrequest (user_id, event_id)
+VALUES ('12', 'abc', current_timestamp);
+
 SELECT *
 FROM event inner join eventlocation e on event.id = e.event_id
 WHERE latitude > 0 AND latitude < 10 AND longitude > -10 AND longitude < 10;

@@ -4,6 +4,8 @@ timeout /t 5 /nobreak
 REM ---------------------------------------------------------------------------------------------------------------------------------------------------
 docker exec -i postgresPrj4 psql -U postgres -d postgres < C:\Users\%username%\Documents\GitHub\prj4-group-android-group5\SQL\table_creation.sql
 timeout /t 3 /nobreak
+docker exec -i postgresPrj4 psql -U postgres -d postgres < C:\Users\%username%\Documents\GitHub\prj4-group-android-group5\SQL\Data_creation.sql
+timeout /t 3 /nobreak
 echo Container und Datenbank erfolgreich erstellt!
 pause
 exit

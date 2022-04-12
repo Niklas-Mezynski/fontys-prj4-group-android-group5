@@ -3,8 +3,10 @@ package org.die6sheeshs.projectx.restAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 
@@ -39,12 +41,12 @@ public class PartyPersistence implements RetrofitPersistence {
     }
 
     public Observable<Party> getParty(String uuid){
-        return this.partyApi.getParty(uuid);
+        return this.partyApi.getParty(uuid, "{\"include\":[\"eventLocation\"]}");
     }
 
-    public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people) {
+    public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price, EventLocation eventLocation) {
 
-        Party p = new Party(name, description, start, end, max_people);
+        Party p = new Party(name, description, start, end, max_people, price, eventLocation);
 
         Observable<Party> observable = partyApi.createParty(p);
         return observable;
@@ -57,5 +59,17 @@ public class PartyPersistence implements RetrofitPersistence {
     @Override
     public void refreshApi() {
         this.partyApi = RetrofitService.getInstance().getRetrofitClient().create(PartyApi.class);
+    }
+
+    public Observable<User> getOwner(String partyId) {
+        return this.partyApi.getOwner(partyId);
+    }
+
+    public Observable<List<Ticket>> getTickets(String partyId){
+        return this.partyApi.getTicketsOfParty(partyId);
+    }
+
+    public Observable<List<Count>> getCountTicketsOfParty(String partyId){
+        return this.partyApi.getCountTicketsOfParty(partyId);
     }
 }

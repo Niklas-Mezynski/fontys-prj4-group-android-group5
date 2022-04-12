@@ -47,4 +47,14 @@ public class EventLocation {
     public void setEvent_id(String event_id) {
         this.event_id = event_id;
     }
+
+    @Override
+    public String toString() {
+        return "EventLocation{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", created_on=" + created_on +
+                ", event_id='" + event_id + '\'' +
+                '}';
+    }
 }

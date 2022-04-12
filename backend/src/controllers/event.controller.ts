@@ -21,7 +21,7 @@ import {
   response,
 } from '@loopback/rest';
 import { Helpers } from '../helpers/helper_functions';
-import { Event } from '../models';
+import { Event, EventLocation, EventWithRelations } from '../models';
 import { EventRepository } from '../repositories';
 
 
@@ -128,7 +128,7 @@ export class EventController {
   async findById(
     @param.path.string('id') id: string,
     @param.filter(Event, { exclude: 'where' }) filter?: FilterExcludingWhere<Event>
-  ): Promise<Event> {
+  ): Promise<EventWithRelations> {
     return this.eventRepository.findById(id, filter);
   }
 

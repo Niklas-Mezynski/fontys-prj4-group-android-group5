@@ -89,13 +89,9 @@ public class Tickets extends Fragment {
     }
 
     private void init() {
-        ScrollView scrollView = view.findViewById(R.id.scroll);
         LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
-        TextView header = view.findViewById(R.id.header);
         String id = SessionManager.getInstance().getUserId();
         String jwt = SessionManager.getInstance().getToken();
-        System.out.println("vor api call");
-        System.out.println(id);
         Observable<List<Ticket>> response = userTicketPersistence.getTickets(id, jwt);
         response.subscribeOn(Schedulers.io())
                 .subscribe(tickets -> {
@@ -105,11 +101,10 @@ public class Tickets extends Fragment {
                                 .subscribe(party -> {
                                     getActivity().runOnUiThread(() -> {
                                         //get information from party and add list item to linearLayout
-                                        System.out.println(party.getId());
                                         FragmentManager fragMan = getChildFragmentManager();
                                         FragmentTransaction fragTransaction = fragMan.beginTransaction();
                                         View.OnClickListener buttonAction = view -> {
-                                            Fragment frag = new TicketDetail(party);
+                                            Fragment frag = new TicketDetail(party,t);
                                             ((MainActivity) getActivity()).replaceFragment(frag);
                                         };
                                         Fragment fragment = new PartyListItem(party, buttonAction);
