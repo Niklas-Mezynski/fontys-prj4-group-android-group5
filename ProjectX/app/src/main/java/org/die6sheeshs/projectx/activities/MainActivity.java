@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.createParty);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        replaceFragment(new Home());
         binding.bottomNavigationView.setOnItemSelectedListener(menuListener);
     }
 
