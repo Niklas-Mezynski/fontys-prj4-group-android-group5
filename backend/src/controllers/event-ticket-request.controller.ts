@@ -26,7 +26,7 @@ export class EventTicketRequestController {
     @repository(EventRepository) protected eventRepository: EventRepository,
   ) { }
 
-  @get('/events/{id}/ticket-requests', {
+  @get('/events/{eventId}/ticket-requests', {
     responses: {
       '200': {
         description: 'Array of Event has many TicketRequest',
@@ -39,10 +39,10 @@ export class EventTicketRequestController {
     },
   })
   async find(
-    @param.path.string('id') id: string,
+    @param.path.string('eventId') eventId: string,
     @param.query.object('filter') filter?: Filter<TicketRequest>,
   ): Promise<TicketRequest[]> {
-    return this.eventRepository.ticketRequests(id).find(filter);
+    return this.eventRepository.ticketRequests(eventId).find(filter);
   }
 
   @post('/events/{id}/ticket-requests', {
