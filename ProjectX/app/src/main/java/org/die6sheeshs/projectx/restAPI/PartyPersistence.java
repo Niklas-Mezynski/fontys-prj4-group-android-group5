@@ -18,7 +18,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class PartyPersistence {
+public class PartyPersistence implements RetrofitPersistence {
 
     private static final PartyPersistence instance = new PartyPersistence();
 
@@ -26,22 +26,12 @@ public class PartyPersistence {
         return instance;
     }
 
-    private Retrofit retrofit;
-    private final String baseUrl = PropertyService.readProperty("baseUrl");
     private PartyApi partyApi;
 
     private PartyPersistence() {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
-                .create();
-        this.retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
+        this.partyApi = RetrofitService.getInstance().getRetrofitClient().create(PartyApi.class);
+        RetrofitService.getInstance().addPersistence(this);
 
-
-        this.partyApi = retrofit.create(PartyApi.class);
     }
 
     public Observable<List<Party>> getAllParties() {
@@ -62,5 +52,10 @@ public class PartyPersistence {
 
     public Observable<EventLocation> getEventLocation(String id){
         return this.partyApi.getEventLocation(id);
+    }
+
+    @Override
+    public void refreshApi() {
+        this.partyApi = RetrofitService.getInstance().getRetrofitClient().create(PartyApi.class);
     }
 }

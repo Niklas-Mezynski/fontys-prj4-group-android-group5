@@ -88,7 +88,7 @@ public class Tickets extends Fragment {
         return view;
     }
 
-    private void init(){
+    private void init() {
         ScrollView scrollView = view.findViewById(R.id.scroll);
         LinearLayout linearLayoutV = view.findViewById(R.id.linlayV);
         TextView header = view.findViewById(R.id.header);
@@ -96,32 +96,30 @@ public class Tickets extends Fragment {
         String jwt = SessionManager.getInstance().getToken();
         System.out.println("vor api call");
         System.out.println(id);
-        Observable<List<Ticket>> response = userTicketPersistence.getTickets(id,jwt);
+        Observable<List<Ticket>> response = userTicketPersistence.getTickets(id, jwt);
         response.subscribeOn(Schedulers.io())
-            .doOnError((error) -> Log.v("Getting List of tickets", "User Tickets GET error: " + error.getMessage()))
-            .subscribe(tickets -> {
-                for (Ticket t :tickets) {
-                    Observable<Party> response2 = partyPersistence.getParty(t.getEvent_id());
-                    response2.subscribeOn(Schedulers.io())
-                        .doOnError((error) -> Log.v("Getting Party based Id", "User Party GET error: " + error.getMessage()))
-                        .subscribe(party ->{
-                            getActivity().runOnUiThread(()->{
-                                //get information from party and add list item to linearLayout
-                                System.out.println(party.getId());
-                                FragmentManager fragMan = getChildFragmentManager();
-                                FragmentTransaction fragTransaction = fragMan.beginTransaction();
-                                View.OnClickListener buttonAction = view -> {
-                                    Fragment frag = new TicketDetail(party);
-                                    ((MainActivity)getActivity()).replaceFragment(frag);
-                                };
-                                Fragment fragment = new PartyListItem(party,buttonAction);
+                .subscribe(tickets -> {
+                    for (Ticket t : tickets) {
+                        Observable<Party> response2 = partyPersistence.getParty(t.getEvent_id());
+                        response2.subscribeOn(Schedulers.io())
+                                .subscribe(party -> {
+                                    getActivity().runOnUiThread(() -> {
+                                        //get information from party and add list item to linearLayout
+                                        System.out.println(party.getId());
+                                        FragmentManager fragMan = getChildFragmentManager();
+                                        FragmentTransaction fragTransaction = fragMan.beginTransaction();
+                                        View.OnClickListener buttonAction = view -> {
+                                            Fragment frag = new TicketDetail(party);
+                                            ((MainActivity) getActivity()).replaceFragment(frag);
+                                        };
+                                        Fragment fragment = new PartyListItem(party, buttonAction);
 
-                                fragTransaction.add(linearLayoutV.getId(), fragment, "party#" + party.getId());
+                                        fragTransaction.add(linearLayoutV.getId(), fragment, "party#" + party.getId());
 
-                                fragTransaction.commit();
-                            });
-                        });
-                }
-            });
+                                        fragTransaction.commit();
+                                    });
+                                }, (error) -> Log.v("Getting Party based Id", "User Party GET error: " + error.getMessage()));
+                    }
+                }, (error) -> Log.v("Getting List of tickets", "User Tickets GET error: " + error.getMessage()));
     }
 }
