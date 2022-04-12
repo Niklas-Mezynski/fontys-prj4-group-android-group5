@@ -3,6 +3,7 @@ package org.die6sheeshs.projectx.restAPI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
@@ -66,5 +67,9 @@ public class PartyPersistence implements RetrofitPersistence {
 
     public Observable<List<Ticket>> getTickets(String partyId){
         return this.partyApi.getTicketsOfParty(partyId);
+    }
+
+    public Observable<List<Count>> getCountTicketsOfParty(String partyId){
+        return this.partyApi.getCountTicketsOfParty(partyId);
     }
 }

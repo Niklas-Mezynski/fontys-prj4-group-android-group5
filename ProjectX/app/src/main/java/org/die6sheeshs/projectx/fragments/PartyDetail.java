@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.User;
@@ -46,6 +47,9 @@ public class PartyDetail extends Fragment {
     private String mParam1;
     private String mParam2;
     private String partyId;
+
+    final int[] maxParticipants = new int[1];
+    final int[] availTicketsF = new int[1];
 
     private View partyDetail;
 
@@ -94,7 +98,9 @@ public class PartyDetail extends Fragment {
     }
 
 
+
     private void setPartyData(View v) {
+
 
         Observable<Party> party = PartyPersistence.getInstance().getParty(partyId);
         party.subscribeOn(Schedulers.io())
@@ -107,6 +113,7 @@ public class PartyDetail extends Fragment {
                         setPartyCity(v, "Not implemented");//todo fetch location
                         setPartyStreetHouseNum(v, "Not Implemented", 0);//todo fetch location
                         setMaxParticipants(v, p.getMax_people());
+                        maxParticipants[0] = p.getMax_people();
                         setTicksAvail(v, p.getMax_people() - 123);//todo calc sold tickets
                         setPrice(v, -999.999);//todo add price to relation
                         setStart(v, p.getStart());
@@ -135,6 +142,18 @@ public class PartyDetail extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         initRequestButton(v, eUser.getId());
                     });
+                });
+        Observable<List<Count>> countTickets = PartyPersistence.getInstance().getCountTicketsOfParty(partyId);
+        countTickets.subscribeOn(Schedulers.io())
+                .doOnError((error) -> Log.v("Party", "Error on count"+error.getMessage()))
+                .subscribe(counts -> {
+                   int availTickets = -1;
+                   if(counts.size() == 1){
+                       Count first = counts.get(0);
+                       availTickets = first.getCount();
+                   }
+                   setTicksAvail(v, maxParticipants[0]- availTickets);
+                   availTicketsF[0] = availTickets;
                 });
 
 
@@ -235,8 +254,14 @@ public class PartyDetail extends Fragment {
                 }
             });
         }else{
-            //todo send party request
-            btn.setText("Let me in!");
+            if(availTicketsF[0] > 0){
+                //todo send party request
+                btn.setText("Let me in!");
+            }else{
+                btn.setBackgroundColor(Color.rgb(80,80,80));
+                btn.setText("Party is full");
+            }
+
         }
 
     }

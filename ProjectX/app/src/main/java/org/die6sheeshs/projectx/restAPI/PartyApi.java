@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
@@ -36,4 +37,7 @@ public interface PartyApi {
 
     @GET("events/{id}/tickets")
     Observable<List<Ticket>> getTicketsOfParty(@Path("id") String partyId);
+
+    @GET("events/{id}/tickets/count")
+    Observable<List<Count>> getCountTicketsOfParty(@Path("id") String partyId);
 }
