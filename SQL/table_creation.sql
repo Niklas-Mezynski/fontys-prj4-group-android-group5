@@ -149,7 +149,8 @@ CREATE OR REPLACE function getNearbyEvents(user_lat double precision, user_lon d
                 "end"       timestamp,
                 max_people  integer,
                 latitude    double precision,
-                longitude   double precision
+                longitude   double precision,
+                event_id    varchar(128)
             )
     language plpgsql
 as
@@ -158,14 +159,24 @@ Declare
 
 Begin
 
-    return QUERY SELECT event.id, event.user_id, event.name, event.description, event.start, event."end", event.max_people, e.latitude, e.longitude
-    FROM event
-             inner join eventlocation e on event.id = e.event_id
-    WHERE (sqrt((111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) *
-                (111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) +
-                (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm;
+    return QUERY SELECT event.id,
+                        event.user_id,
+                        event.name,
+                        event.description,
+                        event.start,
+                        event."end",
+                        event.max_people,
+                        e.latitude,
+                        e.longitude
+--                         e.event_id
+                 FROM event
+                          inner join eventlocation e on event.id = e.event_id
+                 WHERE (sqrt((111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) *
+                             (111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) +
+                             (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm;
 End;
 $$;
 
--- SELECT * FROM getNearbyEvents(0.69, -1.87, 50);
+
+-- SELECT * FROM getNearbyEvents(0.69, -1.87, 50000);
 
