@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class EventWithLocation extends Party {
 
     double latitude, longitude;
+    String event_id;
 
     private EventWithLocation(String name, String description, LocalDateTime start, LocalDateTime end, double price, int max_people, double latitude, double longitude, String event_id) {
         super(name, description, start, end, max_people, price, new EventLocation(latitude, longitude, LocalDateTime.now(), event_id));
