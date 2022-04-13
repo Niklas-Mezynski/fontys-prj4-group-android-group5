@@ -167,8 +167,8 @@ Begin
                         event."end",
                         event.max_people,
                         e.latitude,
-                        e.longitude
---                         e.event_id
+                        e.longitude,
+                        e.event_id
                  FROM event
                           inner join eventlocation e on event.id = e.event_id
                  WHERE (sqrt((111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) *

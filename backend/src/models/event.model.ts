@@ -14,6 +14,7 @@ export class Event extends Entity {
     required: true,
   })
   id: string;
+  
   @property({
     type: 'string',
     required: true,

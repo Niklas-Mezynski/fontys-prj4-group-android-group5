@@ -34,10 +34,16 @@ export class EventWithLocation extends Event {
   latitude: number;
 
   @property({
-    type: 'string',
+    type: 'number',
     required: true,
   })
   longitude: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  event_id: string;
 }
 
 export class EventController {

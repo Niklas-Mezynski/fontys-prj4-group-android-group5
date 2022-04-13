@@ -158,13 +158,13 @@ public class Home extends Fragment {
     private void listParties(Location userLocation, int radius) {
         Observable<List<EventWithLocation>> response = partyPersistence.getPartiesByLocation(userLocation.getLatitude(), userLocation.getLongitude(), radius);
         response.subscribeOn(Schedulers.io())
-                .subscribe(result -> {
+                .subscribe(eventWithLocations -> {
                     getActivity().runOnUiThread(() -> {
 
                         FragmentManager fragmentManager = getChildFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                        for (Party p : result) {
+                        for (Party p : eventWithLocations) {
                             //System.out.println(p.getName() + ": " + p.getId());
                             View.OnClickListener buttonAction = view -> {
                                 Fragment frag = new PartyDetail(p.getId());
