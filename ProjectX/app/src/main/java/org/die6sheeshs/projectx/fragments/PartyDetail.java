@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
@@ -22,9 +23,11 @@ import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
+import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -100,6 +103,8 @@ public class PartyDetail extends Fragment {
     private void setPartyData(View v) {
         int ticksAvailABC = 0;
 
+
+
         Observable<Party> party = PartyPersistence.getInstance().getParty(partyId);
         party.subscribeOn(Schedulers.io())
                 .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
@@ -115,6 +120,8 @@ public class PartyDetail extends Fragment {
                                 userBelongingToEvent.subscribeOn(Schedulers.io())
                                         .doOnError((error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()))
                                         .subscribe( eUser -> {
+
+
                                             getActivity().runOnUiThread(() -> {
                                                 initRequestButton(v, eUser.getId(), p.getMax_people() - counts.stream().findFirst().get().getCount());
                                             });
@@ -145,13 +152,18 @@ public class PartyDetail extends Fragment {
 
                         EventLocation eLoc = p.getEventLocation();
 
-                        double lat, lng;
+                        double lat;
                         lat = eLoc.getLatitude();
-                        lng = eLoc.getLongtitude();
                         setPartyCity(v, lat + "");
-                        setPartyStreetHouseNum(v, lng + "", 0);//todo fetch address from location
+
 
                     });
+
+
+
+
+
+
                 });
 
 
@@ -254,6 +266,10 @@ public class PartyDetail extends Fragment {
                             .setNegativeButton(android.R.string.no, null).show();
                 }
             });
+            Button scanButton = (Button) v.findViewById(R.id.scanQRButton);
+            scanButton.setVisibility(View.VISIBLE);
+            initQRCodeScanButton(v);
+
         }else{
             if(availTickets > 0){
                 //todo send party request
@@ -265,6 +281,11 @@ public class PartyDetail extends Fragment {
 
         }
 
+    }
+
+    public void initQRCodeScanButton(View v){
+        Button qrButton = v.findViewById(R.id.scanQRButton);
+        //here you go lukas
     }
 
 }

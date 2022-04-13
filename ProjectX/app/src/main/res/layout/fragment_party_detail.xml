@@ -129,7 +129,7 @@
                 android:id="@+id/streetHou"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="Hidden Until Accepted to party"
                 app:layout_constraintStart_toStartOf="@+id/maxParticipantsText"
                 app:layout_constraintTop_toBottomOf="@+id/sergsrethsrth" />
 
@@ -311,13 +311,23 @@
 
     <Button
         android:id="@+id/sendReqBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:text="Send Party Request"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/scanQRButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
-        android:text="Send Party Request"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:text="Scan Ticket"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/sendReqBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
