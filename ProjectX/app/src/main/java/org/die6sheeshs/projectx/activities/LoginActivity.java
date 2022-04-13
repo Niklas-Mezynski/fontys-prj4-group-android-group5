@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,6 +37,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         PropertyService.registerContext(this);
+
+        if (getIntent().hasCategory("register_success")) {
+            Toast.makeText(this, "Account successfully created", Toast.LENGTH_SHORT).show();
+        }
 
         submit = findViewById(R.id.buttonLogin);
         gotoRegister = findViewById(R.id.goto_register_view);
