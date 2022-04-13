@@ -102,7 +102,7 @@ public class Home extends Fragment {
         return view;
     }
 
-    public void init(){
+    public void init() {
         //ScrollView scrollView = view.findViewById(R.id.);
         linearLayout = view.findViewById(R.id.linlayVHome);
         seekBar = view.findViewById(R.id.seekBarHome);
@@ -150,7 +150,7 @@ public class Home extends Fragment {
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Log.v("Permissions", "No location permission granted yet");
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
             }
         }
     }
@@ -158,19 +158,18 @@ public class Home extends Fragment {
     private void listParties(Location userLocation, int radius) {
         Observable<List<EventWithLocation>> response = partyPersistence.getPartiesByLocation(userLocation.getLatitude(), userLocation.getLongitude(), radius);
         response.subscribeOn(Schedulers.io())
-                .subscribe(result -> {
+                .subscribe(eventWithLocations -> {
                     getActivity().runOnUiThread(() -> {
 
                         FragmentManager fragmentManager = getChildFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                        for (Party p : result) {
+                        for (EventWithLocation p : eventWithLocations) {
                             //System.out.println(p.getName() + ": " + p.getId());
                             View.OnClickListener buttonAction = view -> {
                                 Fragment frag = new PartyDetail(p.getId());
                                 (mainActivity).replaceFragment(frag);
                             };
-                            Fragment fragment = new PartyListItem(p, buttonAction);
+                            Fragment fragment = new PartyListItem(p, buttonAction, userLocation);
 
                             fragmentTransaction.add(linearLayout.getId(), fragment, "party#" + p.getId());
                         }
@@ -178,6 +177,6 @@ public class Home extends Fragment {
                         fragmentTransaction.commit();
 
                     });
-                },(error) -> Log.v("Getting List of Parties", "Parties GET error: " + error.getMessage()));
+                }, (error) -> Log.v("Getting List of Parties", "Parties GET error: " + error.getMessage()));
     }
 }

@@ -68,16 +68,17 @@ public class Party {
     }
 
     @Override
-    public String toString(){
-
-        return "Party{" + "\n"+
-                "id=" + this.getId()+ "\n"+
-                "name=" + this.getName()+ "\n"+
-                "description=" + this.getDescription()+ "\n"+
-                "start=" + this.getStart()+ "\n"+
-                "end=" +this.getEnd()+ "\n"+
-                "max_people=" + this.getMax_people()+ "\n"+
-                "}";
+    public String toString() {
+        return "Party{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", start=" + start +
+                ", end=" + end +
+                ", max_people=" + max_people +
+                ", eventLocation=" + eventLocation +
+                ", price=" + price +
+                '}';
     }
 
     public EventLocation getEventLocation() {

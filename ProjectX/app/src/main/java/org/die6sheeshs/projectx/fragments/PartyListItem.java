@@ -1,6 +1,8 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.EventLocation;
+import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 
 import java.time.LocalDateTime;
@@ -31,6 +35,7 @@ public class PartyListItem extends Fragment {
     private static final String INDEX_PARAM = "list_index";
     private Party party;
     private View.OnClickListener buttonAction;
+    private Location userLocation;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -38,6 +43,12 @@ public class PartyListItem extends Fragment {
     public PartyListItem(Party party, View.OnClickListener buttonAction) {
         this.party = party;
         this.buttonAction = buttonAction;
+    }
+
+    public PartyListItem(Party party, View.OnClickListener buttonAction, Location userLocation) {
+        this.party = party;
+        this.buttonAction = buttonAction;
+        this.userLocation = userLocation;
     }
 
     /**
@@ -70,17 +81,18 @@ public class PartyListItem extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_party_list_item, container, false);
 
-        initContent(party);
+        initContent(party, userLocation);
 
         return view;
     }
 
-    private void initContent(Party party) {
+    private void initContent(Party party, Location location) {
         setButtonAction();
         setLocation(party.getName());
         setPrice(0D);
         setStartDate(party.getStart());
         setEndDate(party.getEnd());
+        setDistance(party, userLocation);
     }
 
     private void setButtonAction() {
@@ -112,6 +124,30 @@ public class PartyListItem extends Fragment {
         TextView endDateTextView = (TextView) view.findViewById(R.id.textView_endDate);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         endDateTextView.setText(endDate.format(formatter));
+    }
+
+    private void setDistance(Party party, Location userLocation) {
+        if (userLocation == null) {
+            return;
+        }
+        float distance;
+        float[] result = new float[3];
+        if (party instanceof EventWithLocation) {
+            EventWithLocation eventWithLocation = (EventWithLocation) party;
+            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), eventWithLocation.getLatitude(), eventWithLocation.getLongitude(), result);
+            distance = result[0];
+            Log.v("Snens!!", String.valueOf(distance));
+        } else {
+            if (party.getEventLocation() == null)
+                return;
+            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), party.getEventLocation().getLatitude(), party.getEventLocation().getLongtitude(), result);
+            distance = result[0];
+        }
+
+        TextView tv_distance = (TextView) view.findViewById(R.id.tv_distance);
+        tv_distance.setVisibility(View.VISIBLE);
+        int roundedDistKm = Math.round(distance / 1000);
+        tv_distance.setText(roundedDistKm + "km");
     }
 
 }

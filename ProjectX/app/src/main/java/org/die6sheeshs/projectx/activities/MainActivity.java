@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 //            Intent intent = new Intent(this, LoginActivity.class);
 //            startActivity(intent);
 //        }
-
         PropertyService.registerContext(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 

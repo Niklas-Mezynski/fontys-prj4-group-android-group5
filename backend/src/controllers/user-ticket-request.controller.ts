@@ -26,7 +26,7 @@ export class UserTicketRequestController {
     @repository(UserRepository) protected userRepository: UserRepository,
   ) { }
 
-  @get('/users/{id}/ticket-requests', {
+  @get('/users/{userId}/ticket-requests', {
     responses: {
       '200': {
         description: 'Array of User has many TicketRequest',
@@ -39,10 +39,10 @@ export class UserTicketRequestController {
     },
   })
   async find(
-    @param.path.string('id') id: string,
+    @param.path.string('userId') userId: string,
     @param.query.object('filter') filter?: Filter<TicketRequest>,
   ): Promise<TicketRequest[]> {
-    return this.userRepository.ticketRequests(id).find(filter);
+    return this.userRepository.ticketRequests(userId).find(filter);
   }
 
   @post('/users/{userId}/ticket-requests', {

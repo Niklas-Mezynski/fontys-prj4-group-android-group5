@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.fragment.app.Fragment;
@@ -80,16 +81,18 @@ public class PartyCreate extends Fragment {
             ((MainActivity)getActivity()).replaceFragment(frag);
         });
 
-        TextInputLayout startDateText = view.findViewById(R.id.field_start);
-        startDateText.setOnClickListener(new View.OnClickListener() {
+        TextView startDateText = view.findViewById(R.id.textView_start);
+        Button buttonChangeStart = view.findViewById(R.id.button_change_start);
+        buttonChangeStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDateTimeDialog(startDateText);
             }
         });
 
-        TextInputLayout endDateText = view.findViewById(R.id.field_end);
-        endDateText.setOnClickListener(new View.OnClickListener() {
+        TextView endDateText = view.findViewById(R.id.textView_end);
+        Button buttonChangeEnd = view.findViewById(R.id.button_change_end);
+        buttonChangeEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDateTimeDialog(endDateText);
@@ -121,7 +124,7 @@ public class PartyCreate extends Fragment {
         return null;
     }
 
-    private void showDateTimeDialog(final TextInputLayout date_time_in) {
+    private void showDateTimeDialog(final TextView date_time_in) {
         final Calendar calendar=Calendar.getInstance();
         DatePickerDialog.OnDateSetListener dateSetListener=new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -138,7 +141,7 @@ public class PartyCreate extends Fragment {
 
                         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
-                        date_time_in.getEditText().setText(simpleDateFormat.format(calendar.getTime()));
+                        date_time_in.setText(simpleDateFormat.format(calendar.getTime()));
                     }
                 };
 

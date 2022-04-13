@@ -3,6 +3,7 @@ import {UserLocation} from './user-location.model';
 import {Ticket} from './ticket.model';
 import {UserCredentials} from '../services';
 import {Event} from './event.model';
+import {TicketRequest} from './ticket-request.model';
 
 @model()
 export class User extends Entity {
@@ -68,6 +69,9 @@ export class User extends Entity {
 
   @hasMany(() => Event, {keyTo: 'user_id'})
   events: Event[];
+
+  @hasMany(() => TicketRequest, {keyTo: 'user_id'})
+  ticketRequests: TicketRequest[];
 
   constructor(data?: Partial<User>) {
     super(data);

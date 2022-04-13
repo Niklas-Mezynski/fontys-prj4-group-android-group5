@@ -171,7 +171,7 @@
                 android:text="@string/about_me"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView4"
+                android:id="@+id/tv_about_me"
                 app:layout_constraintTop_toBottomOf="@+id/password_repeat_field"
                 android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -181,21 +181,35 @@
                 android:text="@string/picture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_startDate"
-                app:layout_constraintTop_toBottomOf="@+id/textView4"
+                android:id="@+id/tv_picture"
+                app:layout_constraintTop_toBottomOf="@+id/tv_about_me"
                 android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="16dp" />
+
+        <TextView
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/errorRed"
+                android:id="@+id/tv_register_error"
+                app:layout_constraintTop_toBottomOf="@+id/tv_picture"
+                app:layout_constraintBottom_toTopOf="@+id/submit_registration"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:textSize="18sp" />
 
         <Button
                 android:text="@string/register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/submit_registration"
-                app:layout_constraintTop_toBottomOf="@+id/textView_startDate"
+                app:layout_constraintTop_toBottomOf="@+id/tv_register_error"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
         <Button
@@ -207,6 +221,21 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="16dp" />
+
+<!--        <TextView-->
+<!--                android:text="fwefwewef"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textColor="@color/errorRed"-->
+<!--                android:id="@+id/tv_register_error"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/submit_registration"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:visibility="visible"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginBottom="8dp"-->
+<!--                android:textSize="18sp" />-->
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
