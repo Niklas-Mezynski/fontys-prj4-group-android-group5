@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public class TicketRequest {
     private String userId;
-    private String eventId;
+    private String partyId;
     private LocalDateTime createdOn;
 
-    public TicketRequest(String userId, String eventId, LocalDateTime createdOn) {
+    public TicketRequest(String userId, String partyId, LocalDateTime createdOn) {
         this.userId = userId;
-        this.eventId = eventId;
+        this.partyId = partyId;
         this.createdOn = createdOn;
     }
 
@@ -17,8 +17,8 @@ public class TicketRequest {
         return userId;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getPartyId() {
+        return partyId;
     }
 
     public LocalDateTime getCreatedOn() {
@@ -29,7 +29,7 @@ public class TicketRequest {
     public String toString() {
         return "TicketRequest{" +
                 "userId='" + userId + '\'' +
-                ", eventId='" + eventId + '\'' +
+                ", partyId='" + partyId + '\'' +
                 ", createdOn=" + createdOn +
                 '}';
     }
