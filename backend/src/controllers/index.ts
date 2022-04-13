@@ -15,7 +15,4 @@ export * from './friends.controller';
 export * from './geocoder.controller';
 export * from './user-event.controller';
 export * from './event-user.controller';
-export * from './ticket-request-user.controller';
-export * from './user-ticket-request.controller';
-export * from './event-ticket-request.controller';
-export * from './ticket-request-event.controller';
+export * from './ticket-request.controller';
