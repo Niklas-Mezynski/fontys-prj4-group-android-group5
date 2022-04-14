@@ -25,6 +25,12 @@ public class TicketPersistence implements RetrofitPersistence{
         return ticketApi.deleteTicket(id);
     }
 
+    /**
+     *
+     * @param id userId
+     * @param jwt
+     * @return
+     */
     public Observable<List<Ticket>> getTickets(String id, String jwt) {
         return ticketApi.getTickets(id);
     }
