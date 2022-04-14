@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {TicketRequest} from '../models';
 import {TicketRequestRepository, EventRepository, UserRepository} from '../repositories';
+import {inject} from '@loopback/core';
 
 export class TicketRequestController {
   constructor(
@@ -178,7 +179,7 @@ export class TicketRequestController {
   })
   async delete(
     @param.query.object('where', getWhereSchemaFor(TicketRequest)) where?: Where<TicketRequest>,
-  ): Promise<void> {
-    await this.ticketRequestRepository.deleteAll(where)
+  ): Promise<number> {
+    return (await this.ticketRequestRepository.deleteAll(where)).count
   }
 }

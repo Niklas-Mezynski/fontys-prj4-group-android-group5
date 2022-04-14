@@ -14,8 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.TicketRequest;
-
-import java.util.UUID;
+import org.die6sheeshs.projectx.entities.User;
 
 public class TicketRequestListItem extends Fragment {
 
@@ -37,8 +36,7 @@ public class TicketRequestListItem extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param ticketRequest TicketRequest.
      * @return A new instance of fragment CreateParty.
      */
     // TODO: Rename and change types and number of parameters
@@ -62,13 +60,18 @@ public class TicketRequestListItem extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_party_requests, container, false);
-        initAcceptButton(v);
-        initDeclineButton(v);
-        setRequestData(v);
+        view = inflater.inflate(R.layout.fragment_party_requests, container, false);
+
+        initView(ticketRequest);
 
         // Inflate the layout for this fragment
-        return v;
+        return view;
+    }
+
+    private void initView(TicketRequest ticketRequest) {
+        initAcceptButton(view);
+        initDeclineButton(view);
+        setRequestData(view);
     }
 
     private void setRequestData(View v) {
