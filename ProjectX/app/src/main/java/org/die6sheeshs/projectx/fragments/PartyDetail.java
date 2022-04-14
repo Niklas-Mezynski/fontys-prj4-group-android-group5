@@ -526,7 +526,7 @@ public class PartyDetail extends Fragment {
                                                 View view = toast.getView();
 
                                                 //Gets the actual oval background of the Toast then sets the colour filter
-                                                view.getBackground().setColorFilter(Color.parseColor("#ff00ff00"), PorterDuff.Mode.SRC_IN);
+                                                view.setBackgroundColor(Color.parseColor("#ff00ff00"));
 
                                                 //Gets the TextView from the Toast so it can be editted
                                                 TextView text = view.findViewById(android.R.id.message);
@@ -544,7 +544,7 @@ public class PartyDetail extends Fragment {
                                 View view = toast.getView();
 
                                 //Gets the actual oval background of the Toast then sets the colour filter
-                                view.getBackground().setColorFilter(Color.parseColor("#ffff0000"), PorterDuff.Mode.SRC_IN);
+                                view.setBackgroundColor(Color.parseColor("#ffff0000"));
 
                                 //Gets the TextView from the Toast so it can be editted
                                 TextView text = view.findViewById(android.R.id.message);
