@@ -27,7 +27,7 @@ public class FirebaseMessagingHandler extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
     }
 
-    public String getToken() {
+    public static String getToken() {
         final String[] token = {""};
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
