@@ -3,12 +3,15 @@ package org.die6sheeshs.projectx.fragments;
 import static android.app.Activity.RESULT_CANCELED;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +45,7 @@ import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
+import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -434,12 +438,42 @@ public class PartyDetail extends Fragment {
             } else {
                 //use result.getContents() um zu gucken ob es das ticket gibt;
                 Observable<Ticket> response = TicketPersistence.getInstance().getTicketById(result.getContents());
+
                 response.subscribeOn(Schedulers.io())
                         .subscribe(ticket -> {
-                            String uId = SessionManager.getInstance().getUserId();
-                            if(ticket.getEvent_id()==partyId&&ticket.getUser_id()==uId){
-                                Toast.makeText(getContext(), "Valid ticket", Toast.LENGTH_LONG).show();
+                            if(ticket.getEvent_id().equals(partyId)){
+                                Observable<User> response2= UserPersistence.getInstance().getUserData(ticket.getUser_id());
+                                response2.subscribeOn(Schedulers.io())
+                                        .subscribe(user->{
+                                            getActivity().runOnUiThread(()->{
+                                                Toast toast = Toast.makeText(getContext(), "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(), Toast.LENGTH_LONG);
+                                                View view = toast.getView();
+
+                                                //Gets the actual oval background of the Toast then sets the colour filter
+                                                view.getBackground().setColorFilter(Color.parseColor("#ff00ff00"), PorterDuff.Mode.SRC_IN);
+
+                                                //Gets the TextView from the Toast so it can be editted
+                                                TextView text = view.findViewById(android.R.id.message);
+                                                toast.show();
+
+                                                //Toast.makeText(getContext(), "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(), Toast.LENGTH_LONG).show();
+                                            });
+
+                                        },error -> Log.v("User","Error get User with id "+error.getMessage()));
                             }
+                        },(error) ->{
+                            Log.v("Ticket","Error get Ticket with id "+error.getMessage());
+                            getActivity().runOnUiThread(()->{
+                                Toast toast = Toast.makeText(getContext(), "Ticket not found", Toast.LENGTH_LONG);
+                                View view = toast.getView();
+
+                                //Gets the actual oval background of the Toast then sets the colour filter
+                                view.getBackground().setColorFilter(Color.parseColor("#ffff0000"), PorterDuff.Mode.SRC_IN);
+
+                                //Gets the TextView from the Toast so it can be editted
+                                TextView text = view.findViewById(android.R.id.message);
+                                toast.show();
+                            });
                         });
             }
         }
