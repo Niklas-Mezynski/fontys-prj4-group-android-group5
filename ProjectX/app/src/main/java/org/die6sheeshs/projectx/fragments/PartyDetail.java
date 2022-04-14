@@ -489,19 +489,17 @@ public class PartyDetail extends Fragment {
 
     public void initQRCodeScanButton(View v){
         Button qrButton = v.findViewById(R.id.scanQRButton);
-        qrButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                IntentIntegrator integrator = IntentIntegrator.forSupportFragment(PartyDetail.this);
+        qrButton.setOnClickListener((l)-> {
 
-                integrator.setOrientationLocked(false);
-                integrator.setPrompt("Scan QR code");
-                integrator.setBeepEnabled(false);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+            IntentIntegrator integrator = IntentIntegrator.forSupportFragment(PartyDetail.this);
+
+            integrator.setOrientationLocked(false);
+            integrator.setPrompt("Scan QR code");
+            integrator.setBeepEnabled(false);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
 
 
-                integrator.initiateScan();
-            }
+            integrator.initiateScan();
         });
     }
 
