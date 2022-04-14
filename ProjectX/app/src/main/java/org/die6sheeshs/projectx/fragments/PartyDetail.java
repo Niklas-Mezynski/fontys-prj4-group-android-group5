@@ -383,7 +383,8 @@ public class PartyDetail extends Fragment {
     private void updateRequestButton(Button btn, int ticketState){
         if(ticketState == NO_TICKET){
             getActivity().runOnUiThread(()->{
-                btn.setText("Let me in!");
+                btn.setBackgroundColor(Color.BLUE);
+                btn.setText("SeNd reQuEst");
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -426,7 +427,18 @@ public class PartyDetail extends Fragment {
                     .subscribe(ticketRequest -> {
                         getActivity().runOnUiThread(()->{
                             if(ticketRequest.getPartyId().equals(partyId) && ticketRequest.getUserId().equals(userId)){
-                                updateRequestButton(requestButton, TICKET_PENDING);
+                                Thread thread = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Looper.prepare();
+                                        SimpleFuture<Integer> ticketStateFuture = getTicketState();
+                                        ticketStateFuture.doActionWhenValueSet(ticketState -> {
+
+                                            updateRequestButton(requestButton, ticketState);
+                                        });
+                                    }
+                                });
+                                thread.start();
                             }
                         });
                     });
@@ -443,10 +455,19 @@ public class PartyDetail extends Fragment {
                         Observable<Integer> deleteObs = TicketRequestPersistence.getInstance().deleteTicketRequest(SessionManager.getInstance().getUserId(), partyId);
                         deleteObs.subscribeOn(Schedulers.io())
                                 .subscribe((str) -> {
-                                    System.out.println("RETUZRN OF DELETE"+str);
-                                    getTicketState().doActionWhenValueSet((i)->{
-                                        updateRequestButton(requestButton, i);
+                                    Thread thread = new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Looper.prepare();
+                                            SimpleFuture<Integer> ticketStateFuture = getTicketState();
+                                            ticketStateFuture.doActionWhenValueSet(ticketState -> {
+
+                                                updateRequestButton(requestButton, ticketState);
+                                            });
+                                        }
                                     });
+                                    thread.start();
+
                                 }, error -> {
                                     Log.v("Delete TicketRequest", error.getMessage());
                                 });
