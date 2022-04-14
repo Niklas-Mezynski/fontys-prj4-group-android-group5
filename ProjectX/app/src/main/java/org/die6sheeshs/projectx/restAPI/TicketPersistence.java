@@ -35,6 +35,10 @@ public class TicketPersistence implements RetrofitPersistence{
         return ticketApi.getTickets(id);
     }
 
+    public Observable<Ticket> getTicketById(String id){
+        return ticketApi.getTicketById(id);
+    }
+
     @Override
     public void refreshApi() {
         this.ticketApi = RetrofitService.getInstance().getRetrofitClient().create(TicketApi.class);

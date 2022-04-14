@@ -1,6 +1,8 @@
 import {ApplicationConfig, ProjectX} from './application';
 
 export * from './application';
+export * from './keys';
+export * from './types';
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new ProjectX(options);

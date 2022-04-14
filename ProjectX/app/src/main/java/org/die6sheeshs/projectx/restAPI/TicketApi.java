@@ -14,6 +14,9 @@ public interface TicketApi {
     @GET("users/{id}/tickets")
     Observable<List<Ticket>> getTickets(@Path("id") String id);
 
+    @GET("tickets/{id}")
+    Observable<Ticket> getTicketById(@Path("id")String id);
+
     @DELETE("tickets/{id}")
     Observable<Void> deleteTicket(@Path("id")String id);
 

@@ -1,14 +1,26 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.UserPersistence;
+
+import java.io.File;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +37,8 @@ public class Profile extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ImageView imageView;
+    private View view;
 
     public Profile() {
         // Required empty public constructor
@@ -61,6 +75,22 @@ public class Profile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        view = inflater.inflate(R.layout.fragment_profile, container, false);
+        imageView = view.findViewById(R.id.imageView);
+        return view;
+    }
+
+    public void uploadPicture(Uri fileUri){
+        String id = SessionManager.getInstance().getUserId();
+        File file = new File("");
+
+        RequestBody requestUserID = RequestBody.create(MediaType.parse("multipart/form-data"), id);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+        Observable<ResponseBody> responseBody = UserPersistence.getInstance().uploadPicture(requestFile, requestUserID);
+
+        responseBody.subscribeOn(Schedulers.io())
+                .subscribe()
+
     }
 }

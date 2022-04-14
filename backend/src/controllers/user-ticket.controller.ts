@@ -10,6 +10,7 @@ import {
   get,
   getModelSchemaRef,
   getWhereSchemaFor,
+  HttpErrors,
   param,
   patch,
   post,
@@ -59,7 +60,7 @@ export class UserTicketController {
     //In this case: verify that the requesting user is equal to the user_id in the request
     //Maybe do other verifications here
     if (currentUserProfile[securityId] != id) {
-      throw new Error("You don't have permission to access this resource");
+      throw new HttpErrors.BadRequest("You don't have permission to access this resource");
     }
     return this.userRepository.tickets(id).find(filter);
   }
