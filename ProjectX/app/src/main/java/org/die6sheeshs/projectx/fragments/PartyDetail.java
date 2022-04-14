@@ -36,10 +36,12 @@ import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
+import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,6 +50,7 @@ import java.util.UUID;
 import java.util.jar.JarOutputStream;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
@@ -63,6 +66,10 @@ public class PartyDetail extends Fragment {
     private String mParam1;
     private String mParam2;
     private String partyId;
+
+    private static final int NO_TICKET = 0;
+    private static final int TICKET_PENDING = 1;
+    private static final int TICKET_ACCEPTED = 2;
 
     private View partyDetail;
 
@@ -110,6 +117,26 @@ public class PartyDetail extends Fragment {
     }
 
 
+    private int getTicketState(){//todo implement ticket state request
+        String userId = SessionManager.getInstance().getUserId();
+
+        Observable<List<Ticket>> ticketsForParty = TicketPersistence.getInstance().getTickets(partyId, "");
+        ticketsForParty.subscribeOn(Schedulers.io())
+                .subscribe(tickets -> {
+                    long count = tickets.stream().filter(t -> t.getEvent_id().equals(partyId)&&t.getUser_id().equals(userId)).count();
+
+                    if(count > 0){
+                        //return TICKET_ACCEPTED;
+                    }else {
+
+                    }
+                }, error -> {
+
+                });
+
+        return NO_TICKET;
+    }
+
 
     private void setPartyData(View v) {
         int ticksAvailABC = 0;
@@ -118,25 +145,23 @@ public class PartyDetail extends Fragment {
 
         Observable<Party> party = PartyPersistence.getInstance().getParty(partyId);
         party.subscribeOn(Schedulers.io())
-                .doOnError((error) -> Log.v("Party", "Party Error: " + error.getMessage()))
                 .subscribe(p ->{
 
 
                     Observable<List<Count>> countTickets = PartyPersistence.getInstance().getCountTicketsOfParty(partyId);
                     countTickets.subscribeOn(Schedulers.io())
-                            .doOnError((error) -> Log.v("Party", "Error on count"+error.getMessage()))
                             .subscribe(counts -> {
 
                                 Observable<User> userBelongingToEvent = PartyPersistence.getInstance().getOwner(partyId);
                                 userBelongingToEvent.subscribeOn(Schedulers.io())
-                                        .doOnError((error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()))
                                         .subscribe( eUser -> {
 
 
                                             getActivity().runOnUiThread(() -> {
-                                                initRequestButton(v, eUser.getId(), p.getMax_people() - counts.stream().findFirst().get().getCount());
+                                                initRequestButton(v, eUser.getId(), p.getMax_people() - counts.stream().findFirst().get().getCount(), getTicketState());
                                             });
-                                        });
+                                        },
+                                                (error) -> Log.v("Party", "Party Error No User Found: "+ error.getMessage()));
 
                                 getActivity().runOnUiThread(()->{
                                     int availTickets = -1;
@@ -146,7 +171,8 @@ public class PartyDetail extends Fragment {
                                     }
                                     setTicksAvail(v, p.getMax_people() - availTickets);
                                 });
-                            });
+                            },
+                                    (error) -> Log.v("Party", "Party Error: " + error.getMessage()));
 
 
 
@@ -256,7 +282,9 @@ public class PartyDetail extends Fragment {
         });
     }
 
-    private void initRequestButton(View v, String partyOwnerUUID, int availTickets){
+
+
+    private void initRequestButton(View v, String partyOwnerUUID, int availTickets, int ticketState){
         String currentUUID = SessionManager.getInstance().getUserId();
         Button btn = (Button) v.findViewById(R.id.sendReqBtn);
         if(currentUUID.equals(partyOwnerUUID)){
@@ -283,8 +311,10 @@ public class PartyDetail extends Fragment {
 
         }else{
             if(availTickets > 0){
-                //todo send party request
-                btn.setText("Let me in!");
+
+                updateRequestButton(btn, ticketState);
+
+
             }else{
                 btn.setBackgroundColor(Color.rgb(80,80,80));
                 btn.setText("Party is full");
@@ -292,6 +322,89 @@ public class PartyDetail extends Fragment {
 
         }
 
+    }
+
+    private void updateRequestButton(Button btn, int ticketState){
+        if(ticketState == NO_TICKET){
+            btn.setText("Let me in!");
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    postTicketRequest(view, btn);
+                }
+            });
+        }else if(ticketState == TICKET_PENDING){
+            btn.setText("Cancel Request");
+            btn.setBackgroundColor(Color.rgb(80,80,80));
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cancelTicketRequest(view, btn);
+                }
+            });
+        }else if(ticketState == TICKET_ACCEPTED){
+            btn.setText("Cancel Ticket");
+            btn.setBackgroundColor(Color.RED);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cancelTicket(view, btn);
+                }
+            });
+
+        }
+    }
+
+    private void postTicketRequest(View v, Button requestButton){
+        LocalDateTime createdOn = LocalDateTime.now();
+        String userId = SessionManager.getInstance().getUserId();
+        Observable<TicketRequest> tr = TicketRequestPersistence.getInstance().createTicketRequest(userId, partyId, createdOn);
+            tr.subscribeOn(Schedulers.io())
+                    .subscribe(ticketRequest -> {
+                        getActivity().runOnUiThread(()->{
+                            if(ticketRequest.getPartyId().equals(partyId) && ticketRequest.getUserId().equals(userId)){
+                                updateRequestButton(requestButton, TICKET_PENDING);
+                            }
+                        });
+                    });
+
+    }
+
+    private void cancelTicketRequest(View v, Button requestButton){
+        String userId = SessionManager.getInstance().getUserId();
+        Observable<List<TicketRequest>> t = TicketRequestPersistence.getInstance().getTicketRequestsOfUser(userId);
+        t.subscribeOn(Schedulers.io())
+                .subscribe(ticketRequests -> {
+                    TicketRequest trForThisParty = ticketRequests.stream().filter(ticketRequest -> ticketRequest.getPartyId().equals(partyId)).findFirst().get();
+                    if(trForThisParty != null){
+                        //todo delete ticket request
+
+                    }else{
+                        updateRequestButton(requestButton, NO_TICKET);
+                    }
+                },
+                        (error) -> Log.v("Party", "Error on count"+error.getMessage()));
+
+    }
+
+    private void cancelTicket(View v, Button requestButton){
+        String userId = SessionManager.getInstance().getUserId();
+        Observable<List<Ticket>> ticketsOfUser = TicketPersistence.getInstance().getTickets(userId,"");
+        ticketsOfUser.subscribeOn(Schedulers.io())
+                .subscribe(tickets -> {
+                    Ticket ticketForThisParty = tickets.stream().filter(ticket -> ticket.getEvent_id().equals(partyId) && ticket.getUser_id().equals(userId)).findFirst().get();
+                    if(ticketForThisParty != null){
+                        Observable<Void> delete = TicketPersistence.getInstance().deleteTicket(ticketForThisParty.getId());
+                        delete.subscribeOn(Schedulers.io())
+                                .subscribe(nix -> {
+                                    updateRequestButton(requestButton, NO_TICKET);
+                                },
+                                        (error) -> Log.v("Party", "Error on count"+error.getMessage()));
+                    }else{
+                        updateRequestButton(requestButton, TICKET_PENDING);
+                    }
+                },
+                        (error) -> Log.v("Party", "Error on count"+error.getMessage()));
     }
 
     public void initQRCodeScanButton(View v){
