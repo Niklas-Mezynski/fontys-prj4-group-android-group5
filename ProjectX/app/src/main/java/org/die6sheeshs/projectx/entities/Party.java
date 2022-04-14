@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public class Party {
 
-    private String id, name, description;
+    private String id, name, description, user_id;
     private LocalDateTime start, end;
     private int max_people;
     private EventLocation eventLocation;
-    private double price;
-    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price, EventLocation eventLocation){
+    private Double price;
+    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, Double price, EventLocation eventLocation){
         this.name = name;
         this.description = description;
         this.start = start;
@@ -17,6 +17,16 @@ public class Party {
         this.max_people = max_people;
         this.eventLocation = eventLocation;
         this.price = price;
+    }
+    public Party(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, String user_id, Double price, EventLocation eventLocation){
+        this.name = name;
+        this.description = description;
+        this.start = start;
+        this.end = end;
+        this.max_people = max_people;
+        this.eventLocation = eventLocation;
+        this.price = price;
+        this.user_id = user_id;
     }
 
     public String getId() {

@@ -1,5 +1,7 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -25,7 +27,7 @@ public class PartyPersistence implements RetrofitPersistence {
 
     private static final PartyPersistence instance = new PartyPersistence();
 
-    public static PartyPersistence getInstance(){
+    public static PartyPersistence getInstance() {
         return instance;
     }
 
@@ -45,19 +47,18 @@ public class PartyPersistence implements RetrofitPersistence {
         return this.partyApi.getPartyByLocation(lat, lon, radius);
     }
 
-    public Observable<Party> getParty(String uuid){
+    public Observable<Party> getParty(String uuid) {
         return this.partyApi.getParty(uuid, "{\"include\":[\"eventLocation\"]}");
     }
 
-    public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, double price, EventLocation eventLocation) {
+    public Observable<Party> createParty(String name, String description, LocalDateTime start, LocalDateTime end, int max_people, String user_id, Double price, EventLocation eventLocation) {
 
-        Party p = new Party(name, description, start, end, max_people, price, eventLocation);
-
+        Party p = new Party(name, description, start, end, max_people, user_id, price, eventLocation);
         Observable<Party> observable = partyApi.createParty(p);
         return observable;
     }
 
-    public Observable<EventLocation> getEventLocation(String id){
+    public Observable<EventLocation> getEventLocation(String id) {
         return this.partyApi.getEventLocation(id);
     }
 
@@ -70,15 +71,15 @@ public class PartyPersistence implements RetrofitPersistence {
         return this.partyApi.getOwner(partyId);
     }
 
-    public Observable<List<Ticket>> getTickets(String partyId){
+    public Observable<List<Ticket>> getTickets(String partyId) {
         return this.partyApi.getTicketsOfParty(partyId);
     }
 
-    public Observable<List<Count>> getCountTicketsOfParty(String partyId){
+    public Observable<List<Count>> getCountTicketsOfParty(String partyId) {
         return this.partyApi.getCountTicketsOfParty(partyId);
     }
 
-    public Observable<List<Party>> getPartiesFromUser(String id){
+    public Observable<List<Party>> getPartiesFromUser(String id) {
         return this.partyApi.getPartiesFromUser(id);
     }
 }
