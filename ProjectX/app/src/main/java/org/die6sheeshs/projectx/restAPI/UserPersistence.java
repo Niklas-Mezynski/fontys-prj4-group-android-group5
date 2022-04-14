@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -53,6 +56,11 @@ public class UserPersistence implements RetrofitPersistence {
 
     public Observable<User> getUserData(String id){
         return this.userApi.getUserById(id);
+    }
+
+    public Observable<ResponseBody> uploadPicture(RequestBody description, RequestBody body) {
+        //RequestBody requestBody = new RequestBody
+        return this.userApi.upload(body, description);
     }
 
     @Override

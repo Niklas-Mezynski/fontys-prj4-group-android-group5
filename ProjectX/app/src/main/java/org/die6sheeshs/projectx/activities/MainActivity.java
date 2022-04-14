@@ -34,9 +34,10 @@ import org.die6sheeshs.projectx.fragments.Tickets;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.util.TimerTask;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import io.reactivex.schedulers.Schedulers;
-import kotlin.Function;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
 
     //Google API for location services
-    public FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     //Configures the type of location request
     private LocationRequest locationRequest;
@@ -61,23 +62,22 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(intent);
 //        }
         PropertyService.registerContext(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         setContentView(R.layout.activity_main);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        updateLocation(location -> Log.v("Location", "Location fetched successfully"));
+
         findViewById(R.id.createParty);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //Starting the first fragment
         replaceFragment(Home.newInstance("",""));
-
         binding.bottomNavigationView.setOnItemSelectedListener(menuListener);
 
         setupLocationRequest();
-//        updateLocation();
-
     }
 
-    private void updateLocation() {
+    public void updateLocation(Consumer<Location> func) {
         //Get user permission
         //Get current location from the fused client
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, location -> {
                 //Location successfully fetched
                 if (location != null) {
-                    Log.v("Location success", String.format("Lat: %f   Long: %f", location.getLatitude(), location.getLongitude()));
+                    func.accept(location);
 
                 } else {
                     Log.v("Location null", "Location object is null");

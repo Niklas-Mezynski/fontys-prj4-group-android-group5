@@ -28,7 +28,7 @@ public class PartyRequests extends Fragment {
     private String mParam2;
     private UUID partyId;
 
-    // private View partyRequests;
+    private View view;
 
     public PartyRequests(UUID partyID) {
         partyId = partyID;

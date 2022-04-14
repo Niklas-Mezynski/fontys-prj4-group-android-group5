@@ -133,27 +133,9 @@ public class Home extends Fragment {
     }
 
     private void updateLocation(int radius) {
-        //Get user permission
-        //Get current location from the fused client
-        if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            //Get the location
-            mainActivity.fusedLocationProviderClient.getLastLocation().addOnSuccessListener(mainActivity, location -> {
-                //Location successfully fetched
-                if (location != null) {
-                    Log.v("Location success", String.format("Lat: %f   Long: %f", location.getLatitude(), location.getLongitude()));
-                    listParties(location, radius);
-                } else {
-                    Log.v("Location null", "Location object is null");
-                    Toast.makeText(mainActivity, "There was an error getting your current location, please try again", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Log.v("Permissions", "No location permission granted yet");
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
-            }
-        }
+        mainActivity.updateLocation(location -> listParties(location, radius));
     }
+
 
     private void listParties(Location userLocation, int radius) {
         Observable<List<EventWithLocation>> response = partyPersistence.getPartiesByLocation(userLocation.getLatitude(), userLocation.getLongitude(), radius);

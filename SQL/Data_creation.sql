@@ -37,6 +37,12 @@ VALUES ('34', '5243fwersdgerv'),
 INSERT INTO ticketrequest (user_id, event_id, created_on)
 VALUES ('12', 'abc', current_timestamp);
 
+INSERT INTO ticketrequest (user_id, event_id, created_on)
+VALUES ('34', 'abc', current_timestamp);
+
+INSERT INTO ticketrequest (user_id, event_id, created_on)
+VALUES ('12', 'def', current_timestamp);
+
 SELECT *
 FROM event inner join eventlocation e on event.id = e.event_id
 WHERE latitude > 0 AND latitude < 10 AND longitude > -10 AND longitude < 10;
