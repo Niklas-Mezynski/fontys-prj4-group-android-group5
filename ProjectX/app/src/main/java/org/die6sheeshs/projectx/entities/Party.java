@@ -100,6 +100,7 @@ public class Party {
     }
 
     public double getPrice() {
+        if (price == null) return 0.0;
         return price;
     }
 
