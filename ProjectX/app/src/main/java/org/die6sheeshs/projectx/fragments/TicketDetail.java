@@ -91,6 +91,16 @@ public class TicketDetail extends Fragment {
         start.setText(party.getStart().format(formatter));
         TextView end = view.findViewById(R.id.endT);
         end.setText(party.getEnd().format(formatter));
+        Button gotoPartyDetail = (Button) view.findViewById(R.id.toPartyDetail);
+        gotoPartyDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().runOnUiThread(()->{
+                    Fragment pDetail = new PartyDetail(party.getId());
+                    ((MainActivity) getActivity()).replaceFragment(pDetail);
+                });
+            }
+        });
 
         Button cancel = view.findViewById(R.id.cancel);
         cancel.setOnClickListener((l)-> {
