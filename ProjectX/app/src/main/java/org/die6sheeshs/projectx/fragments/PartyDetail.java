@@ -440,9 +440,10 @@ public class PartyDetail extends Fragment {
                 .subscribe(ticketRequests -> {
                     TicketRequest trForThisParty = ticketRequests.stream().filter(ticketRequest -> ticketRequest.getPartyId().equals(partyId)).findFirst().get();
                     if(trForThisParty != null){
-                        Observable<String> deleteObs = TicketRequestPersistence.getInstance().deleteTicketRequest(SessionManager.getInstance().getUserId(), partyId);
+                        Observable<Integer> deleteObs = TicketRequestPersistence.getInstance().deleteTicketRequest(SessionManager.getInstance().getUserId(), partyId);
                         deleteObs.subscribeOn(Schedulers.io())
                                 .subscribe((str) -> {
+                                    System.out.println("RETUZRN OF DELETE"+str);
                                     getTicketState().doActionWhenValueSet((i)->{
                                         updateRequestButton(requestButton, i);
                                     });
