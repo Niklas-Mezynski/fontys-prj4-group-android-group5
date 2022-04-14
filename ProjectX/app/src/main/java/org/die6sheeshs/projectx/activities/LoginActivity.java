@@ -49,24 +49,30 @@ public class LoginActivity extends AppCompatActivity {
         passwordField = findViewById(R.id.loginPassword);
         invalidPassword = findViewById(R.id.invalid_password);
 
+        String debugMode = PropertyService.readProperty("debugMode");
+        if (debugMode != null && debugMode.equals("true")) {
+            submitLogin(PropertyService.readProperty("email"), PropertyService.readProperty("password"));
+        }
+
+        if (getIntent().hasCategory("register_success")) {
+            Toast.makeText(this, "Account successfully created", Toast.LENGTH_SHORT).show();
+        }
+
+
         gotoRegister.setOnClickListener(view -> {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
         });
 
         submit.setOnClickListener(listener -> {
-
             invalidPassword.setVisibility(View.GONE);
-            submitLogin();
-
+            submitLogin(emailField.getText().toString(), passwordField.getText().toString());
         });
     }
 
-    private void submitLogin() {
+    private void submitLogin(String email, String password) {
         ProgressDialog dialog = ProgressDialog.show(this, "",
                 "Logging in. Please wait...", true);
-        String email = emailField.getText().toString();
-        String password = passwordField.getText().toString();
 
         Observable<LoginResponse> ob = UserPersistence.getInstance().userLogin(email, password);
         ob.subscribeOn(Schedulers.io())

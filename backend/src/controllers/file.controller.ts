@@ -102,9 +102,9 @@ export class FileController {
     const uploadedFiles = request.files;
     let filename = '';
     const mapper = (file: globalThis.Express.Multer.File) => {
-      if (!file.mimetype.startsWith('image')) {
-        throw new HttpErrors.UnsupportedMediaType(`Unsupported file type: ${file.mimetype}`);
-      }
+      // if (!file.mimetype.startsWith('image')) {
+      //   throw new HttpErrors.UnsupportedMediaType(`Unsupported file type: ${file.mimetype}`);
+      // }
       filename = file.filename;
       return ({
         fieldname: file.fieldname,

@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int BASE_INTERVAL = 60 * 1000;
     public static final int FASTEST_INTERVAL = 5 * 1000;
     public static final int PERMISSIONS_FINE_LOCATION = 69;
+    public static final int PERMISSIONS_CAMERA = 10;
     ActivityMainBinding binding;
 
     //Google API for location services
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //Starting the first fragment
-        replaceFragment(Home.newInstance("",""));
+        replaceFragment(Home.newInstance("", ""));
         binding.bottomNavigationView.setOnItemSelectedListener(menuListener);
 
         setupLocationRequest();
@@ -95,7 +96,17 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Log.v("Permissions", "No location permission granted yet");
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
+            }
+        }
+    }
+
+    public void requestCameraPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            //Get the location
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.v("Permissions", "No location permission granted yet");
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_CAMERA);
             }
         }
     }
@@ -125,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
     }
-
 
 
     public void replaceFragment(Fragment fragment) {

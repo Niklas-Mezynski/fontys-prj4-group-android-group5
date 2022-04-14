@@ -37,8 +37,11 @@ public interface UserApi {
     @Multipart
     @POST("/users/{id}/files")
     Observable<ResponseBody> upload(
-            @Part RequestBody file,
-            @Part("userID")RequestBody userID
+            @Path("id") String user_id,
+            @Part MultipartBody.Part file
             );
+
+    @GET("/users/{id}/files")
+    Observable<ResponseBody> downloadProfilePicture(@Path("id") String id);
 
 }

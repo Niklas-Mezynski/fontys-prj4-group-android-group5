@@ -136,7 +136,6 @@ public class PartyListItem extends Fragment {
             EventWithLocation eventWithLocation = (EventWithLocation) party;
             Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), eventWithLocation.getLatitude(), eventWithLocation.getLongitude(), result);
             distance = result[0];
-            Log.v("Snens!!", String.valueOf(distance));
         } else {
             if (party.getEventLocation() == null)
                 return;
