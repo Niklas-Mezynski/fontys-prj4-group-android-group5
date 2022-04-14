@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     //Starting the main activity
                     Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     Log.v("New JWT token", token.getToken());
                     Log.v("Logged in user: ", SessionManager.getInstance().getUserId());
