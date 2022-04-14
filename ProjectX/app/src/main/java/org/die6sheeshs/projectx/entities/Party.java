@@ -77,6 +77,10 @@ public class Party {
         this.max_people = max_people;
     }
 
+    public String getUser_id() {
+        return user_id;
+    }
+
     @Override
     public String toString() {
         return "Party{" +

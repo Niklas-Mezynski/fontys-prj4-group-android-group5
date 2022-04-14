@@ -32,6 +32,9 @@ public interface PartyApi {
     @GET("eventsByLocationRadius/{lat},{lon},{radius}")
     Observable<List<EventWithLocation>> getPartyByLocation(@Path("lat") double user_lat, @Path("lon") double user_lon, @Path("radius") int search_radius);
 
+    @POST("events/{id}/event-location")
+    Observable<EventLocation> createEventLocation(@Path("id") String event_id, @Body EventLocation eventLocation);
+
     @GET("events/{id}/event-location")
     Observable<EventLocation> getEventLocation(@Path("id") String id);
 
