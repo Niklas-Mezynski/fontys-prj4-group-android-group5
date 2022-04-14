@@ -24,5 +24,5 @@ public interface TicketRequestApi {
     @POST("ticket-requests/")
     Observable<TicketRequest> createTicketRequest(@Body TicketRequest ticketRequest);
     @DELETE("ticket-requests/")
-    Observable<String> deleteTicketRequest(@Query("where") String where);
+    Observable<Integer> deleteTicketRequest(@Query("where") String where);
 }

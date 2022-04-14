@@ -3,34 +3,34 @@ package org.die6sheeshs.projectx.entities;
 import java.time.LocalDateTime;
 
 public class TicketRequest {
-    private String userId;
-    private String partyId;
-    private LocalDateTime createdOn;
+    private LocalDateTime created_on;
+    private String user_id;
+    private String event_id;
 
-    public TicketRequest(String userId, String partyId, LocalDateTime createdOn) {
-        this.userId = userId;
-        this.partyId = partyId;
-        this.createdOn = createdOn;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getPartyId() {
-        return partyId;
+    public TicketRequest(LocalDateTime createdOn, String userId, String partyId) {
+        this.created_on = createdOn;
+        this.user_id = userId;
+        this.event_id = partyId;
     }
 
     public LocalDateTime getCreatedOn() {
-        return createdOn;
+        return created_on;
+    }
+
+    public String getUserId() {
+        return user_id;
+    }
+
+    public String getPartyId() {
+        return event_id;
     }
 
     @Override
     public String toString() {
         return "TicketRequest{" +
-                "userId='" + userId + '\'' +
-                ", partyId='" + partyId + '\'' +
-                ", createdOn=" + createdOn +
+                "created_on='" + created_on + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", event_id=" + event_id +
                 '}';
     }
 }
