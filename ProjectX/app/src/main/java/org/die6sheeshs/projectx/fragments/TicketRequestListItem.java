@@ -13,25 +13,23 @@ import androidx.fragment.app.Fragment;
 import com.squareup.picasso.Picasso;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.TicketRequest;
 
 import java.util.UUID;
 
-public class PartyRequests extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private UUID partyId;
+public class TicketRequestListItem extends Fragment {
 
     private View view;
 
-    public PartyRequests(UUID partyID) {
-        partyId = partyID;
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private TicketRequest ticketRequest;
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+
+    public TicketRequestListItem(TicketRequest ticketRequest) {
+        this.ticketRequest = ticketRequest;
     }
 
     /**
@@ -43,8 +41,8 @@ public class PartyRequests extends Fragment {
      * @return A new instance of fragment CreateParty.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartyRequests newInstance(String param1, String param2, UUID partyId) {
-        PartyRequests fragment = new PartyRequests(partyId);
+    public static TicketRequestListItem newInstance(String param1, String param2, UUID partyId) {
+        TicketRequestListItem fragment = new TicketRequestListItem(partyId);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
