@@ -1,6 +1,7 @@
 package org.die6sheeshs.projectx.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -24,6 +26,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
+import org.die6sheeshs.projectx.fragments.PartyDetail;
 import org.die6sheeshs.projectx.fragments.PartyOverview;
 import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
@@ -150,4 +153,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
