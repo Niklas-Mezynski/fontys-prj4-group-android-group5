@@ -6,6 +6,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -437,9 +439,15 @@ public class PartyDetail extends Fragment {
                 .subscribe(ticketRequests -> {
                     TicketRequest trForThisParty = ticketRequests.stream().filter(ticketRequest -> ticketRequest.getPartyId().equals(partyId)).findFirst().get();
                     if(trForThisParty != null){
-                        //todo delete ticket request
-                        
-
+                        Observable<String> deleteObs = TicketRequestPersistence.getInstance().deleteTicketRequest(SessionManager.getInstance().getUserId(), partyId);
+                        deleteObs.subscribeOn(Schedulers.io())
+                                .subscribe((str) -> {
+                                    getTicketState().doActionWhenValueSet((i)->{
+                                        updateRequestButton(requestButton, i);
+                                    });
+                                }, error -> {
+                                    Log.v("Delete TicketRequest", error.getMessage());
+                                });
                     }else{
                         updateRequestButton(requestButton, NO_TICKET);
                     }
