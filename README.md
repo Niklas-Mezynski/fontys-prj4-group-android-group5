@@ -47,7 +47,7 @@ Db: aertac.tk:5432
 
 - Make sure to have the latest version of npm and loopback installed
 - then navigate in cmd to "\<RepoRoot\>"/backend
-- First time: run command "npm install" and "npm i --save @loopback/authentication @loopback/authentication-jwt" and "npm i --save-dev @types/multer"
+- First time: run command "npm install" and "npm i --save @loopback/authentication @loopback/authentication-jwt multer" and "npm i --save-dev @types/multer"
 - Remove user credentials from "backend\node_modules\@loopback\authentication-jwt\dist\models\user.model.d.ts"
 - To start: run command "npm start"
 
