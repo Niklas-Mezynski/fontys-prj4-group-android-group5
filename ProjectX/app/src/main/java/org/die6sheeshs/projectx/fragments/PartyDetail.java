@@ -1,9 +1,13 @@
 package org.die6sheeshs.projectx.fragments;
 
+import static android.app.Activity.RESULT_CANCELED;
+
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,9 +18,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
@@ -33,6 +45,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.jar.JarOutputStream;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -50,7 +63,6 @@ public class PartyDetail extends Fragment {
     private String mParam1;
     private String mParam2;
     private String partyId;
-
 
     private View partyDetail;
 
@@ -93,7 +105,6 @@ public class PartyDetail extends Fragment {
         initShareButton(v);
         initLocationImages(v);
         setPartyData(v);
-
         // Inflate the layout for this fragment
         return v;
     }
@@ -285,7 +296,39 @@ public class PartyDetail extends Fragment {
 
     public void initQRCodeScanButton(View v){
         Button qrButton = v.findViewById(R.id.scanQRButton);
-        //here you go lukas
+        qrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IntentIntegrator integrator = IntentIntegrator.forSupportFragment(PartyDetail.this);
+
+                integrator.setOrientationLocked(false);
+                integrator.setPrompt("Scan QR code");
+                integrator.setBeepEnabled(false);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+
+
+                integrator.initiateScan();
+            }
+        });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                //use result.getContents() um zu gucken ob es das ticket gibt;
+                Observable<Ticket> response = TicketPersistence.getInstance().getTicketById(result.getContents());
+                response.subscribeOn(Schedulers.io())
+                        .subscribe(ticket -> {
+                            String uId = SessionManager.getInstance().getUserId();
+                            if(ticket.getEvent_id()==partyId&&ticket.getUser_id()==uId){
+                                Toast.makeText(getContext(), "Valid ticket", Toast.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        }
+    }
 }
