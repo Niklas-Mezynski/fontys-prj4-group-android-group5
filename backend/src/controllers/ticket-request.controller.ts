@@ -19,7 +19,6 @@ import {
 } from '@loopback/rest';
 import {TicketRequest} from '../models';
 import {TicketRequestRepository, EventRepository, UserRepository} from '../repositories';
-import {inject} from '@loopback/core';
 
 export class TicketRequestController {
   constructor(
