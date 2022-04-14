@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,12 +55,16 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         submit.setOnClickListener(listener -> {
+
             invalidPassword.setVisibility(View.GONE);
             submitLogin();
+
         });
     }
 
     private void submitLogin() {
+        ProgressDialog dialog = ProgressDialog.show(this, "",
+                "Logging in. Please wait...", true);
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
 
@@ -76,9 +81,11 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     Log.v("New JWT token", token.getToken());
                     Log.v("Logged in user: ", SessionManager.getInstance().getUserId());
+                    dialog.dismiss();
                 }), error -> {
                     runOnUiThread(() -> invalidPassword.setVisibility(View.VISIBLE));
                     Log.v("Login error", " " + error.getMessage());
+                    dialog.dismiss();
                 });
     }
 
