@@ -15,6 +15,11 @@ import com.squareup.picasso.Picasso;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.restAPI.UserPersistence;
+
+import java.util.NoSuchElementException;
+
+import io.reactivex.Observable;
 
 public class TicketRequestListItem extends Fragment {
 
@@ -23,13 +28,17 @@ public class TicketRequestListItem extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String INDEX_PARAM = "list_index";
-    private TicketRequest ticketRequest;
+    private User user;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
 
     public TicketRequestListItem(TicketRequest ticketRequest) {
-        this.ticketRequest = ticketRequest;
+        try {
+            user = UserPersistence.getInstance().getUserData(ticketRequest.getUserId()).blockingFirst();
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -60,9 +69,9 @@ public class TicketRequestListItem extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_party_requests, container, false);
+        view = inflater.inflate(R.layout.fragment_party_request_list_item, container, false);
 
-        initView(ticketRequest);
+        // -> initView(ticketRequest);
 
         // Inflate the layout for this fragment
         return view;
