@@ -35,13 +35,10 @@ VALUES ('34', '5243fwersdgerv'),
        ('12', '34');
 
 INSERT INTO ticketrequest (user_id, event_id, created_on)
-VALUES ('12', 'abc', current_timestamp);
-
-INSERT INTO ticketrequest (user_id, event_id, created_on)
-VALUES ('34', 'abc', current_timestamp);
-
-INSERT INTO ticketrequest (user_id, event_id, created_on)
-VALUES ('12', 'def', current_timestamp);
+VALUES ('12', 'abc', current_timestamp),
+       ('12', 'def', current_timestamp),
+       ('34', 'abc', current_timestamp),
+	   ('5243fwersdgerv', 'def', current_timestamp);
 
 SELECT *
 FROM event inner join eventlocation e on event.id = e.event_id

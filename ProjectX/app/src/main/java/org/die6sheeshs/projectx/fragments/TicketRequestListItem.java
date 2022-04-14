@@ -1,6 +1,7 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +14,17 @@ import androidx.fragment.app.Fragment;
 import com.squareup.picasso.Picasso;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.restAPI.TicketPersistence;
+import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.NoSuchElementException;
 
 import io.reactivex.Observable;
@@ -29,11 +37,16 @@ public class TicketRequestListItem extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String INDEX_PARAM = "list_index";
     private User user;
+    private TicketRequest ticketRequest;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
 
     public TicketRequestListItem(TicketRequest ticketRequest) {
+        if (ticketRequest == null) {
+            this.ticketRequest = new TicketRequest(LocalDateTime.of(2022, 4, 14, 13, 58, 27), "12", "def");
+        }
+        this.ticketRequest = ticketRequest;
         try {
             user = UserPersistence.getInstance().getUserData(ticketRequest.getUserId()).blockingFirst();
         } catch (NoSuchElementException e) {
@@ -71,23 +84,23 @@ public class TicketRequestListItem extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_party_request_list_item, container, false);
 
-        // -> initView(ticketRequest);
+        initView(ticketRequest, user);
 
         // Inflate the layout for this fragment
         return view;
     }
 
-    private void initView(TicketRequest ticketRequest) {
+    private void initView(TicketRequest ticketRequest, User user) {
         initAcceptButton(view);
         initDeclineButton(view);
         setRequestData(view);
     }
 
     private void setRequestData(View v) {
-        setFirstName(v, "John");
-        setLastName(v, "Anderson");
-        setAboutMe(v, "Absoluter Partylöwe, trinkt wie ein Loch");
-        setProfilePicture(v, "https://cdn-icons-png.flaticon.com/512/123/123172.png");
+        setFirstName(v, user.getFirstName());
+        setLastName(v, user.getLastName());
+        setAboutMe(v, user.getAbout_me());
+        setProfilePicture(v, user.getProfile_pic());
     }
 
     private void setFirstName(View v, String firstName) {
@@ -116,7 +129,18 @@ public class TicketRequestListItem extends Fragment {
             @Override
             public void onClick(View view) {
                 //new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
-                System.out.println("Request accepted!");
+                try {
+                    byte[] bytesOfUserPartyId = (ticketRequest.getUserId()+ticketRequest.getPartyId()).getBytes("UTF-8");
+                    MessageDigest md = MessageDigest.getInstance("MD5");
+                    String newTicketId = Base64.getEncoder().encodeToString(md.digest(bytesOfUserPartyId));
+                    Ticket newTicket = new Ticket(newTicketId, ticketRequest.getPartyId(), ticketRequest.getUserId());
+                    // TODO: Implement createTicket in TicketPersistence and uncomment afterwards
+                    // TicketPersistence.getInstance().createTicket(newTicket);
+                    System.out.println(newTicket);
+                } catch (Exception e) {
+                    Log.w("Error", e.getMessage());
+                }
+                Log.w("Info", "Request accepted!");
             }
         });
     }
@@ -127,7 +151,8 @@ public class TicketRequestListItem extends Fragment {
             @Override
             public void onClick(View view) {
                 //new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
-                System.out.println("Request declined!");
+                TicketRequestPersistence.getInstance().deleteTicketRequest(ticketRequest.getUserId(), ticketRequest.getPartyId());
+                Log.w("Info","Request declined!");
             }
         });
     }
