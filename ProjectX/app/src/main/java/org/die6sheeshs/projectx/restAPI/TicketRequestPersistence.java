@@ -31,8 +31,8 @@ public class TicketRequestPersistence implements RetrofitPersistence {
         return this.ticketRequestApi.getTicketRequests(meetingFilter);
     }
 
-    public Observable<Integer> getCountOfTicketRequests(String meetingFilter) {
-        return this.ticketRequestApi.getCountTicketRequests(meetingFilter);
+    public Observable<Integer> getCountOfTicketRequests(String where) {
+        return this.ticketRequestApi.getCountTicketRequests(where);
     }
 
     public Observable<TicketRequest> createTicketRequest(String userId, String partyId, LocalDateTime createdOn) {
@@ -47,5 +47,9 @@ public class TicketRequestPersistence implements RetrofitPersistence {
 
     public Observable<List<TicketRequest>> getTicketRequestsOfUser(String userId) {
         return this.ticketRequestApi.getTicketRequestsOfUser(userId, "");
+    }
+
+    public Observable<String> deleteTicketRequest(String userId, String eventId) {
+        return this.ticketRequestApi.deleteTicketRequest("{\"user_id\": \""+userId+"\",\"event_id\": \""+eventId+"\"}");
     }
 }

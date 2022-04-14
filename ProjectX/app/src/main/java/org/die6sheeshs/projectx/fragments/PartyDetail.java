@@ -1,10 +1,17 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.app.ProgressDialog;
+import static android.app.Activity.RESULT_CANCELED;
+
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +20,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
@@ -31,12 +46,15 @@ import org.die6sheeshs.projectx.helpers.SimpleObserver;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
+import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.UUID;
+import java.util.jar.JarOutputStream;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -57,7 +75,6 @@ public class PartyDetail extends Fragment {
     private static final int NO_TICKET = 0;
     private static final int TICKET_PENDING = 1;
     private static final int TICKET_ACCEPTED = 2;
-
 
     private View partyDetail;
 
@@ -100,7 +117,6 @@ public class PartyDetail extends Fragment {
         initShareButton(v);
         initLocationImages(v);
         setPartyData(v);
-
         // Inflate the layout for this fragment
         return v;
     }
@@ -465,7 +481,69 @@ public class PartyDetail extends Fragment {
 
     public void initQRCodeScanButton(View v){
         Button qrButton = v.findViewById(R.id.scanQRButton);
-        //here you go lukas
+        qrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IntentIntegrator integrator = IntentIntegrator.forSupportFragment(PartyDetail.this);
+
+                integrator.setOrientationLocked(false);
+                integrator.setPrompt("Scan QR code");
+                integrator.setBeepEnabled(false);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+
+
+                integrator.initiateScan();
+            }
+        });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                //use result.getContents() um zu gucken ob es das ticket gibt;
+                Observable<Ticket> response = TicketPersistence.getInstance().getTicketById(result.getContents());
+
+                response.subscribeOn(Schedulers.io())
+                        .subscribe(ticket -> {
+                            if(ticket.getEvent_id().equals(partyId)){
+                                Observable<User> response2= UserPersistence.getInstance().getUserData(ticket.getUser_id());
+                                response2.subscribeOn(Schedulers.io())
+                                        .subscribe(user->{
+                                            getActivity().runOnUiThread(()->{
+                                                Toast toast = Toast.makeText(getContext(), "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(), Toast.LENGTH_LONG);
+                                                View view = toast.getView();
+
+                                                //Gets the actual oval background of the Toast then sets the colour filter
+                                                view.getBackground().setColorFilter(Color.parseColor("#ff00ff00"), PorterDuff.Mode.SRC_IN);
+
+                                                //Gets the TextView from the Toast so it can be editted
+                                                TextView text = view.findViewById(android.R.id.message);
+                                                toast.show();
+
+                                                //Toast.makeText(getContext(), "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(), Toast.LENGTH_LONG).show();
+                                            });
+
+                                        },error -> Log.v("User","Error get User with id "+error.getMessage()));
+                            }
+                        },(error) ->{
+                            Log.v("Ticket","Error get Ticket with id "+error.getMessage());
+                            getActivity().runOnUiThread(()->{
+                                Toast toast = Toast.makeText(getContext(), "Ticket not found", Toast.LENGTH_LONG);
+                                View view = toast.getView();
+
+                                //Gets the actual oval background of the Toast then sets the colour filter
+                                view.getBackground().setColorFilter(Color.parseColor("#ffff0000"), PorterDuff.Mode.SRC_IN);
+
+                                //Gets the TextView from the Toast so it can be editted
+                                TextView text = view.findViewById(android.R.id.message);
+                                toast.show();
+                            });
+                        });
+            }
+        }
+    }
 }

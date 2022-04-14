@@ -15,10 +15,11 @@ import {
   put,
   del,
   requestBody,
-  response,
+  response, getWhereSchemaFor,
 } from '@loopback/rest';
 import {TicketRequest} from '../models';
 import {TicketRequestRepository, EventRepository, UserRepository} from '../repositories';
+import {inject} from '@loopback/core';
 
 export class TicketRequestController {
   constructor(
@@ -63,19 +64,19 @@ export class TicketRequestController {
 
   @get('/ticket-requests')
   @response(200, {
-    description: 'Array of TicketRequest model instances (Filter not working!)',
+    description: 'Array of TicketRequest model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(TicketRequest),
+          items: getModelSchemaRef(TicketRequest, { includeRelations: true }),
         },
       },
     },
   })
   async find(
-    // @param.filter(TicketRequest) filter?: Filter<TicketRequest>,
-	@param.query.object('filter') filter?: Filter<TicketRequest>,
+    @param.filter(TicketRequest) filter?: Filter<TicketRequest>,
+	// @param.query.object('filter') filter?: Filter<TicketRequest>,
   ): Promise<TicketRequest[]> {
     return this.ticketRequestRepository.find(filter);
   }
@@ -172,14 +173,13 @@ export class TicketRequestController {
     await this.ticketRequestRepository.replaceById(id, ticketRequest);
   }*/
 
-  @del('/ticket-requests/{userId},{eventId}')
+  @del('/ticket-requests')
   @response(204, {
-    description: 'TicketRequest DELETE success (NOT implemented yet!)',
+    description: 'TicketRequest DELETE success',
   })
-  async deleteById(
-    @param.path.string('userId') userId: string,
-	@param.path.string('eventId') eventId: string,
-  ): Promise<void> {
-    await this.ticketRequestRepository.deleteById(userId);
+  async delete(
+    @param.query.object('where', getWhereSchemaFor(TicketRequest)) where?: Where<TicketRequest>,
+  ): Promise<number> {
+    return (await this.ticketRequestRepository.deleteAll(where)).count
   }
 }
