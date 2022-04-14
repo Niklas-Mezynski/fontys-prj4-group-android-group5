@@ -62,6 +62,10 @@ public class PartyPersistence implements RetrofitPersistence {
         return this.partyApi.getEventLocation(id);
     }
 
+    public Observable<EventLocation> createEventLocation(EventLocation eventLocation) {
+        return this.partyApi.createEventLocation(eventLocation.getEvent_id(), eventLocation);
+    }
+
     @Override
     public void refreshApi() {
         this.partyApi = RetrofitService.getInstance().getRetrofitClient().create(PartyApi.class);

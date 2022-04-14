@@ -60,7 +60,6 @@ export class EventEventLocationController {
         'application/json': {
           schema: getModelSchemaRef(EventLocation, {
             title: 'NewEventLocationInEvent',
-            exclude: ['event_id'],
             optional: ['event_id']
           }),
         },

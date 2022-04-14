@@ -1,8 +1,15 @@
 package org.die6sheeshs.projectx.fragments;
 
+import static org.die6sheeshs.projectx.activities.MainActivity.PERMISSIONS_FINE_LOCATION;
+
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,18 +18,30 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.helpers.IllegalUserInputException;
+import org.die6sheeshs.projectx.helpers.InputVerification;
+import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +51,8 @@ import java.util.Calendar;
 public class PartyCreate extends Fragment {
 
     private View view;
+    private final PartyPersistence partyPersistence = PartyPersistence.getInstance();
+    private final SessionManager sessionManager = SessionManager.getInstance();
 
     public PartyCreate() {
         // Required empty public constructor
@@ -70,6 +91,8 @@ public class PartyCreate extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_party_create, container, false);
         initializeAbortButton();
+        initializeDateButtons();
+        initializeSubmitButton();
 
         return view;
     }
@@ -80,7 +103,9 @@ public class PartyCreate extends Fragment {
             Fragment frag = new PartyOverview();
             ((MainActivity)getActivity()).replaceFragment(frag);
         });
+    }
 
+    private void initializeDateButtons() {
         TextView startDateText = view.findViewById(R.id.textView_start);
         Button buttonChangeStart = view.findViewById(R.id.button_change_start);
         buttonChangeStart.setOnClickListener(new View.OnClickListener() {
@@ -100,9 +125,17 @@ public class PartyCreate extends Fragment {
         });
     }
 
+    private void initializeSubmitButton() {
+        Button submitButton = view.findViewById(R.id.button_submit_create);
+        submitButton.setOnClickListener(view -> {
+            submitParty(getPartyFromInputs());
+        });
+    }
+
     private Party getPartyFromInputs() {
         String partyName, partyDescription;
-        LocalDateTime startTime, endTime;
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
         int maxPeople;
         double price;
 
@@ -118,10 +151,13 @@ public class PartyCreate extends Fragment {
         EditText fieldPrice = view.findViewById(R.id.field_price);
         price = Double.parseDouble(fieldPrice.getText().toString());
 
+        TextView startDateText = view.findViewById(R.id.textView_start);
+        TextView endDateText = view.findViewById(R.id.textView_end);
 
+        startTime = LocalDateTime.parse(startDateText.getText(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        endTime = LocalDateTime.parse(endDateText.getText(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
 
-//        Party party = new Party(partyName, partyDescription, startTime, endTime maxPeople);
-        return null;
+        return new Party(partyName, partyDescription, startTime, endTime, maxPeople, sessionManager.getUserId(), price, null);
     }
 
     private void showDateTimeDialog(final TextView date_time_in) {
@@ -150,6 +186,55 @@ public class PartyCreate extends Fragment {
         };
 
         new DatePickerDialog(getActivity(),dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+
+    }
+
+    private void submitParty(Party p) {
+        Observable<Party> response = partyPersistence.createParty(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getMax_people(), p.getUser_id(), null, null);
+
+        response.subscribeOn(Schedulers.io())
+                .subscribe(result -> {
+                    getActivity().runOnUiThread(() -> {
+
+                        if (result != null) {
+                            setLocation(result);
+                            Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
+                        }
+
+                    });
+                }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
+
+
+    }
+
+    private void setLocation(Party party) {
+        MainActivity mainActivity = (MainActivity) getActivity();
+
+        mainActivity.updateLocation(location -> {
+            party.setEventLocation(new EventLocation(location.getLatitude(), location.getLongitude(), LocalDateTime.now(), party.getId()));
+            submitLocation(party);
+        });
+
+    }
+
+    private void submitLocation(Party p) {
+        System.out.println(p);
+
+        EventLocation location = p.getEventLocation();
+        Log.e("Location", location.toString());
+        Observable<EventLocation> response = partyPersistence.createEventLocation(location);
+        response.subscribeOn(Schedulers.io())
+                .subscribe(result -> {
+                    getActivity().runOnUiThread(() -> {
+
+                        if (result != null) {
+                            Toast.makeText(getActivity(), "Successfully inserted location!", Toast.LENGTH_SHORT).show();
+                            Fragment frag = new PartyOverview();
+                            ((MainActivity)getActivity()).replaceFragment(frag);
+                        }
+
+                    });
+                }, error -> Log.v("Submit Location", "error: " + error.getMessage()));
 
     }
 
