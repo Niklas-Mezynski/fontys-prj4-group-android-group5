@@ -51,4 +51,5 @@ public class TicketRequestPersistence implements RetrofitPersistence {
     public Observable<Integer> deleteTicketRequest(String userId, String eventId) {
         return this.ticketRequestApi.deleteTicketRequest("{\"user_id\": \""+userId+"\",\"event_id\": \""+eventId+"\"}");
     }
+
 }

@@ -323,7 +323,16 @@ public class PartyDetail extends Fragment {
         });
     }
 
+    private void cancelParty(String partyId, View v){
+        //todo cancel Party (WIP)
+        Observable<List<TicketRequest>> resp = TicketRequestPersistence.getInstance().getTicketRequestsOfParty(partyId);
+        resp.subscribeOn(Schedulers.io())
+                .subscribe(ticketReq -> {
+                    for (TicketRequest tr: ticketReq) {
 
+                    }
+                });
+    }
 
     private void initRequestButton(View v, String partyOwnerUUID, int availTickets, int ticketState){
         String currentUUID = SessionManager.getInstance().getUserId();
@@ -345,7 +354,7 @@ public class PartyDetail extends Fragment {
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                                     public void onClick(DialogInterface dialog, int whichButton) {
-                                        //todo cancel party
+                                        cancelParty(partyId, v);
                                     }})
                                 .setNegativeButton(android.R.string.no, null).show();
                     }
@@ -535,17 +544,6 @@ public class PartyDetail extends Fragment {
                                                 toast.setDuration(Toast.LENGTH_LONG);
                                                 toast.setView(layout);
                                                 toast.show();
-                                                /*Toast toast = Toast.makeText(getContext(), "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(), Toast.LENGTH_LONG);
-                                                View view = toast.getView();
-
-                                                //Gets the actual oval background of the Toast then sets the colour filter
-                                                view.setBackgroundColor(Color.parseColor("#ff00ff00"));
-
-                                                //Gets the TextView from the Toast so it can be editted
-                                                TextView text = view.findViewById(android.R.id.message);
-                                                toast.show();*/
-
-                                                //Toast.makeText(getContext(), "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(), Toast.LENGTH_LONG).show();
                                             });
 
                                         },error -> Log.v("User","Error get User with id "+error.getMessage()));
