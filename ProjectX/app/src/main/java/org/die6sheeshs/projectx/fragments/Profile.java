@@ -1,16 +1,9 @@
 package org.die6sheeshs.projectx.fragments;
 
-import static android.app.Activity.RESULT_OK;
-
 import static androidx.core.content.FileProvider.getUriForFile;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
@@ -34,9 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
@@ -172,7 +161,7 @@ public class Profile extends Fragment {
             OutputStream outputStream = null;
 
             try {
-                byte[] fileReader = new byte[4096];
+                byte[] fileReader = new byte[8192];
 
                 inputStream = bodyWithFile.byteStream();
                 outputStream = new FileOutputStream(file);
