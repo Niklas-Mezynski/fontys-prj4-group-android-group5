@@ -49,7 +49,14 @@ public class TicketRequestPersistence implements RetrofitPersistence {
     }
 
     public Observable<Integer> deleteTicketRequest(String userId, String eventId) {
-        return this.ticketRequestApi.deleteTicketRequest("{\"user_id\": \""+userId+"\",\"event_id\": \""+eventId+"\"}");
+        if (!(userId.isEmpty() && eventId.isEmpty())) {
+            return this.ticketRequestApi.deleteTicketRequest("{\"user_id\": \""+userId+"\",\"event_id\": \""+eventId+"\"}");
+        } else if (userId.isEmpty()) {
+            return this.ticketRequestApi.deleteTicketRequest("{\"event_id\": \""+eventId+"\"}");
+        } else if (eventId.isEmpty()) {
+            return this.ticketRequestApi.deleteTicketRequest("{\"user_id\": \""+userId+"\"}");
+        }
+        return null;
     }
 
 }

@@ -32,6 +32,7 @@ import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
 import org.die6sheeshs.projectx.fragments.Tickets;
 import org.die6sheeshs.projectx.helpers.PropertyService;
+import org.die6sheeshs.projectx.restAPI.FirebaseMessagingHandler;
 
 import java.util.TimerTask;
 import java.util.function.Consumer;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     //Google API for location services
     private FusedLocationProviderClient fusedLocationProviderClient;
 
+    //Firebase Messaging Handler for Notifications
+    private FirebaseMessagingHandler firebaseMessagingHandler;
+
     //Configures the type of location request
     private LocationRequest locationRequest;
 
@@ -66,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         updateLocation(location -> Log.v("Location", "Location fetched successfully"));
+
+        //Initialize Firebase Messaging Handler
+        firebaseMessagingHandler = new FirebaseMessagingHandler();
 
         findViewById(R.id.createParty);
         binding = ActivityMainBinding.inflate(getLayoutInflater());

@@ -55,15 +55,6 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="controller.TicketsController"
-                android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
                 android:name="com.journeyapps.barcodescanner.CaptureActivity"
                 android:screenOrientation="portrait"
                 tools:replace="screenOrientation" />
