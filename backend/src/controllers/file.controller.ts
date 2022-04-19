@@ -6,14 +6,15 @@ import { repository } from "@loopback/repository";
 import { get, HttpErrors, oas, param, post, Request, requestBody, Response, RestBindings } from "@loopback/rest";
 import { SecurityBindings, UserProfile } from "@loopback/security";
 import { FILE_UPLOAD_SERVICE } from "../keys";
-import { UserRepository } from "../repositories";
+import { EventRepository, PicturesRepository, UserRepository } from "../repositories";
 import { FileUploadHandler } from "../types";
 import path from 'path';
 import multer from 'multer';
 import { Console } from "console";
 import e from "express";
-import {STORAGE_DIRECTORY} from '../keys';
+import { STORAGE_DIRECTORY } from '../keys';
 import { User } from "@loopback/authentication-jwt";
+import { Pictures } from "../models";
 
 // import {inject} from '@loopback/core';
 
@@ -24,6 +25,10 @@ export class FileController {
     // private storageDirectory: string,
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @repository(PicturesRepository)
+    public eventPicturesRepository: PicturesRepository,
+    @repository(EventRepository)
+    public eventRepository: EventRepository,
     @inject(FILE_UPLOAD_SERVICE)
     private handler: FileUploadHandler,
   ) { }
@@ -83,7 +88,7 @@ export class FileController {
   }
 
   /**
-   * Validate file names to prevent them goes beyond the designated directory
+   * Validate file names
    * @param fileName - File name
    */
   private validateFileName(fileName: string) {
@@ -100,12 +105,12 @@ export class FileController {
    */
   private getFilesAndFields(request: Request, user_id: string) {
     const uploadedFiles = request.files;
-    let filename = '';
+    let filenames: string[] = [];
     const mapper = (file: globalThis.Express.Multer.File) => {
       // if (!file.mimetype.startsWith('image')) {
       //   throw new HttpErrors.UnsupportedMediaType(`Unsupported file type: ${file.mimetype}`);
       // }
-      filename = file.filename;
+      filenames.push(file.filename);
       return ({
         fieldname: file.fieldname,
         originalname: file.originalname,
@@ -115,17 +120,26 @@ export class FileController {
       })
     };
     let files: object[] = [];
+    //Multiple files
     if (Array.isArray(uploadedFiles)) {
       files = uploadedFiles.map(mapper);
-    } else {
+    } else { //Single file
       for (const filename in uploadedFiles) {
         files.push(...uploadedFiles[filename].map(mapper));
       }
     }
     //TODO Update the user path!
-    this.userRepository.updateById(user_id, {profile_pic: filename})
+    if (filenames.length == 1) {
+      this.userRepository.updateById(user_id, { profile_pic: filenames[0] })
+    } else if (filenames.length > 1) {
+      //TODO Handle multiple files
+      // filenames.forEach(filename => this.eventPicturesRepository.create(new Pictures({ url: filenames[0], event_id: "1" })));
+    } else {
+      throw new HttpErrors.UnsupportedMediaType(`Upload error, there are no files in the request`);
+    }
     return { files, fields: request.body };
   }
+
 
   private getMulterOptions(fileName: string): multer.Options {
     return {
