@@ -59,6 +59,7 @@
     "@loopback/service-proxy": "^4.0.1",
     "loopback-connector-postgresql": "^5.5.0",
     "loopback-connector-rest": "^4.0.1",
+    "multer": "^1.4.4",
     "tslib": "^2.0.0",
     "uuid": "^8.3.2"
   },
