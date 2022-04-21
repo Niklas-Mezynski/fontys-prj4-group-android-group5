@@ -325,13 +325,39 @@ public class PartyDetail extends Fragment {
 
     private void cancelParty(String partyId, View v){
         //todo cancel Party (WIP)
-        Observable<List<TicketRequest>> resp = TicketRequestPersistence.getInstance().getTicketRequestsOfParty(partyId);
+        Observable<Integer> resp = TicketRequestPersistence.getInstance().deleteTicketRequest("",partyId);
         resp.subscribeOn(Schedulers.io())
-                .subscribe(ticketReq -> {
-                    for (TicketRequest tr: ticketReq) {
+                .subscribe(r -> {
+                    Observable<Count> resp2 = PartyPersistence.getInstance().deleteTicketsFromParty(partyId);
+                    resp2.subscribeOn(Schedulers.io())
+                            .subscribe(r2 -> {
+                                Observable<Void> resp3 = PartyPersistence.getInstance().deleteEvent(partyId);
+                                resp3.subscribeOn(Schedulers.io())
+                                        .subscribe(r3 -> {
+                                            getActivity().runOnUiThread(()->{
+                                                Fragment frag = new PartyOverview();
+                                                ((MainActivity) getActivity()).replaceFragment(frag);
 
-                    }
-                });
+                                                LayoutInflater inflater = getLayoutInflater();
+                                                View layout = inflater.inflate(R.layout.toast_layout,null);
+
+                                                ImageView image = (ImageView) layout.findViewById(R.id.image);
+                                                image.setImageResource(R.drawable.ic_baseline_clear_24);
+                                                TextView text = (TextView) layout.findViewById(R.id.text);
+                                                text.setText("Ticket not found");
+                                                layout.setBackgroundColor(Color.parseColor("#ffff0000"));
+                                                Toast toast = new Toast(getContext());
+                                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                                                toast.setDuration(Toast.LENGTH_LONG);
+                                                toast.setView(layout);
+                                                toast.show();
+                                            });
+                                        },(error) ->{
+                                            Log.v("Party","Error delete party by party id  "+error.getMessage());});
+                            },(error) ->{
+                                Log.v("Ticket","Error delete ticket by party id  "+error.getMessage());});
+                },(error) ->{
+                    Log.v("Ticket Request","Error delete ticket request by party id  "+error.getMessage());});
     }
 
     private void initRequestButton(View v, String partyOwnerUUID, int availTickets, int ticketState){
