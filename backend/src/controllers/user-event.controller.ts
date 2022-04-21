@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -21,6 +22,7 @@ import {
 } from '../models';
 import {UserRepository} from '../repositories';
 
+@authenticate('jwt')
 export class UserEventController {
   constructor(
     @repository(UserRepository) protected userRepository: UserRepository,

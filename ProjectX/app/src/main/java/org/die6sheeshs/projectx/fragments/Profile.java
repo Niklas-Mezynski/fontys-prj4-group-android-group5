@@ -8,15 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.function.Consumer;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -48,15 +49,17 @@ public class Profile extends Fragment {
     static final int REQUEST_IMAGE_CAPTURE = 187;
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private ImageView imageView;
-    private ImageView imageViewForUpload;
-    private View view;
-    private Button pictureButton;
-    private Button uploadButton;
     private ActivityResultLauncher<Uri> takePhotoActivity;
     private Uri takeImageUri;
+    private String mParam1;
+    private String mParam2;
+    private View view;
+    private ImageView imageView;
+    private TextView tv_firstName;
+    private TextView tv_lastName;
+    private TextView tv_email;
+    private TextView tv_nickname;
+
 
     public Profile() {
         // Required empty public constructor
@@ -91,8 +94,8 @@ public class Profile extends Fragment {
         File newFile = new File(getContext().getExternalFilesDir("my_images"), "test123.jpg");
         this.takeImageUri = getUriForFile(getContext(), "org.die6sheeshs.projectx.fileprovider", newFile);
         takePhotoActivity = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
-            Log.v("Snens", result.toString());
-            imageViewForUpload.setImageURI(takeImageUri);
+            //Do something with the image after a picture was taken
+//            imageViewForUpload.setImageURI(takeImageUri);
         });
     }
 
@@ -102,36 +105,53 @@ public class Profile extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         imageView = view.findViewById(R.id.imageView);
-        imageViewForUpload = view.findViewById(R.id.imageViewForUpload);
-        pictureButton = view.findViewById(R.id.button_take_picture);
-        uploadButton = view.findViewById(R.id.button_upload_pic);
+        tv_firstName = view.findViewById(R.id.tv_profile_firstname);
+        tv_lastName = view.findViewById(R.id.tv_profile_lastname);
+        tv_email = view.findViewById(R.id.tv_profile_email);
+        tv_nickname = view.findViewById(R.id.tv_profile_nickname);
 
-        downloadPicture();
+        initProfileData();
+        downloadProfilePicture();
 
-        pictureButton.setOnClickListener(view1 -> {
-            ((MainActivity) getActivity()).requestCameraPermission();
-            takePhotoActivity.launch(takeImageUri);
-        });
+        //Take picture action
+//        pictureButton.setOnClickListener(view1 -> {
+//            ((MainActivity) getActivity()).requestCameraPermission();
+//            takePhotoActivity.launch(takeImageUri);
+//        });
 
-        uploadButton.setOnClickListener(this::onClick);
+        //Upload action
+//        uploadButton.setOnClickListener(this::onClick);
 
         return view;
     }
 
-    public void downloadPicture() {
+    private void initProfileData() {
+        Observable<User> userDataResponse = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
+        userDataResponse.subscribeOn(Schedulers.io())
+                .subscribe(user -> {
+                    getActivity().runOnUiThread(() -> {
+                        tv_firstName.setText(user.getFirstName());
+                        tv_lastName.setText(user.getLastName());
+                        tv_email.setText(user.getEmail());
+                        tv_nickname.setText(user.getNick_name());
+                    });
+                }, (error) -> Log.e("Get user data in profile", error.getMessage()));
+    }
+
+    private void downloadProfilePicture() {
         String id = SessionManager.getInstance().getUserId();
         Observable<ResponseBody> imageRequest = UserPersistence.getInstance().downloadProfilePic(id);
 
         imageRequest.subscribeOn(Schedulers.io())
                 .subscribe(response -> {
                     Log.v("File download", "Server has file");
-                    boolean success = writeResponseBodyToDisk(response, "snens.png", imageView);
+                    boolean success = writeResponseBodyToDisk(response, "profile_pic.png", imageView, (file) -> getActivity().runOnUiThread(() -> imageView.setImageURI(Uri.fromFile(file))));
                     Log.v("File download", "Successfully converted file");
                 }, (error) -> Log.v("File download", error.getMessage()));
 
     }
 
-    public void uploadPicture() {
+    private void uploadPicture() {
         String id = SessionManager.getInstance().getUserId();
         File file = new File(getContext().getExternalFilesDir("my_images"), "test123.jpg");
         if (!file.exists()) {
@@ -149,23 +169,19 @@ public class Profile extends Fragment {
                 }, error -> Log.v("Upload error", error.getMessage()));
     }
 
-    private boolean writeResponseBodyToDisk(ResponseBody bodyWithFile, String filename, ImageView imageView) {
+    private boolean writeResponseBodyToDisk(ResponseBody bodyWithFile, String filename, ImageView imageView, Consumer<File> func) {
         try {
-            // todo change the file location/name according to your needs
-//            File file = new File(getExternalFilesDir(null) + File.separator + "Future Studio Icon.png");
-
-
             File file = new File(view.getContext().getFilesDir(), filename);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;
 
             try {
-                byte[] fileReader = new byte[8192];
+//                byte[] fileReader = new byte[8192];
+                byte[] fileReader = new byte[4096];
 
                 inputStream = bodyWithFile.byteStream();
                 outputStream = new FileOutputStream(file);
-//                outputStream = view.getContext().openFileOutput("snens.png", Context.MODE_PRIVATE);
 
                 while (true) {
                     int read = inputStream.read(fileReader);
@@ -180,9 +196,8 @@ public class Profile extends Fragment {
                 }
 //                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                 outputStream.close();
-//                Log.v("File location", file.toString());
-                getActivity().runOnUiThread(() -> imageView.setImageURI(Uri.fromFile(file)));
-
+//                getActivity().runOnUiThread(() -> imageView.setImageURI(Uri.fromFile(file)));
+                func.accept(file);
                 outputStream.flush();
 
                 return true;
