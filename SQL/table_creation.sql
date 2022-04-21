@@ -138,7 +138,7 @@ End;
 $$;
 
 CREATE OR REPLACE function getNearbyEvents(user_lat double precision, user_lon double precision,
-                                           radiusInKm integer)
+                                           radiusInKm integer, request_user_id varchar)
     RETURNS TABLE
             (
                 id          varchar(128),
@@ -173,10 +173,14 @@ Begin
                           inner join eventlocation e on event.id = e.event_id
                  WHERE (sqrt((111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) *
                              (111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) +
-                             (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm;
+                             (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm
+                   AND (request_user_id != event.user_id)
+                   AND request_user_id NOT IN (SELECT ticket.user_id
+                                               FROM ticket
+                                               WHERE ticket.event_id = event.id);
 End;
 $$;
 
 
--- SELECT * FROM getNearbyEvents(0.69, -1.87, 50000);
+-- SELECT * FROM getNearbyEvents(0.69, -1.87, 50000, 'db7c3024-d53d-4bcf-85df-718cc5198b90');
 

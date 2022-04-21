@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -20,6 +21,7 @@ import {
 import {Ticket} from '../models';
 import {TicketRepository} from '../repositories';
 
+@authenticate('jwt')
 export class TicketController {
   constructor(
     @repository(TicketRepository)

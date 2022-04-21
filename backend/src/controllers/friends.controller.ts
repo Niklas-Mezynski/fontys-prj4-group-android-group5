@@ -12,10 +12,11 @@ import {
 import { AnyObject, Filter, repository } from "@loopback/repository";
 import { FriendsRepository } from "../repositories";
 import { Friends, User } from '../models';
+import { authenticate } from '@loopback/authentication';
 
 // import {inject} from '@loopback/core';
 
-
+@authenticate('jwt')
 export class FriendsController {
   constructor(
     @repository(FriendsRepository) protected friendsRepository: FriendsRepository,

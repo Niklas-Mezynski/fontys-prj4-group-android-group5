@@ -81,7 +81,10 @@ export class FileController {
   ) {
     let user = await this.userRepository.findById(id);
     // let fileName = `u${id}.png`;
-    let fileName = user.profile_pic!;
+    let fileName = user.profile_pic;
+    if (!fileName) {
+      throw new HttpErrors.NotFound("No profile pic for that user");
+    }
     const file = this.validateFileName(fileName);
     response.download(file, fileName);
     return response;
