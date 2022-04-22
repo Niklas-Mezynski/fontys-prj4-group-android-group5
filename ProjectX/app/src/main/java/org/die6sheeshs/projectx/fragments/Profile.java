@@ -155,8 +155,8 @@ public class Profile extends Fragment {
         //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
         byte[] decode = Base64.decode(base64, Base64.DEFAULT);
         Bitmap bmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
-//        getActivity().runOnUiThread(() -> imageView.setImageBitmap(bmp));
-        getActivity().runOnUiThread(() -> imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, imageView.getWidth(), imageView.getHeight(), false)));
+        getActivity().runOnUiThread(() -> imageView.setImageBitmap(bmp));
+//        getActivity().runOnUiThread(() -> imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, imageView.getWidth(), imageView.getHeight(), false)));
 
     }
 
