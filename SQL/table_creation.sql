@@ -24,7 +24,7 @@ CREATE TABLE "user"
     email       varchar(320) NOT NULL UNIQUE,
     nick_name   varchar(40)  NOT NULL UNIQUE,
     birth_date  date         NOT NULL,
-    profile_pic varchar(1024),
+    profile_pic varchar,
     about_me    varchar(2048),
     password    varchar(256) NOT NULL,
     PRIMARY KEY (id)
@@ -60,8 +60,8 @@ CREATE TABLE eventlocation
 CREATE TABLE pictures
 (
     event_id varchar(128)  NOT NULL,
-    url      varchar(1024) NOT NULL,
-    PRIMARY KEY (event_id, url)
+    base64      varchar NOT NULL,
+    PRIMARY KEY (event_id, base64)
 );
 CREATE TABLE friends
 (
@@ -78,7 +78,6 @@ CREATE TABLE ticketrequest
     created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, created_on)
 );
-
 
 -- Create relations
 ALTER TABLE pictures

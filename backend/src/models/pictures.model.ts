@@ -9,7 +9,7 @@ export class Pictures extends Entity {
     generated: false,
     required: true,
   })
-  url: string;
+  base64: string;
 
   @belongsTo(() => Event, {name: 'event'})
   event_id: string;
