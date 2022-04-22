@@ -144,7 +144,7 @@ public class Profile extends Fragment {
                         tv_lastName.setText(user.getLastName());
                         tv_email.setText(user.getEmail());
                         tv_nickname.setText(user.getNick_name());
-                        if (user.getProfile_pic() != null) {
+                        if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
                             displayProfilePicture(user.getProfile_pic());
                         }
                     });
@@ -155,6 +155,9 @@ public class Profile extends Fragment {
         //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
         byte[] decode = Base64.decode(base64, Base64.DEFAULT);
         Bitmap bmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+        if (bmp == null) {
+            return;
+        }
         getActivity().runOnUiThread(() -> imageView.setImageBitmap(bmp));
 //        getActivity().runOnUiThread(() -> imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, imageView.getWidth(), imageView.getHeight(), false)));
 
