@@ -1,9 +1,9 @@
-import {Entity, model, property, hasOne, hasMany} from '@loopback/repository';
-import {UserLocation} from './user-location.model';
-import {Ticket} from './ticket.model';
-import {UserCredentials} from '../services';
-import {Event} from './event.model';
-import {TicketRequest} from './ticket-request.model';
+import { Entity, model, property, hasOne, hasMany } from '@loopback/repository';
+import { UserLocation } from './user-location.model';
+import { Ticket } from './ticket.model';
+import { UserCredentials } from '@loopback/authentication-jwt';
+import { Event } from './event.model';
+import { TicketRequest } from './ticket-request.model';
 
 @model()
 export class User extends Entity {
@@ -61,24 +61,23 @@ export class User extends Entity {
   })
   password: string;
 
-  @hasOne(() => UserLocation, {keyTo: 'user_id'})
+  userCredentials: UserCredentials;
+
+  @hasOne(() => UserLocation, { keyTo: 'user_id' })
   userLocation: UserLocation;
 
-  @hasMany(() => Ticket, {keyTo: 'user_id'})
+  @hasMany(() => Ticket, { keyTo: 'user_id' })
   tickets: Ticket[];
 
-  @hasMany(() => Event, {keyTo: 'user_id'})
+  @hasMany(() => Event, { keyTo: 'user_id' })
   events: Event[];
 
-  @hasMany(() => TicketRequest, {keyTo: 'user_id'})
+  @hasMany(() => TicketRequest, { keyTo: 'user_id' })
   ticketRequests: TicketRequest[];
 
   constructor(data?: Partial<User>) {
     super(data);
   }
-
-  // userCredentials: UserCredentials;
-
 }
 
 export interface UserRelations {
