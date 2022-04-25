@@ -259,16 +259,15 @@ public class PartyDetail extends Fragment {
 
 
     }
-    private List<Pictures> getPictures(){
 
+    private SimpleFuture<List<Pictures>> getPictures(){
+        SimpleFuture<List<Pictures>> listOfPictures = new SimpleFuture<>();
         Observable<List<Pictures>> pictures = PartyPersistence.getInstance().getPartyPictures(partyId);
         pictures.subscribeOn(Schedulers.io())
-                .subscribe(party -> {
-                    getActivity().runOnUiThread(() -> {
-                        //party
-                    });
+                .subscribe(pictureList -> {
+                        listOfPictures.setValue(pictureList);
                 });
-        throw new UnsupportedOperationException("Not implemented yet");
+        return listOfPictures;
     }
 
     private void setDescription(View v, String s) {

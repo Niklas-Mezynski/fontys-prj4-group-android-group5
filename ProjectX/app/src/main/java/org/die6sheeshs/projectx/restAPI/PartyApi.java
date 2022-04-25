@@ -59,5 +59,5 @@ public interface PartyApi {
     Observable<Void> deleteEvent(@Path("id") String partyId);
 
     @GET("events/{id}/pictures")
-    Observable<List<Pictures>> getPartyPictures(@Path("id") String id);
+    Observable<List<Pictures>> getPicturesOfParty(@Path("id") String id);
 }

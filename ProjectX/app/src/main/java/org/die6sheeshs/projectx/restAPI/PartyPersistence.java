@@ -96,5 +96,5 @@ public class PartyPersistence implements RetrofitPersistence {
         return this.partyApi.deleteEvent(id);
     }
 
-    public Observable<List<Pictures>> getPartyPictures(String id) {return this.partyApi.getPartyPictures(id);}
+    public Observable<List<Pictures>> getPartyPictures(String partyId) {return this.partyApi.getPicturesOfParty(partyId);}
 }
