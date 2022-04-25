@@ -61,8 +61,9 @@ CREATE TABLE eventlocation
 CREATE TABLE pictures
 (
     event_id varchar(128)  NOT NULL,
+    img_uuid varchar(128) NOT NULL,
     base64      varchar NOT NULL,
-    PRIMARY KEY (event_id, base64)
+    PRIMARY KEY (event_id, img_uuid)
 );
 CREATE TABLE friends
 (
