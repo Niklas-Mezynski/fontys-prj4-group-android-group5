@@ -123,7 +123,11 @@ public class PartyListItem extends Fragment {
     private void setEndDate(LocalDateTime endDate) {
         TextView endDateTextView = (TextView) view.findViewById(R.id.textView_endDate);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        endDateTextView.setText(endDate.format(formatter));
+        if (endDate == null) {
+            endDateTextView.setText("Open-End");
+        } else {
+            endDateTextView.setText(endDate.format(formatter));
+        }
     }
 
     private void setDistance(Party party, Location userLocation) {

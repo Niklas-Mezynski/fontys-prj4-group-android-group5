@@ -198,8 +198,6 @@ public class PartyCreate extends Fragment {
     }
 
     private void submitParty(Party p) {
-//        Observable<Party> response = partyPersistence.createParty(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getMax_people(), p.getUser_id(), null, null);
-//        EventWithLocation eventWithLocation = new EventWithLocation(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getPrice(), p.getMax_people(), 0D, 0D, null, p.getUser_id());
         MainActivity mainActivity = (MainActivity) getActivity();
 
         mainActivity.getAndConsumeLastLocation(location -> {
@@ -222,63 +220,6 @@ public class PartyCreate extends Fragment {
                         });
                     }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
         });
-
-
-//        EventWithLocation eventWithLocation = new EventWithLocation(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), null, p.getMax_people(), 0D, 0D, null, p.getUser_id());
-//        setLocation(eventWithLocation);
-//
-//        Observable<Party> response = partyPersistence.createEventWithLocation(eventWithLocation);
-//
-//        response.subscribeOn(Schedulers.io())
-//                .subscribe(result -> {
-//                    getActivity().runOnUiThread(() -> {
-//                        if (result != null) {
-//                            //Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
-//                            showToast("Successfully create a new party", "#ff00ff00");
-//                            Fragment frag = new PartyOverview();
-//                            ((MainActivity) getActivity()).replaceFragment(frag);
-//                        }
-//                    });
-//                }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
-//        response.subscribeOn(Schedulers.io())
-//                .subscribe(result -> {
-//                    getActivity().runOnUiThread(() -> {
-//
-//                        if (result != null) {
-//                            setLocation(result);
-//                            Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
-//                        }
-//
-//                    });
-//                }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
-
-    }
-
-    private void setLocation(EventWithLocation party) {
-        MainActivity mainActivity = (MainActivity) getActivity();
-
-        mainActivity.getAndConsumeLastLocation(location -> {
-            party.setEventLocation(new EventLocation(location.getLatitude(), location.getLongitude(), LocalDateTime.now(), party.getId()));
-            // submitLocation(party);
-        });
-
-    }
-
-    private void submitLocation(Party p) {
-        EventLocation location = p.getEventLocation();
-        Observable<EventLocation> response = partyPersistence.createEventLocation(location);
-        response.subscribeOn(Schedulers.io())
-                .subscribe(result -> {
-                    getActivity().runOnUiThread(() -> {
-
-                        if (result != null) {
-                            Toast.makeText(getActivity(), "Successfully inserted location!", Toast.LENGTH_SHORT).show();
-                            Fragment frag = new PartyOverview();
-                            ((MainActivity) getActivity()).replaceFragment(frag);
-                        }
-
-                    });
-                }, error -> Log.v("Submit Location", "error: " + error.getMessage()));
 
     }
 
