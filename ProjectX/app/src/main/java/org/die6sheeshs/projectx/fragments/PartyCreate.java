@@ -6,16 +6,19 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -28,6 +31,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.EventLocation;
+import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.helpers.IllegalUserInputException;
 import org.die6sheeshs.projectx.helpers.InputVerification;
@@ -204,28 +208,44 @@ public class PartyCreate extends Fragment {
     }
 
     private void submitParty(Party p) {
-        Observable<Party> response = partyPersistence.createParty(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getMax_people(), p.getUser_id(), null, null);
+//        Observable<Party> response = partyPersistence.createParty(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getMax_people(), p.getUser_id(), null, null);
+//        EventWithLocation eventWithLocation = new EventWithLocation(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getPrice(), p.getMax_people(), 0D, 0D, null, p.getUser_id());
+        EventWithLocation eventWithLocation = new EventWithLocation(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), null, p.getMax_people(), 0D, 0D, null, p.getUser_id());
+        setLocation(eventWithLocation);
+
+        Observable<Party> response = partyPersistence.createEventWithLocation(eventWithLocation);
 
         response.subscribeOn(Schedulers.io())
                 .subscribe(result -> {
-                    getActivity().runOnUiThread(() -> {
-
-                        if (result != null) {
-                            setLocation(result);
-                            Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
-                        }
-
+                        getActivity().runOnUiThread(() -> {
+                            if (result != null) {
+                                //Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
+                                showToast("Successfully create a new party", "#ff00ff00");
+                                Fragment frag = new PartyOverview();
+                                ((MainActivity)getActivity()).replaceFragment(frag);
+                            }
                     });
                 }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
+//        response.subscribeOn(Schedulers.io())
+//                .subscribe(result -> {
+//                    getActivity().runOnUiThread(() -> {
+//
+//                        if (result != null) {
+//                            setLocation(result);
+//                            Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    });
+//                }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
 
     }
 
-    private void setLocation(Party party) {
+    private void setLocation(EventWithLocation party) {
         MainActivity mainActivity = (MainActivity) getActivity();
 
         mainActivity.updateLocation(location -> {
             party.setEventLocation(new EventLocation(location.getLatitude(), location.getLongitude(), LocalDateTime.now(), party.getId()));
-            submitLocation(party);
+            // submitLocation(party);
         });
 
     }
@@ -297,6 +317,22 @@ public class PartyCreate extends Fragment {
         for (TextView v : failFields.values()) {
             v.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void showToast(String msg, String color) {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_layout,null);
+
+        ImageView image = (ImageView) layout.findViewById(R.id.image);
+        image.setImageResource(R.drawable.ic_baseline_check_24);
+        TextView text = (TextView) layout.findViewById(R.id.text);
+        text.setText(msg);
+        layout.setBackgroundColor(Color.parseColor(color));
+        Toast toast = new Toast(getContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        toast.show();
     }
 
 }

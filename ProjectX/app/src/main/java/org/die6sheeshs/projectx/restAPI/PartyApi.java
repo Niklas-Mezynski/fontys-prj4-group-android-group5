@@ -37,6 +37,9 @@ public interface PartyApi {
     @POST("events/{id}/event-location")
     Observable<EventLocation> createEventLocation(@Path("id") String event_id, @Body EventLocation eventLocation);
 
+    @POST("event-with-location")
+    Observable<Party> createEventWithLocation(@Body EventWithLocation eventWithLocation);
+
     @GET("events/{id}/event-location")
     Observable<EventLocation> getEventLocation(@Path("id") String id);
 
