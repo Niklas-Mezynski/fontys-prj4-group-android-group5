@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS eventlocation CASCADE;
 DROP TABLE IF EXISTS pictures CASCADE;
 DROP TABLE IF EXISTS friends CASCADE;
 DROP TABLE IF EXISTS requests CASCADE;
+DROP TABLE IF EXISTS ticketrequest CASCADE;
 
 
 -- Create tables
@@ -76,7 +77,7 @@ CREATE TABLE ticketrequest
     user_id    varchar(128) NOT NULL,
     event_id   varchar(128) NOT NULL,
     created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, created_on)
+    PRIMARY KEY (user_id, event_id)
 );
 
 
