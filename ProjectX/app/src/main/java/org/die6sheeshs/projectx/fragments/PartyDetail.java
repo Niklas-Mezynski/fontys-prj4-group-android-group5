@@ -279,7 +279,11 @@ public class PartyDetail extends Fragment {
     private void setEnd(View v, LocalDateTime end){
         TextView title = (TextView) v.findViewById(R.id.endText);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        title.setText(end.format(formatter));
+        if (end == null) {
+            title.setText("Open-End");
+        } else {
+            title.setText(end.format(formatter));
+        }
     }
 
     private void setStart(View v, LocalDateTime start){
