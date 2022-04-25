@@ -31,6 +31,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.collection.CircularArray;
 import androidx.fragment.app.Fragment;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -56,6 +57,7 @@ import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -84,6 +86,8 @@ public class PartyDetail extends Fragment {
 
     private View partyDetail;
     private ImageView imageView;
+
+    List<Bitmap> partyImages = new ArrayList<>();
 
     public PartyDetail(String partyID){
         partyId = partyID;
@@ -254,15 +258,16 @@ public class PartyDetail extends Fragment {
 
 
     }
-
     private List<Pictures> getPictures(){
+
         Observable<List<Pictures>> pictures = PartyPersistence.getInstance().getPartyPictures(partyId);
         pictures.subscribeOn(Schedulers.io())
                 .subscribe(party -> {
                     getActivity().runOnUiThread(() -> {
-                        party
+                        //party
                     });
-                })
+                });
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     private void setDescription(View v, String s) {
@@ -314,6 +319,8 @@ public class PartyDetail extends Fragment {
         title.setText(s);
     }
 
+    SimpleObservable<Integer> imageIndex = new SimpleObservable<>();
+
     private void initLocationImages(View v) {
         ImageView curImg = (ImageView) v.findViewById(R.id.displayedLocationImage);
         Bitmap bmp = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
@@ -323,6 +330,116 @@ public class PartyDetail extends Fragment {
             }
         }
         curImg.setImageBitmap(bmp);
+
+        Bitmap bmp1 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
+        for(int x = 0; x < 1919; x++){
+            for(int y = 0; y < 1079; y++){
+                bmp1.setPixel(x,y, Color.rgb(x%256,y%256,x%256));
+            }
+        }
+        Bitmap bmp2 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
+        for(int x = 0; x < 1919; x++){
+            for(int y = 0; y < 1079; y++){
+                bmp2.setPixel(x,y, Color.rgb(x%256,0,x%256));
+            }
+        }
+        Bitmap bmp3 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
+        for(int x = 0; x < 1919; x++){
+            for(int y = 0; y < 1079; y++){
+                bmp3.setPixel(x,y, Color.rgb(0,y%256,x%256));
+            }
+        }
+
+        List<Pictures> pics;
+
+        partyImages.add(bmp);
+        partyImages.add(bmp1);
+        partyImages.add(bmp3);
+        partyImages.add(bmp2);
+
+        SimpleObserver<Integer> indexChangeObserver = new SimpleObserver<Integer>() {
+            @Override
+            public void doAction(Integer value) {
+                if(value >= partyImages.size()){
+
+                }else{
+                    curImg.setImageBitmap(partyImages.get(value));
+                }
+
+            }
+        };
+        imageIndex.subscribe(indexChangeObserver);
+        initNextImageButton(imageIndex, partyImages, v);
+        initPreviousImageButton(imageIndex, partyImages, v);
+
+        imageIndex.runActions(0);
+
+
+    }
+
+
+
+    private void initNextImageButton(SimpleObservable<Integer> index, List<Bitmap> images, View v){
+        Button nextImageButton = (Button) v.findViewById(R.id.nextImgBtn);
+
+        index.subscribe(new SimpleObserver<Integer>() {
+            @Override
+            public void doAction(Integer value) {
+                if(value >= images.size()-1){
+                    //disable next button
+                    disableButton(nextImageButton);
+                }else{
+                    // enable next button
+                    enableButton(nextImageButton, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            index.runActions(value+1);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void initPreviousImageButton(SimpleObservable<Integer> index, List<Bitmap> images, View v){
+        Button previousImageButton = (Button) v.findViewById(R.id.previousImgBtn);
+
+        index.subscribe(new SimpleObserver<Integer>() {
+            @Override
+            public void doAction(Integer value) {
+                if(value <= 0){
+                    // disable previous button
+                    disableButton(previousImageButton);
+                }else{
+                    // enable next button
+                    enableButton(previousImageButton, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            index.runActions(value-1);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void disableButton(Button b){
+        getActivity().runOnUiThread(()->{
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+            b.setBackgroundColor(Color.GRAY);
+        });
+    }
+
+    private void enableButton(Button b, View.OnClickListener o){
+        getActivity().runOnUiThread(()->{
+            b.setBackgroundColor(Color.BLUE);
+            b.setOnClickListener(o);
+        });
     }
 
 
