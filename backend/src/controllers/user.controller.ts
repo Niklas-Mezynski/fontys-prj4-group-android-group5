@@ -104,7 +104,7 @@ export class UserController {
   @authenticate.skip()
   @post('/users')
   @response(200, {
-    description: 'User model instance',
+    description: 'Register a new user',
     content: { 'application/json': { schema: getModelSchemaRef(User) } },
   })
   async create(
