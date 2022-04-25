@@ -39,6 +39,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -53,6 +55,7 @@ public class PartyCreate extends Fragment {
     private View view;
     private final PartyPersistence partyPersistence = PartyPersistence.getInstance();
     private final SessionManager sessionManager = SessionManager.getInstance();
+    private final Map<String, TextView> failFields = new HashMap<>();
 
     public PartyCreate() {
         // Required empty public constructor
@@ -128,7 +131,10 @@ public class PartyCreate extends Fragment {
     private void initializeSubmitButton() {
         Button submitButton = view.findViewById(R.id.button_submit_create);
         submitButton.setOnClickListener(view -> {
-            submitParty(getPartyFromInputs());
+            Party party = getPartyFromInputs();
+            if (checkFields(party)) {
+                submitParty(party);
+            }
         });
     }
 
@@ -146,16 +152,24 @@ public class PartyCreate extends Fragment {
         partyDescription = fieldPartyDescription.getEditText().getText().toString();
 
         EditText fieldMaxPeople = view.findViewById(R.id.field_max_people);
-        maxPeople = Integer.parseInt(fieldMaxPeople.getText().toString());
+        String stringMaxPeople = fieldMaxPeople.getText().toString();
+        maxPeople = stringMaxPeople.equals("") ? -1 : Integer.parseInt(stringMaxPeople);
 
         EditText fieldPrice = view.findViewById(R.id.field_price);
-        price = Double.parseDouble(fieldPrice.getText().toString());
+        String stringPrice = fieldPrice.getText().toString();
+        price = stringPrice.equals("") ? 0D : Double.parseDouble(stringPrice);
 
         TextView startDateText = view.findViewById(R.id.textView_start);
+        String startDateString = String.valueOf(startDateText.getText());
         TextView endDateText = view.findViewById(R.id.textView_end);
+        String endDateString = String.valueOf(endDateText.getText());
 
-        startTime = LocalDateTime.parse(startDateText.getText(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-        endTime = LocalDateTime.parse(endDateText.getText(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        try {
+            startTime = LocalDateTime.parse(startDateString, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+            endTime = LocalDateTime.parse(endDateString, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        } catch (Exception e) {
+            Log.v("Date", "Could not transform string");
+        }
 
         return new Party(partyName, partyDescription, startTime, endTime, maxPeople, sessionManager.getUserId(), price, null);
     }
@@ -204,7 +218,6 @@ public class PartyCreate extends Fragment {
                     });
                 }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
 
-
     }
 
     private void setLocation(Party party) {
@@ -218,10 +231,7 @@ public class PartyCreate extends Fragment {
     }
 
     private void submitLocation(Party p) {
-        System.out.println(p);
-
         EventLocation location = p.getEventLocation();
-        Log.e("Location", location.toString());
         Observable<EventLocation> response = partyPersistence.createEventLocation(location);
         response.subscribeOn(Schedulers.io())
                 .subscribe(result -> {
@@ -236,6 +246,57 @@ public class PartyCreate extends Fragment {
                     });
                 }, error -> Log.v("Submit Location", "error: " + error.getMessage()));
 
+    }
+
+    private void findFailFields() {
+        failFields.put("name",          view.findViewById(R.id.failed_name));
+        failFields.put("description",   view.findViewById(R.id.failed_description));
+        failFields.put("start",         view.findViewById(R.id.failed_start));
+        failFields.put("start_past",    view.findViewById(R.id.failed_start_past));
+        failFields.put("end",           view.findViewById(R.id.failed_end));
+        failFields.put("price",         view.findViewById(R.id.failed_price));
+        failFields.put("max",           view.findViewById(R.id.failed_max));
+    }
+
+    private boolean checkFields(Party p) {
+        if (failFields.isEmpty()) findFailFields();
+        resetFailFields();
+
+        boolean success = true;
+
+        if (p.getName() == null || p.getName().isEmpty()) {
+            failFields.get("name").setVisibility(View.VISIBLE);
+            success = false;
+        } if (p.getDescription() == null || p.getDescription().isEmpty()) {
+            failFields.get("description").setVisibility(View.VISIBLE);
+            success = false;
+        } if (p.getStart() == null) {
+            failFields.get("start").setVisibility(View.VISIBLE);
+            success = false;
+        } else if (p.getStart().isBefore(LocalDateTime.now())) {
+            failFields.get("start_past").setVisibility(View.VISIBLE);
+            success = false;
+        } if (p.getEnd() != null && p.getEnd().isBefore(p.getStart())) {
+            failFields.get("end").setVisibility(View.VISIBLE);
+            success = false;
+        } if (p.getPrice() < 0) {
+            failFields.get("price").setVisibility(View.VISIBLE);
+            success = false;
+        } if (p.getMax_people() < 1) {
+            failFields.get("max").setVisibility(View.VISIBLE);
+            success = false;
+        }
+
+        return success;
+    }
+
+    /**
+     * Resets all fail fields and sets them invisible
+     */
+    private void resetFailFields() {
+        for (TextView v : failFields.values()) {
+            v.setVisibility(View.INVISIBLE);
+        }
     }
 
 }
