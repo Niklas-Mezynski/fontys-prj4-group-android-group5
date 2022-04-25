@@ -61,6 +61,15 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/failed_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You need to define a name for your party"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/field_party_description"
                 android:layout_width="match_parent"
@@ -80,6 +89,16 @@
                     tools:ignore="TextContrastCheck" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/failed_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="You need to define a description for your party"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
 
             <Space
                 android:layout_width="match_parent"
@@ -115,7 +134,28 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
                     android:text="Change" />
+
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/failed_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="You need to define a start date and time for your party"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/failed_start_past"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="The start date cannot be in the past"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -149,6 +189,24 @@
                     android:text="Change" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Optional - Open End otherwise"
+                android:textAlignment="center"
+                android:textColor="#737373" />
+
+            <TextView
+                android:id="@+id/failed_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="The end date cannot be before the start"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
+
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="96dp" />
@@ -173,6 +231,15 @@
                 tools:ignore="SpeakableTextPresentCheck" />
 
             <TextView
+                android:id="@+id/failed_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You need to define a price for your party"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
+
+            <TextView
                 android:id="@+id/textView7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -190,6 +257,15 @@
                 android:inputType="number"
                 android:minHeight="48dp"
                 tools:ignore="SpeakableTextPresentCheck" />
+
+            <TextView
+                android:id="@+id/failed_max"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You need to define a maximum amount of people for your party"
+                android:textAlignment="center"
+                android:textColor="#AA3C34"
+                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/button_submit_create"

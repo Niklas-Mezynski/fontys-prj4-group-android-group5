@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   AnyObject,
   Count,
@@ -24,6 +25,7 @@ import {
 } from '../models';
 import {EventRepository} from '../repositories';
 
+@authenticate('jwt')
 export class EventTicketController {
   constructor(
     @repository(EventRepository) protected eventRepository: EventRepository,

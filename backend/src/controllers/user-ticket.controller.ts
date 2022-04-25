@@ -32,7 +32,7 @@ import {
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { Console } from 'console';
 
-
+@authenticate('jwt')
 export class UserTicketController {
   constructor(
     @repository(UserRepository) protected userRepository: UserRepository,

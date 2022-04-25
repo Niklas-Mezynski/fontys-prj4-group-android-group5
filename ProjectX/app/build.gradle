@@ -48,7 +48,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'android.arch.navigation:navigation-fragment:1.0.0'
     implementation 'android.arch.navigation:navigation-ui:1.0.0'
-    implementation 'com.android.support:support-v4:28.0.0'
+//    implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
 //    implementation 'com.google.code.gson:gson:2.9.0'
     testImplementation 'junit:junit:4.13.2'
@@ -60,7 +60,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.zxing:core:3.2.1'
-
+    implementation 'commons-io:commons-io:2.11.0'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 }
