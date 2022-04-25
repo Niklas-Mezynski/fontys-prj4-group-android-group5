@@ -1,35 +1,35 @@
 package org.die6sheeshs.projectx.entities;
 
 public class Pictures {
-    private String id, uuid, picture;
+    private String event_id, img_uuid, base64;
 
-    public Pictures(String eventId,String uuid, String picture){
-        this.id = id;
-        this.uuid = uuid;
-        this.picture = picture;
+    public Pictures(String event_id,String img_uuid, String base64){
+        this.event_id = event_id;
+        this.img_uuid = img_uuid;
+        this.base64 = base64;
     }
 
     public String getId() {
-        return id;
+        return event_id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.event_id = event_id;
     }
 
     public String getUuid() {
-        return uuid;
+        return img_uuid;
     }
 
     public void setUuid(String uuid) {
-        this.uuid = uuid;
+        this.img_uuid = uuid;
     }
 
     public String getPicture() {
-        return picture;
+        return base64;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setPicture(String base64) {
+        this.base64 = base64;
     }
 }

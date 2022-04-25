@@ -384,12 +384,13 @@ public class PartyDetail extends Fragment {
                         ProgressBar pgb = (ProgressBar) v.findViewById(R.id.imgProgBar);
                         pgb.setMax(partyImages.size()-1);
                         pgb.setProgress(value, true);
-                    });
-                    if(value >= partyImages.size()){
+                        if(value >= partyImages.size()){
 
-                    }else{
-                        curImg.setImageBitmap(partyImages.get(value));
-                    }
+                        }else{
+                            curImg.setImageBitmap(partyImages.get(value));
+                        }
+                    });
+
 
                 }
             };

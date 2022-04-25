@@ -1,11 +1,15 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,10 +20,17 @@ import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -93,6 +104,7 @@ public class PartyListItem extends Fragment {
         setStartDate(party.getStart());
         setEndDate(party.getEnd());
         setDistance(party, userLocation);
+        setImage(party);
     }
 
     private void setButtonAction() {
@@ -147,6 +159,27 @@ public class PartyListItem extends Fragment {
         tv_distance.setVisibility(View.VISIBLE);
         int roundedDistKm = Math.round(distance / 1000);
         tv_distance.setText(roundedDistKm + "km");
+    }
+
+    private void setImage(Party p){
+        ImageView img = (ImageView)view.findViewById(R.id.imageView3);
+        String partyId = p.getId();
+        Observable<List<Pictures>> picsObservable = PartyPersistence.getInstance().getPartyPictures(partyId);
+        picsObservable.subscribeOn(Schedulers.io())
+                .subscribe(pictureList -> {
+                    Optional<Pictures> firstImgOpt = pictureList.stream().findFirst();
+                    if(firstImgOpt.isPresent()){
+                        byte[] decode = Base64.decode(firstImgOpt.get().getPicture(), Base64.DEFAULT);
+                        Bitmap decodedBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                        getActivity().runOnUiThread(()->{
+                            img.setImageBitmap(decodedBmp);
+                        });
+                    }else{
+
+                    }
+
+        });
+
     }
 
 }

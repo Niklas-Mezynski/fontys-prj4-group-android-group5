@@ -22,7 +22,8 @@
             android:layout_width="128dp"
             android:layout_height="128dp"
             android:layout_weight="1"
-            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
             android:src="@color/teal_200" />
 
         <LinearLayout
