@@ -3,9 +3,9 @@ package org.die6sheeshs.projectx.entities;
 public class Pictures {
     private String id, picture;
 
-    public Pictures(String id, String picture){
+    public Pictures(String eventId,String uuid, String picture){
         this.id = id;
-        this.id = picture;
+        this.picture = picture;
     }
 
     public String getId() {
