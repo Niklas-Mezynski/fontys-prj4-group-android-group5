@@ -1,5 +1,5 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
-import {Event} from './event.model';
+import { Entity, model, property, belongsTo } from '@loopback/repository';
+import { Event } from './event.model';
 
 @model()
 export class Pictures extends Entity {
@@ -9,9 +9,15 @@ export class Pictures extends Entity {
     generated: false,
     required: true,
   })
+  img_uuid: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   base64: string;
 
-  @belongsTo(() => Event, {name: 'event'})
+  @belongsTo(() => Event, { name: 'event' })
   event_id: string;
 
   constructor(data?: Partial<Pictures>) {
