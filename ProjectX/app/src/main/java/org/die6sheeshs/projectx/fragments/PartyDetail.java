@@ -357,46 +357,48 @@ public class PartyDetail extends Fragment {
 
 
 
-
-    List<Pictures> pics = getPictures();
-
-    for(Pictures p: pics){
-        byte[] decode = Base64.decode(p.getPicture(), Base64.DEFAULT);
-        Bitmap decodeBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
-        if (bmp != null) {
-            partyImages.add(decodeBmp);
-        }
-    }
- **/
-
-
-        if(partyImages.size() == 0){
-            partyImages.add(bmp);
-        }
-
-
-        SimpleObserver<Integer> indexChangeObserver = new SimpleObserver<Integer>() {
-            @Override
-            public void doAction(Integer value) {
-                getActivity().runOnUiThread(()->{
-                    ProgressBar pgb = (ProgressBar) v.findViewById(R.id.imgProgBar);
-                    pgb.setMax(partyImages.size()-1);
-                    pgb.setProgress(value, true);
-                });
-                if(value >= partyImages.size()){
-
-                }else{
-                    curImg.setImageBitmap(partyImages.get(value));
+         **/
+        SimpleFuture<List<Pictures>> future = getPictures();
+        //SimpleFuture<List<Pictures>> future = new SimpleFuture<>();
+        //future.setValue(new ArrayList<>());
+        future.doActionWhenValueSet( pics ->{
+            for(Pictures p: pics){
+                byte[] decode = Base64.decode(p.getPicture(), Base64.DEFAULT);
+                Bitmap decodeBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                if (bmp != null) {
+                    partyImages.add(decodeBmp);
                 }
-
             }
-        };
-        imageIndex.subscribe(indexChangeObserver);
-        initNextImageButton(imageIndex, partyImages, v);
-        initPreviousImageButton(imageIndex, partyImages, v);
 
-        imageIndex.runActions(0);
 
+
+            if(partyImages.size() == 0){
+                partyImages.add(bmp);
+            }
+
+
+            SimpleObserver<Integer> indexChangeObserver = new SimpleObserver<Integer>() {
+                @Override
+                public void doAction(Integer value) {
+                    getActivity().runOnUiThread(()->{
+                        ProgressBar pgb = (ProgressBar) v.findViewById(R.id.imgProgBar);
+                        pgb.setMax(partyImages.size()-1);
+                        pgb.setProgress(value, true);
+                    });
+                    if(value >= partyImages.size()){
+
+                    }else{
+                        curImg.setImageBitmap(partyImages.get(value));
+                    }
+
+                }
+            };
+            imageIndex.subscribe(indexChangeObserver);
+            initNextImageButton(imageIndex, partyImages, v);
+            initPreviousImageButton(imageIndex, partyImages, v);
+
+            imageIndex.runActions(0);
+        });
 
     }
 
