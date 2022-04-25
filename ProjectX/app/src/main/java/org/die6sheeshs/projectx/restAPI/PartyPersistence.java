@@ -9,6 +9,7 @@ import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.PropertyService;
@@ -94,4 +95,6 @@ public class PartyPersistence implements RetrofitPersistence {
     public Observable<Void> deleteEvent(String id){
         return this.partyApi.deleteEvent(id);
     }
+
+    public Observable<List<Pictures>> getPartyPictures(String id) {return this.partyApi.getPartyPictures(id);}
 }

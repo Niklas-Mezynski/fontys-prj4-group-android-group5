@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -39,6 +41,7 @@ import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
@@ -80,6 +83,7 @@ public class PartyDetail extends Fragment {
     private static final int TICKET_ACCEPTED = 2;
 
     private View partyDetail;
+    private ImageView imageView;
 
     public PartyDetail(String partyID){
         partyId = partyID;
@@ -117,6 +121,7 @@ public class PartyDetail extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_party_detail, container, false);
+        imageView = v.findViewById(R.id.displayedLocationImage);
         initShareButton(v);
         initLocationImages(v);
         setPartyData(v);
@@ -248,6 +253,16 @@ public class PartyDetail extends Fragment {
 
 
 
+    }
+
+    private List<Pictures> getPictures(){
+        Observable<List<Pictures>> pictures = PartyPersistence.getInstance().getPartyPictures(partyId);
+        pictures.subscribeOn(Schedulers.io())
+                .subscribe(party -> {
+                    getActivity().runOnUiThread(() -> {
+                        party
+                    });
+                })
     }
 
     private void setDescription(View v, String s) {

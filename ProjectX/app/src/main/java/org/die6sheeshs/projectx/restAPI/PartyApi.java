@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
 
@@ -56,4 +57,7 @@ public interface PartyApi {
 
     @DELETE("events/{id}")
     Observable<Void> deleteEvent(@Path("id") String partyId);
+
+    @GET("events/{id}/pictures")
+    Observable<List<Pictures>> getPartyPictures(@Path("id") String id);
 }
