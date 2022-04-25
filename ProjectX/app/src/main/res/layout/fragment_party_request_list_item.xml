@@ -52,24 +52,12 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_acceptDecline"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/acceptButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Accept" />
-
-            <Button
-                android:id="@+id/declineButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Decline" />
-        </LinearLayout>
+            android:orientation="vertical"/>
 
     </LinearLayout>
 

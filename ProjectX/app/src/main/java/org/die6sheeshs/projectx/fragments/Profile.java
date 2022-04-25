@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
@@ -61,6 +65,8 @@ public class Profile extends Fragment {
     private TextView tv_nickname;
     private AppCompatImageButton uploadPicture;
     private AppCompatImageButton cancelUpload;
+    private TabLayout tabLayout;
+    private ViewPager profileViewPager;
 
 
     public Profile() {
@@ -136,6 +142,8 @@ public class Profile extends Fragment {
 
         initProfileData();
 
+        initTabs();
+
         return view;
     }
 
@@ -208,6 +216,23 @@ public class Profile extends Fragment {
 
     private void upload(View clickedView) {
         uploadPicture();
+    }
 
+    private void initTabs() {
+        tabLayout = view.findViewById(R.id.profile_tabLayout);
+        profileViewPager = view.findViewById(R.id.profile_viewPager);
+
+        final ProfileViewPagerAdapter profileViewPagerAdapter = new ProfileViewPagerAdapter(getActivity().getSupportFragmentManager());
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                profileViewPagerAdapter.addFragment(ProfileFriendsTab.getInstance(), "Friends");
+                profileViewPagerAdapter.addFragment(ProfileSearchTab.getInstance(), "Search");
+                profileViewPagerAdapter.addFragment(ProfileNotificationsTab.getInstance(), "Notifications");
+                profileViewPager.setAdapter(profileViewPagerAdapter);
+                tabLayout.setupWithViewPager(profileViewPager);
+            }
+        });
     }
 }

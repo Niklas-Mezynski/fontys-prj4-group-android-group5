@@ -45,10 +45,11 @@ public class TicketRequestListItem extends Fragment {
     public TicketRequestListItem(TicketRequest ticketRequest) {
         if (ticketRequest == null) {
             this.ticketRequest = new TicketRequest(LocalDateTime.of(2022, 4, 14, 13, 58, 27), "12", "def");
+        } else {
+            this.ticketRequest = ticketRequest;
         }
-        this.ticketRequest = ticketRequest;
         try {
-            user = UserPersistence.getInstance().getUserData(ticketRequest.getUserId()).blockingFirst();
+            user = UserPersistence.getInstance().getUserData(this.ticketRequest.getUserId()).blockingFirst();
         } catch (NoSuchElementException e) {
             System.out.println(e.getMessage());
         }
@@ -124,7 +125,7 @@ public class TicketRequestListItem extends Fragment {
     }
 
     private void initAcceptButton(View v) {
-        Button accept = (Button) v.findViewById(R.id.acceptButton);
+        /*Button accept = (Button) v.findViewById(R.id.acceptButton);
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,11 +143,11 @@ public class TicketRequestListItem extends Fragment {
                 }
                 Log.w("Info", "Request accepted!");
             }
-        });
+        });*/
     }
 
     private void initDeclineButton(View v) {
-        Button decline = (Button) v.findViewById(R.id.declineButton);
+        /*Button decline = (Button) v.findViewById(R.id.declineButton);
         decline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,6 +155,6 @@ public class TicketRequestListItem extends Fragment {
                 TicketRequestPersistence.getInstance().deleteTicketRequest(ticketRequest.getUserId(), ticketRequest.getPartyId());
                 Log.w("Info","Request declined!");
             }
-        });
+        });*/
     }
 }
