@@ -96,28 +96,43 @@ export class EventController {
         'application/json': {
           schema: getModelSchemaRef(EventWithALocation, {
             title: 'NewEventWithALocation',
-            exclude: ['id'],
+            exclude: ['id',],
           }),
         },
       },
     })
-      event: EventWithALocation,
+    event: EventWithALocation,
   ): Promise<Event> {
     const repo1 = new DefaultTransactionalRepository(Event, this.eventRepository.dataSource);
     const repo2 = new DefaultTransactionalRepository(EventLocation, this.eventRepository.dataSource);
 
-    const tx = await repo1.beginTransaction(IsolationLevel.READ_COMMITTED);
+    const tx = await repo2.beginTransaction(IsolationLevel.READ_COMMITTED);
 
     event.id = Helpers.generateUUID();
-    const createdEvent = await repo1.create(event, {transaction: tx});
+    let e = new Event({
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      start: event.start,
+      max_people: event.max_people,
+      user_id: event.user_id
+    })
+    if (event.end !== null) {
+      e.end = event.end;
+    }
+    const createdEvent = await repo1.create(e, { transaction: tx });
 
-    const location = new EventLocation();
-    location.event_id = createdEvent.id;
-    location.latitude = event.latitude;
-    location.longitude = event.longitude;
-    location.created_on = Date.now().toString();
+    let timestamp = new Date().toDateString();
+    console.log(timestamp);
+    const location = new EventLocation({
+      event_id: event.id,
+      latitude: event.latitude,
+      longitude: event.longitude,
+      created_on: timestamp,
+    });
 
-    await repo2.create(location, {transaction: tx});
+
+    await repo2.create(location, { transaction: tx });
 
     await tx.commit();
 

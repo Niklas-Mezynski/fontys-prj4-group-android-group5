@@ -54,9 +54,8 @@ export class EventWithLocation extends Model {
 
   @property({
     type: 'date',
-    required: false,
   })
-  created_on: string;
+  created_on?: string;
 
   @property({
     type: 'string',
