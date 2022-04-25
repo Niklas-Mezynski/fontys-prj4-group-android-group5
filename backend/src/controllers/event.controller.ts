@@ -1,3 +1,5 @@
+import { authenticate } from '@loopback/authentication';
+import { inject } from '@loopback/core';
 import {
   AnyObject,
   Count,
@@ -23,6 +25,7 @@ import {
 import { Helpers } from '../helpers/helper_functions';
 import { Event, EventLocation, EventWithRelations } from '../models';
 import { EventRepository } from '../repositories';
+import { SecurityBindings, securityId, UserProfile } from "@loopback/security";
 
 
 @model()
@@ -46,6 +49,7 @@ export class EventWithLocation extends Event {
   event_id: string;
 }
 
+@authenticate('jwt')
 export class EventController {
   constructor(
     @repository(EventRepository)
@@ -189,11 +193,13 @@ export class EventController {
     @param.path.number('lat') lat: number,
     @param.path.number('lon') lon: number,
     @param.path.number('radius') radius: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @param.filter(Event, { exclude: 'where' }) filter?: FilterExcludingWhere<Event>
   ): Promise<AnyObject> {
-    let sql: string = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius});`;
-    let queryResult = await this.eventRepository.execute(sql);
-    return queryResult;
+    //Calling a custom SQL function to get the nearby parties
+    let sql: string = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius}, '${currentUserProfile[securityId]}');`;
+    return this.eventRepository.execute(sql);
   }
 }
 

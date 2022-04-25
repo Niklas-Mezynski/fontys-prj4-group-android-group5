@@ -86,6 +86,7 @@ export const CredentialsRequestBody = {
   },
 };
 
+@authenticate('jwt')
 export class UserController {
   constructor(
     @inject(TokenServiceBindings.TOKEN_SERVICE)
@@ -100,6 +101,7 @@ export class UserController {
     public userLocationRepository: UserLocationRepository,
   ) { }
 
+  @authenticate.skip()
   @post('/users')
   @response(200, {
     description: 'User model instance',
@@ -160,7 +162,7 @@ export class UserController {
 
   @patch('/users')
   @response(200, {
-    description: 'User PATCH success count',
+    description: 'User PATCH (Register) success count',
     content: { 'application/json': { schema: CountSchema } },
   })
   async updateAll(
@@ -249,7 +251,7 @@ export class UserController {
   }
 
   
-
+  @authenticate.skip()
   @post('/users/login', {
     responses: {
       '200': {
@@ -278,7 +280,6 @@ export class UserController {
     return loginResponse;
   }
 
-  @authenticate('jwt')
   @get('/whoAmI', {
     responses: {
       '200': {

@@ -1,26 +1,15 @@
 package org.die6sheeshs.projectx.restAPI;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.die6sheeshs.projectx.entities.LoginRequest;
 import org.die6sheeshs.projectx.entities.LoginResponse;
 import org.die6sheeshs.projectx.entities.User;
-import org.die6sheeshs.projectx.helpers.AuthInterceptor;
-import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import io.reactivex.Observable;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UserPersistence implements RetrofitPersistence {
 
@@ -58,9 +47,10 @@ public class UserPersistence implements RetrofitPersistence {
         return this.userApi.getUserById(id);
     }
 
-    public Observable<ResponseBody> uploadPicture(String user_id, MultipartBody.Part file) {
+    public Observable<ResponseBody> uploadPicture(String user_id, String base64) {
         //RequestBody requestBody = new RequestBody
-        return this.userApi.upload(user_id, file);
+        User user = new User(null, null, null, null, null, base64, null, null);
+        return this.userApi.updateUser(user_id, user);
     }
 
     public Observable<ResponseBody> downloadProfilePic(String user_id) {

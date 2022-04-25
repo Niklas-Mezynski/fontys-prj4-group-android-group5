@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -49,4 +50,10 @@ public interface PartyApi {
 
     @GET("users/{id}/events")
     Observable<List<Party>> getPartiesFromUser(@Path("id") String id);
+
+    @DELETE("events/{id}/tickets")
+    Observable<Count> deleteTicketsFromEvent(@Path("id") String partyId);
+
+    @DELETE("events/{id}")
+    Observable<Void> deleteEvent(@Path("id") String partyId);
 }

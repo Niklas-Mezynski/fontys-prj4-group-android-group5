@@ -1,7 +1,9 @@
+import { authenticate } from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {get, param} from '@loopback/rest';
 import {Geocoder} from '../services';
 
+@authenticate('jwt')
 export class GeocoderController {
   constructor(
     @inject('services.Geocoder') protected geoService: Geocoder,

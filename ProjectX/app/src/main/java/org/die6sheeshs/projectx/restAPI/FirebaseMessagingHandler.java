@@ -20,6 +20,7 @@ public class FirebaseMessagingHandler extends FirebaseMessagingService {
         // or directly send it to server
 
         // TODO: Post on rest api for changing device token in the database
+
     }
 
     @Override

@@ -24,7 +24,7 @@ CREATE TABLE "user"
     email       varchar(320) NOT NULL UNIQUE,
     nick_name   varchar(40)  NOT NULL UNIQUE,
     birth_date  date         NOT NULL,
-    profile_pic varchar(1024),
+    profile_pic varchar,
     about_me    varchar(2048),
     password    varchar(256) NOT NULL,
     PRIMARY KEY (id)
@@ -60,8 +60,8 @@ CREATE TABLE eventlocation
 CREATE TABLE pictures
 (
     event_id varchar(128)  NOT NULL,
-    url      varchar(1024) NOT NULL,
-    PRIMARY KEY (event_id, url)
+    base64      varchar NOT NULL,
+    PRIMARY KEY (event_id, base64)
 );
 CREATE TABLE friends
 (
@@ -78,7 +78,6 @@ CREATE TABLE ticketrequest
     created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, created_on)
 );
-
 
 -- Create relations
 ALTER TABLE pictures
@@ -138,7 +137,7 @@ End;
 $$;
 
 CREATE OR REPLACE function getNearbyEvents(user_lat double precision, user_lon double precision,
-                                           radiusInKm integer)
+                                           radiusInKm integer, request_user_id varchar)
     RETURNS TABLE
             (
                 id          varchar(128),
@@ -173,10 +172,14 @@ Begin
                           inner join eventlocation e on event.id = e.event_id
                  WHERE (sqrt((111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) *
                              (111.3 * cos((e.latitude + user_lat) / 2 * 0.01745) * (e.longitude - user_lon)) +
-                             (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm;
+                             (111.3 * (e.latitude - user_lat)) * (111.3 * (e.latitude - user_lat)))) <= radiusInKm
+                   AND (request_user_id != event.user_id)
+                   AND request_user_id NOT IN (SELECT ticket.user_id
+                                               FROM ticket
+                                               WHERE ticket.event_id = event.id);
 End;
 $$;
 
 
--- SELECT * FROM getNearbyEvents(0.69, -1.87, 50000);
+-- SELECT * FROM getNearbyEvents(0.69, -1.87, 50000, 'db7c3024-d53d-4bcf-85df-718cc5198b90');
 

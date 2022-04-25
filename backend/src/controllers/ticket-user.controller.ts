@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   repository,
 } from '@loopback/repository';
@@ -12,6 +13,7 @@ import {
 } from '../models';
 import {TicketRepository} from '../repositories';
 
+@authenticate('jwt')
 export class TicketUserController {
   constructor(
     @repository(TicketRepository)
