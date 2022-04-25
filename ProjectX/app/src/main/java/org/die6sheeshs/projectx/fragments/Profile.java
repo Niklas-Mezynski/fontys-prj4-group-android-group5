@@ -130,37 +130,51 @@ public class Profile extends Fragment {
 
         uploadPicture.setOnClickListener(this::upload);
 
+        cancelUpload.setOnClickListener(view1 -> {
+            initProfileData();
+        });
+
         initProfileData();
 
         return view;
     }
 
     private void initProfileData() {
-        Observable<User> userDataResponse = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
-        userDataResponse.subscribeOn(Schedulers.io())
-                .subscribe(user -> {
-                    getActivity().runOnUiThread(() -> {
-                        tv_firstName.setText(user.getFirstName());
-                        tv_lastName.setText(user.getLastName());
-                        tv_email.setText(user.getEmail());
-                        tv_nickname.setText(user.getNick_name());
-                        if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
-                            displayProfilePicture(user.getProfile_pic());
-                        }
-                    });
-                }, (error) -> Log.e("Get user data in profile", error.getMessage()));
+        User user = SessionManager.getInstance().getUser();
+        tv_firstName.setText(user.getFirstName());
+        tv_lastName.setText(user.getLastName());
+        tv_email.setText(user.getEmail());
+        tv_nickname.setText(user.getNick_name());
+        if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
+            displayProfilePicture(user.getProfile_pic());
+        }
+//        Observable<User> userDataResponse = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
+//        userDataResponse.subscribeOn(Schedulers.io())
+//                .subscribe(user -> {
+//                    getActivity().runOnUiThread(() -> {
+//                        tv_firstName.setText(user.getFirstName());
+//                        tv_lastName.setText(user.getLastName());
+//                        tv_email.setText(user.getEmail());
+//                        tv_nickname.setText(user.getNick_name());
+//                        if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
+//                            displayProfilePicture(user.getProfile_pic());
+//                        }
+//                    });
+//                }, (error) -> Log.e("Get user data in profile", error.getMessage()));
+
     }
 
     private void displayProfilePicture(String base64) {
         //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
-        byte[] decode = Base64.decode(base64, Base64.DEFAULT);
-        Bitmap bmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
-        if (bmp == null) {
-            return;
-        }
-        getActivity().runOnUiThread(() -> imageView.setImageBitmap(bmp));
+        Schedulers.io().scheduleDirect(() -> {
+            byte[] decode = Base64.decode(base64, Base64.DEFAULT);
+            Bitmap bmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+            if (bmp == null) {
+                return;
+            }
+            getActivity().runOnUiThread(() -> imageView.setImageBitmap(bmp));
+        });
 //        getActivity().runOnUiThread(() -> imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, imageView.getWidth(), imageView.getHeight(), false)));
-
     }
 
     private void uploadPicture() {
