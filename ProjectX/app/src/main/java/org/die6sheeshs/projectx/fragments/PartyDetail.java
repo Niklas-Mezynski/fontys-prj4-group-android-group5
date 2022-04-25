@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -329,7 +330,7 @@ public class PartyDetail extends Fragment {
                 bmp.setPixel(x,y, Color.rgb(x%256,y%256,0));
             }
         }
-        curImg.setImageBitmap(bmp);
+        /**
 
         Bitmap bmp1 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
         for(int x = 0; x < 1919; x++){
@@ -350,16 +351,39 @@ public class PartyDetail extends Fragment {
             }
         }
 
-        List<Pictures> pics;
+         partyImages.add(bmp);
+         partyImages.add(bmp1);
+         partyImages.add(bmp3);
+         partyImages.add(bmp2);
 
-        partyImages.add(bmp);
-        partyImages.add(bmp1);
-        partyImages.add(bmp3);
-        partyImages.add(bmp2);
+
+
+
+    List<Pictures> pics = getPictures();
+
+    for(Pictures p: pics){
+        byte[] decode = Base64.decode(p.getPicture(), Base64.DEFAULT);
+        Bitmap decodeBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+        if (bmp != null) {
+            partyImages.add(decodeBmp);
+        }
+    }
+ **/
+
+
+        if(partyImages.size() == 0){
+            partyImages.add(bmp);
+        }
+
 
         SimpleObserver<Integer> indexChangeObserver = new SimpleObserver<Integer>() {
             @Override
             public void doAction(Integer value) {
+                getActivity().runOnUiThread(()->{
+                    ProgressBar pgb = (ProgressBar) v.findViewById(R.id.imgProgBar);
+                    pgb.setMax(partyImages.size()-1);
+                    pgb.setProgress(value, true);
+                });
                 if(value >= partyImages.size()){
 
                 }else{
