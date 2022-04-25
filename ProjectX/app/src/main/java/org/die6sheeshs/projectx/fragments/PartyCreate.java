@@ -1,26 +1,22 @@
 package org.die6sheeshs.projectx.fragments;
 
-import static org.die6sheeshs.projectx.activities.MainActivity.PERMISSIONS_FINE_LOCATION;
-
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -28,14 +24,12 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.EventLocation;
+import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
-import org.die6sheeshs.projectx.helpers.IllegalUserInputException;
-import org.die6sheeshs.projectx.helpers.InputVerification;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -104,7 +98,7 @@ public class PartyCreate extends Fragment {
         Button abortButton = view.findViewById(R.id.button_abort);
         abortButton.setOnClickListener(view -> {
             Fragment frag = new PartyOverview();
-            ((MainActivity)getActivity()).replaceFragment(frag);
+            ((MainActivity) getActivity()).replaceFragment(frag);
         });
     }
 
@@ -175,87 +169,68 @@ public class PartyCreate extends Fragment {
     }
 
     private void showDateTimeDialog(final TextView date_time_in) {
-        final Calendar calendar=Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener dateSetListener=new DatePickerDialog.OnDateSetListener() {
+        final Calendar calendar = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(Calendar.YEAR,year);
-                calendar.set(Calendar.MONTH,month);
-                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                TimePickerDialog.OnTimeSetListener timeSetListener=new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                        calendar.set(Calendar.MINUTE,minute);
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        calendar.set(Calendar.MINUTE, minute);
 
-                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
                         date_time_in.setText(simpleDateFormat.format(calendar.getTime()));
                     }
                 };
 
-                new TimePickerDialog(getActivity(),timeSetListener,calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),false).show();
+                new TimePickerDialog(getActivity(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
             }
         };
 
-        new DatePickerDialog(getActivity(),dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+        new DatePickerDialog(getActivity(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
 
     }
 
     private void submitParty(Party p) {
-        Observable<Party> response = partyPersistence.createParty(p.getName(), p.getDescription(), p.getStart(), p.getEnd(), p.getMax_people(), p.getUser_id(), null, null);
-
-        response.subscribeOn(Schedulers.io())
-                .subscribe(result -> {
-                    getActivity().runOnUiThread(() -> {
-
-                        if (result != null) {
-                            setLocation(result);
-                            Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
-                        }
-
-                    });
-                }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
-
-    }
-
-    private void setLocation(Party party) {
         MainActivity mainActivity = (MainActivity) getActivity();
 
-        mainActivity.updateLocation(location -> {
-            party.setEventLocation(new EventLocation(location.getLatitude(), location.getLongitude(), LocalDateTime.now(), party.getId()));
-            submitLocation(party);
+        mainActivity.getAndConsumeLastLocation(location -> {
+            EventWithLocation eventWithLocation = new EventWithLocation(p.getName(), p.getDescription(),
+                    p.getStart(), p.getEnd(), null, p.getMax_people(), location.getLatitude(),
+                    location.getLongitude(), null, p.getUser_id());
+
+            Observable<Party> response = partyPersistence.createEventWithLocation(eventWithLocation);
+
+            response.subscribeOn(Schedulers.io())
+                    .subscribe(result -> {
+                        getActivity().runOnUiThread(() -> {
+                            System.out.println(result);
+                            if (result != null) {
+                                //Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
+                                showToast("Successfully create a new party", "#ff00ff00");
+                                Fragment frag = new PartyOverview();
+                                ((MainActivity) getActivity()).replaceFragment(frag);
+                            }
+                        });
+                    }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
         });
 
     }
 
-    private void submitLocation(Party p) {
-        EventLocation location = p.getEventLocation();
-        Observable<EventLocation> response = partyPersistence.createEventLocation(location);
-        response.subscribeOn(Schedulers.io())
-                .subscribe(result -> {
-                    getActivity().runOnUiThread(() -> {
-
-                        if (result != null) {
-                            Toast.makeText(getActivity(), "Successfully inserted location!", Toast.LENGTH_SHORT).show();
-                            Fragment frag = new PartyOverview();
-                            ((MainActivity)getActivity()).replaceFragment(frag);
-                        }
-
-                    });
-                }, error -> Log.v("Submit Location", "error: " + error.getMessage()));
-
-    }
-
     private void findFailFields() {
-        failFields.put("name",          view.findViewById(R.id.failed_name));
-        failFields.put("description",   view.findViewById(R.id.failed_description));
-        failFields.put("start",         view.findViewById(R.id.failed_start));
-        failFields.put("start_past",    view.findViewById(R.id.failed_start_past));
-        failFields.put("end",           view.findViewById(R.id.failed_end));
-        failFields.put("price",         view.findViewById(R.id.failed_price));
-        failFields.put("max",           view.findViewById(R.id.failed_max));
+        failFields.put("name", view.findViewById(R.id.failed_name));
+        failFields.put("description", view.findViewById(R.id.failed_description));
+        failFields.put("start", view.findViewById(R.id.failed_start));
+        failFields.put("start_past", view.findViewById(R.id.failed_start_past));
+        failFields.put("end", view.findViewById(R.id.failed_end));
+        failFields.put("price", view.findViewById(R.id.failed_price));
+        failFields.put("max", view.findViewById(R.id.failed_max));
     }
 
     private boolean checkFields(Party p) {
@@ -267,22 +242,27 @@ public class PartyCreate extends Fragment {
         if (p.getName() == null || p.getName().isEmpty()) {
             failFields.get("name").setVisibility(View.VISIBLE);
             success = false;
-        } if (p.getDescription() == null || p.getDescription().isEmpty()) {
+        }
+        if (p.getDescription() == null || p.getDescription().isEmpty()) {
             failFields.get("description").setVisibility(View.VISIBLE);
             success = false;
-        } if (p.getStart() == null) {
+        }
+        if (p.getStart() == null) {
             failFields.get("start").setVisibility(View.VISIBLE);
             success = false;
         } else if (p.getStart().isBefore(LocalDateTime.now())) {
             failFields.get("start_past").setVisibility(View.VISIBLE);
             success = false;
-        } if (p.getEnd() != null && p.getEnd().isBefore(p.getStart())) {
+        }
+        if (p.getEnd() != null && p.getEnd().isBefore(p.getStart())) {
             failFields.get("end").setVisibility(View.VISIBLE);
             success = false;
-        } if (p.getPrice() < 0) {
+        }
+        if (p.getPrice() < 0) {
             failFields.get("price").setVisibility(View.VISIBLE);
             success = false;
-        } if (p.getMax_people() < 1) {
+        }
+        if (p.getMax_people() < 1) {
             failFields.get("max").setVisibility(View.VISIBLE);
             success = false;
         }
@@ -297,6 +277,22 @@ public class PartyCreate extends Fragment {
         for (TextView v : failFields.values()) {
             v.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void showToast(String msg, String color) {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_layout, null);
+
+        ImageView image = (ImageView) layout.findViewById(R.id.image);
+        image.setImageResource(R.drawable.ic_baseline_check_24);
+        TextView text = (TextView) layout.findViewById(R.id.text);
+        text.setText(msg);
+        layout.setBackgroundColor(Color.parseColor(color));
+        Toast toast = new Toast(getContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        toast.show();
     }
 
 }

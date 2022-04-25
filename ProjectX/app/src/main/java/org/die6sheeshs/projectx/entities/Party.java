@@ -87,6 +87,7 @@ public class Party {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", user_id='" + user_id + '\'' +
                 ", start=" + start +
                 ", end=" + end +
                 ", max_people=" + max_people +

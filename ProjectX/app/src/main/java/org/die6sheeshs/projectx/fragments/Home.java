@@ -1,16 +1,8 @@
 package org.die6sheeshs.projectx.fragments;
 
-import static org.die6sheeshs.projectx.activities.MainActivity.PERMISSIONS_FINE_LOCATION;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,19 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
-import org.die6sheeshs.projectx.entities.Party;
-import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.util.List;
@@ -133,7 +118,7 @@ public class Home extends Fragment {
     }
 
     private void updateLocation(int radius) {
-        mainActivity.updateLocation(location -> listParties(location, radius));
+        mainActivity.getAndConsumeLastLocation(location -> listParties(location, radius));
     }
 
 

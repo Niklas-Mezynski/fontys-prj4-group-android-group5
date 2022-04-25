@@ -4,8 +4,10 @@ import {
   AnyObject,
   Count,
   CountSchema,
+  DefaultTransactionalRepository,
   Filter,
   FilterExcludingWhere,
+  IsolationLevel,
   model,
   property,
   repository,
@@ -23,7 +25,7 @@ import {
   response,
 } from '@loopback/rest';
 import { Helpers } from '../helpers/helper_functions';
-import { Event, EventLocation, EventWithRelations } from '../models';
+import { Event, EventLocation, EventWithRelations, EventWithLocation as EventWithALocation } from '../models';
 import { EventRepository } from '../repositories';
 import { SecurityBindings, securityId, UserProfile } from "@loopback/security";
 
@@ -77,6 +79,70 @@ export class EventController {
     event.id = Helpers.generateUUID();
     return this.eventRepository.create(event);
   }
+
+
+
+
+
+
+  @post('/event-with-location')
+  @response(200, {
+    description: 'Success',
+    content: { 'application/json': { schema: getModelSchemaRef(Event) } },
+  })
+  async createEventWithLocation(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(EventWithALocation, {
+            title: 'NewEventWithALocation',
+            exclude: ['id',],
+          }),
+        },
+      },
+    })
+    event: EventWithALocation,
+  ): Promise<Event> {
+    const repo1 = new DefaultTransactionalRepository(Event, this.eventRepository.dataSource);
+    const repo2 = new DefaultTransactionalRepository(EventLocation, this.eventRepository.dataSource);
+
+    const tx = await repo2.beginTransaction(IsolationLevel.READ_COMMITTED);
+
+    event.id = Helpers.generateUUID();
+    let e = new Event({
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      start: event.start,
+      max_people: event.max_people,
+      user_id: event.user_id
+    })
+    if (event.end !== null) {
+      e.end = event.end;
+    }
+    const createdEvent = await repo1.create(e, { transaction: tx });
+
+    let timestamp = new Date().toDateString();
+    console.log(timestamp);
+    const location = new EventLocation({
+      event_id: event.id,
+      latitude: event.latitude,
+      longitude: event.longitude,
+      created_on: timestamp,
+    });
+
+
+    await repo2.create(location, { transaction: tx });
+
+    await tx.commit();
+
+    return createdEvent;
+  }
+
+
+
+
+
 
   @get('/events/count')
   @response(200, {

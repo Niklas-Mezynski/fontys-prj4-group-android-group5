@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -19,14 +18,10 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationBarView;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
-import org.die6sheeshs.projectx.fragments.PartyDetail;
 import org.die6sheeshs.projectx.fragments.PartyOverview;
 import org.die6sheeshs.projectx.fragments.Home;
 import org.die6sheeshs.projectx.fragments.Profile;
@@ -34,11 +29,7 @@ import org.die6sheeshs.projectx.fragments.Tickets;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 import org.die6sheeshs.projectx.restAPI.FirebaseMessagingHandler;
 
-import java.util.TimerTask;
 import java.util.function.Consumer;
-import java.util.function.Function;
-
-import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         PropertyService.registerContext(this);
         setContentView(R.layout.activity_main);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        updateLocation(location -> Log.v("Location", "Location fetched successfully"));
+        getAndConsumeLastLocation(location -> Log.v("Location", "Location fetched successfully"));
 
         //Initialize Firebase Messaging Handler
         firebaseMessagingHandler = new FirebaseMessagingHandler();
@@ -85,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         setupLocationRequest();
     }
 
-    public void updateLocation(Consumer<Location> func) {
+    public void getAndConsumeLastLocation(Consumer<Location> func) {
         //Get user permission
         //Get current location from the fused client
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
