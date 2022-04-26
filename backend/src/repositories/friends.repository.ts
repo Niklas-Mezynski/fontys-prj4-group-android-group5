@@ -1,7 +1,7 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
-import {LocalDbDataSource} from '../datasources';
-import {Friends, FriendsRelations} from '../models';
+import { inject } from '@loopback/core';
+import { AnyObject, DefaultCrudRepository } from '@loopback/repository';
+import { LocalDbDataSource } from '../datasources';
+import { Friends, FriendsRelations } from '../models';
 
 export class FriendsRepository extends DefaultCrudRepository<
   Friends,
@@ -14,10 +14,8 @@ export class FriendsRepository extends DefaultCrudRepository<
     super(Friends, dataSource);
   }
 
-  snens(userId:string, friendId:string) {
-    let sql:string = 'SELECT "user".nick_name FROM ((SELECT f.usera as friendId FROM friends f where (userb = ?)) UNION (SELECT f.userb as friendId FROM friends f where (usera = ?))) AS friends INNER JOIN "user" ON "user".id = friends.friendId;';
-
-    
+  getFriendsForUser(userId: string): Promise<AnyObject> {
+    let sql: string = `SELECT * FROM getFriendInfos($1);`;
+    return this.dataSource.execute(sql, [userId]);
   }
-
 }
