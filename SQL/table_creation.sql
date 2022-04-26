@@ -112,7 +112,7 @@ ALTER TABLE "user"
 ALTER TABLE event
     ADD CONSTRAINT event_start_in_future CHECK ( "start" > CURRENT_TIMESTAMP );
 
-
+DROP FUNCTION getfriendinfos(character varying)
 -- Custom function to get all friends from the database
 CREATE OR REPLACE function getFriendInfos(user_id varchar)
     RETURNS TABLE

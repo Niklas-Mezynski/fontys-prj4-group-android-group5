@@ -225,8 +225,14 @@ public class PartyPictures extends Fragment {
                             response.subscribeOn(Schedulers.io())
                                     .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
                                                 Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
-                                            })
-                                            , throwable -> getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show()));
+                                            }), throwable -> {
+                                                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show());
+                                                Log.v("Image Upload", throwable.getMessage());
+                                            }
+
+
+
+                                    );
                         }
                     });
 
