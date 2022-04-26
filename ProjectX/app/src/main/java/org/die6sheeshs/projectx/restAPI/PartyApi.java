@@ -66,4 +66,7 @@ public interface PartyApi {
 
     @POST("events/{id}/pictures")
     Observable<Pictures> uploadPictures(@Path("id") String event_id, @Body Pictures pictures);
+
+    @DELETE("events/{id}/pictures")
+    Observable<Count> deletePictures(@Path("id") String partyId);
 }

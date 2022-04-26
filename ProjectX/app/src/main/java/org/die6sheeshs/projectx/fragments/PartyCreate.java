@@ -273,7 +273,8 @@ public class PartyCreate extends Fragment {
                             if (result != null) {
                                 //Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
                                 showToast("Successfully create a new party", "#ff00ff00");
-                                Fragment frag = new PartyOverview();
+                                //Fragment frag = new PartyOverview();
+                                Fragment frag = new PartyPictures(result);
                                 ((MainActivity) getActivity()).replaceFragment(frag);
                             }
                         });
