@@ -19,10 +19,6 @@ import org.die6sheeshs.projectx.entities.Party;
 
 public class OurToast extends Fragment {
 
-    public OurToast() {
-
-    }
-
     static void makeToast(String content, String color, int picture, Context context,LayoutInflater inflat){
         LayoutInflater inflater = inflat;
         View layout = inflater.inflate(R.layout.toast_layout,null);
