@@ -5,7 +5,6 @@ import static androidx.core.content.FileProvider.getUriForFile;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +28,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
@@ -180,8 +180,8 @@ public class Profile extends Fragment {
     private void displayProfilePicture(String base64) {
         //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
         Schedulers.io().scheduleDirect(() -> {
-            byte[] decode = Base64.decode(base64, Base64.DEFAULT);
-            Bitmap bmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+            Bitmap bmp = ImageConversion.base64ToBitmap(base64);
+            
             if (bmp == null) {
                 return;
             }
