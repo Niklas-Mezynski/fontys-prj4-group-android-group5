@@ -29,7 +29,7 @@ public class ProfileFriendsTab extends Fragment {
         return view;
     }
 
-    init(){
+    private void init(){
 
     }
 }
