@@ -96,4 +96,8 @@ public class PartyPersistence implements RetrofitPersistence {
         Pictures pictures = new Pictures(base64);
         return this.partyApi.uploadPictures(event_id, pictures);
     }
+
+    public Observable<Count> deletePartyPictures(String event_id){
+        return this.partyApi.deletePictures(event_id);
+    }
 }

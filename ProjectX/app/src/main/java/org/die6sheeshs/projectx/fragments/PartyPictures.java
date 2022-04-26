@@ -148,11 +148,11 @@ public class PartyPictures extends Fragment {
                 @Override
                 public void onClick(View view) {
                     mainImageIndex = index;
+                    updateImageViews();
                 }
             };
 
-
-            Fragment imageFragment = new PartyPictureItem(images.get(i), deleter, mainImageSetter);
+            Fragment imageFragment = new PartyPictureItem(images.get(i), deleter, mainImageSetter, i == mainImageIndex);
             fragTransaction.add(linearLayout.getId(), imageFragment, "image#"+i);
 
         }
@@ -214,28 +214,25 @@ public class PartyPictures extends Fragment {
         uploadPicsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo delete all images in backed associated with this party
-
-                //todo upload images
-
+                PartyPersistence.getInstance().deletePartyPictures(p.getId()).subscribe(count -> {
                     Schedulers.io().scheduleDirect(() -> {
-                        for(byte[] bytes: images) {
-                            String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
-                            Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64);
-                            response.subscribeOn(Schedulers.io())
-                                    .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
-                                                Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
-                                            }), throwable -> {
-                                                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show());
-                                                Log.v("Image Upload", throwable.getMessage());
-                                            }
+                        if(images.size() != 0 && mainImageIndex < images.size() && mainImageIndex >= 0){
+                            uploadPic(images.get(mainImageIndex));
+                        }
 
 
 
-                                    );
+                        for(int i = 0; i < images.size(); i++){
+                            if(i != mainImageIndex){
+                                int finalI = i;
+                                        byte[] bytes = images.get(finalI);
+                                        uploadPic(bytes);
+                            }
                         }
                     });
-
+                }, throwable -> {
+                    Log.v("Image Upload", throwable.getMessage());
+                });
                 //todo return to partyOverview
             }
         });
@@ -243,7 +240,21 @@ public class PartyPictures extends Fragment {
     }
 
 
+    private void uploadPic(byte[] bytes){
+        String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+        Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64);
+        response.subscribeOn(Schedulers.io())
+                .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
+                        }), throwable -> {
+                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show());
+                            Log.v("Image Upload", throwable.getMessage());
+                        }
 
+
+
+                );
+    }
     private void askPermAndTakeImg(View clickedView) {
         //Checking for camera permissions
         if (ContextCompat.checkSelfPermission(
