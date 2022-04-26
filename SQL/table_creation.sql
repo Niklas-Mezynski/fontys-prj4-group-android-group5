@@ -114,11 +114,16 @@ ALTER TABLE event
 
 
 -- Custom function to get all friends from the database
+
+--DROP FUNCTION getfriendinfos(character varying);
+
 CREATE OR REPLACE function getFriendInfos(user_id varchar)
     RETURNS TABLE
             (
                 friend_id varchar,
-                nick_name varchar
+                nick_name varchar,
+			profile_pic varchar,
+			about_me varchar
             )
     language plpgsql
 as
@@ -126,7 +131,7 @@ $$
 Declare
 
 Begin
-    return QUERY SELECT DISTINCT "user".id as freind_id, "user".nick_name
+    return QUERY SELECT DISTINCT "user".id as friend_id, "user".nick_name, "user".profile_pic, "user".about_me
                  FROM ((SELECT f.usera as friendId
                         FROM friends f
                         where (userb = user_id))

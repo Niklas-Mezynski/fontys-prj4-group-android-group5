@@ -1,7 +1,9 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -50,6 +55,22 @@ public class PartyCreate extends Fragment {
     private final PartyPersistence partyPersistence = PartyPersistence.getInstance();
     private final SessionManager sessionManager = SessionManager.getInstance();
     private final Map<String, TextView> failFields = new HashMap<>();
+    private Party createdParty;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Permission is granted. Continue the action or workflow in your app.
+                    submitThePartyWithLocation(createdParty);
+                } else {
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
+                    Toast.makeText(getContext(), "Cannot post the new party without having location permissions", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     public PartyCreate() {
         // Required empty public constructor
@@ -222,6 +243,22 @@ public class PartyCreate extends Fragment {
     }
 
     private void submitParty(Party p) {
+        createdParty = p;
+        //Checking for location permissions
+        if (ContextCompat.checkSelfPermission(
+                getContext(), Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // You can use the API that requires the permission.
+            submitThePartyWithLocation(p);
+        } else {
+            // You can directly ask for the permission.
+            // The registered ActivityResultCallback gets the result of this request.
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+    }
+
+    private void submitThePartyWithLocation(Party p) {
         MainActivity mainActivity = (MainActivity) getActivity();
 
         mainActivity.getAndConsumeLastLocation(location -> {
@@ -242,7 +279,6 @@ public class PartyCreate extends Fragment {
                         });
                     }, error -> Log.e("Submit party", "Could post a new party to RestAPI: " + error.getMessage()));
         });
-
     }
 
     private void findFailFields() {

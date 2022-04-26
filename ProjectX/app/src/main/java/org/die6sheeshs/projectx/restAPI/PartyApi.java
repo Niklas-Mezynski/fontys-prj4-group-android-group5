@@ -1,7 +1,6 @@
 package org.die6sheeshs.projectx.restAPI;
 
 import org.die6sheeshs.projectx.entities.Count;
-import com.fasterxml.jackson.annotation.JsonFilter;
 
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
@@ -13,6 +12,7 @@ import org.die6sheeshs.projectx.entities.User;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -63,4 +63,7 @@ public interface PartyApi {
 
     @GET("events/{id}/pictures")
     Observable<List<Pictures>> getPicturesOfParty(@Path("id") String id);
+
+    @POST("events/{id}/pictures")
+    Observable<Pictures> uploadPictures(@Path("id") String event_id, @Body Pictures pictures);
 }
