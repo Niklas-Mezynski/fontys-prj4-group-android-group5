@@ -31,7 +31,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/username"
+                android:id="@+id/firstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/first_name" />
@@ -42,12 +42,6 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="50px"
                 android:text="@string/last_name" />
-
-            <TextView
-                android:id="@+id/aboutMe"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/about_me" />
 
         </LinearLayout>
 

@@ -1,9 +1,13 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,12 +16,22 @@ import androidx.fragment.app.Fragment;
 import com.squareup.picasso.Picasso;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.restAPI.TicketPersistence;
+import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.NoSuchElementException;
+
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 public class TicketRequestListItem extends Fragment {
 
@@ -32,6 +46,8 @@ public class TicketRequestListItem extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
 
+    public TicketRequestListItem() {}
+
     public TicketRequestListItem(TicketRequest ticketRequest) {
         if (ticketRequest == null) {
             this.ticketRequest = new TicketRequest(LocalDateTime.of(2022, 4, 14, 13, 58, 27), "12", "def");
@@ -39,9 +55,20 @@ public class TicketRequestListItem extends Fragment {
             this.ticketRequest = ticketRequest;
         }
         try {
-            user = UserPersistence.getInstance().getUserData(this.ticketRequest.getUserId()).blockingFirst();
+            Observable<User> userObservable = UserPersistence.getInstance().getUserData(this.ticketRequest.getUserId());
+            userObservable.subscribeOn(Schedulers.io())
+                    .subscribe(user1 -> {
+                        this.user = user1;
+                        Log.println(Log.INFO,"UserMain", this.user.toString());
+                        getActivity().runOnUiThread(() -> {
+                            initView(ticketRequest, user);
+                        });
+                    });
+            /*userObservable.subscribe(user1 -> {
+                    Log.println(Log.INFO, "!!!USER-OBSERVABLE!!!", user1.toString());
+            });*/
         } catch (NoSuchElementException e) {
-            System.out.println(e.getMessage());
+            Log.println(Log.ERROR, "NoSuchUser", e.getMessage());
         }
     }
 
@@ -75,7 +102,7 @@ public class TicketRequestListItem extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_party_request_list_item, container, false);
 
-        initView(ticketRequest, user);
+        // initView(ticketRequest, user);
 
         // Inflate the layout for this fragment
         return view;
@@ -94,7 +121,7 @@ public class TicketRequestListItem extends Fragment {
     }
 
     private void setFirstName(View v, String firstName) {
-        TextView fName = (TextView) v.findViewById(R.id.username);
+        TextView fName = (TextView) v.findViewById(R.id.firstName);
         fName.setText(firstName);
     }
 
@@ -105,7 +132,10 @@ public class TicketRequestListItem extends Fragment {
 
     private void setProfilePicture(View v, String pictureURL) {
         ImageView profile_pic = (ImageView) v.findViewById(R.id.image_profilepic);
-        Picasso.get().load(pictureURL).into(profile_pic);
+        //Picasso.get().load(pictureURL).into(profile_pic);
+        byte[] decodedString = Base64.getDecoder().decode(pictureURL);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        profile_pic.setImageBitmap(decodedByte);
     }
 
     private void initAcceptButton(View v) {
