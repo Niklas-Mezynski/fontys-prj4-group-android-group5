@@ -202,15 +202,13 @@ public class PartyCreate extends Fragment {
 
         mainActivity.getAndConsumeLastLocation(location -> {
             EventWithLocation eventWithLocation = new EventWithLocation(p.getName(), p.getDescription(),
-                    p.getStart(), p.getEnd(), null, p.getMax_people(), location.getLatitude(),
+                    p.getStart(), p.getEnd(), p.getPrice(), p.getMax_people(), location.getLatitude(),
                     location.getLongitude(), null, p.getUser_id());
-
             Observable<Party> response = partyPersistence.createEventWithLocation(eventWithLocation);
 
             response.subscribeOn(Schedulers.io())
                     .subscribe(result -> {
                         getActivity().runOnUiThread(() -> {
-                            System.out.println(result);
                             if (result != null) {
                                 //Toast.makeText(getActivity(), "Successfully created a new party!", Toast.LENGTH_SHORT).show();
                                 showToast("Successfully create a new party", "#ff00ff00");

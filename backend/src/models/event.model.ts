@@ -40,6 +40,11 @@ export class Event extends Entity {
 
   @property({
     type: 'number',
+  })
+  price: number;
+
+  @property({
+    type: 'number',
     required: true,
   })
   max_people: number;

@@ -114,6 +114,7 @@ export class EventController {
       name: event.name,
       description: event.description,
       start: event.start,
+      price: event.price,
       max_people: event.max_people,
       user_id: event.user_id
     })
@@ -123,7 +124,6 @@ export class EventController {
     const createdEvent = await repo1.create(e, { transaction: tx });
 
     let timestamp = new Date().toDateString();
-    console.log(timestamp);
     const location = new EventLocation({
       event_id: event.id,
       latitude: event.latitude,
@@ -138,11 +138,6 @@ export class EventController {
 
     return createdEvent;
   }
-
-
-
-
-
 
   @get('/events/count')
   @response(200, {

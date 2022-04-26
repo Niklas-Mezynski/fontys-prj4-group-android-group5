@@ -36,9 +36,9 @@ CREATE TABLE event
     user_id     varchar(128)  NOT NULL,
     name        varchar(80)   NOT NULL,
     description varchar(2048) NOT NULL,
---     pictures    integer,
     "start"     timestamp     NOT NULL,
     "end"       timestamp,
+    price       double precision DEFAULT 0,
     max_people  integer       NOT NULL,
     PRIMARY KEY (id)
 );
@@ -60,9 +60,9 @@ CREATE TABLE eventlocation
 );
 CREATE TABLE pictures
 (
-    event_id varchar(128)  NOT NULL,
+    event_id varchar(128) NOT NULL,
     img_uuid varchar(128) NOT NULL,
-    base64      varchar NOT NULL,
+    base64   varchar      NOT NULL,
     PRIMARY KEY (event_id, img_uuid)
 );
 CREATE TABLE friends

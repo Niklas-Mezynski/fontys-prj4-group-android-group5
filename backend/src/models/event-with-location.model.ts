@@ -36,6 +36,11 @@ export class EventWithLocation extends Model {
 
   @property({
     type: 'number',
+  })
+  price: number;
+
+  @property({
+    type: 'number',
     required: true,
   })
   max_people: number;
