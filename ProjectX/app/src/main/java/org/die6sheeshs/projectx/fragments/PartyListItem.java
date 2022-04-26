@@ -100,7 +100,7 @@ public class PartyListItem extends Fragment {
     private void initContent(Party party, Location location) {
         setButtonAction();
         setLocation(party.getName());
-        setPrice(0D);
+        setPrice(party.getPrice());
         setStartDate(party.getStart());
         setEndDate(party.getEnd());
         setDistance(party, userLocation);

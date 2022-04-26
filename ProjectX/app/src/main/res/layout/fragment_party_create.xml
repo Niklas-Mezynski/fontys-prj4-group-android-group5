@@ -182,6 +182,15 @@
                     android:textSize="18sp" />
 
                 <Button
+                    android:id="@+id/button_remove_end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="0"
+                    android:text="Remove"
+                    android:visibility="gone" />
+
+                <Button
                     android:id="@+id/button_change_end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
