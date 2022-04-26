@@ -61,6 +61,11 @@ export class User extends Entity {
   })
   password: string;
 
+  @property({
+    type: 'string',
+  })
+  firebaseToken: string;
+
   userCredentials: UserCredentials;
 
   @hasOne(() => UserLocation, { keyTo: 'user_id' })

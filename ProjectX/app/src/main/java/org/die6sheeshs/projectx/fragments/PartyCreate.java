@@ -111,6 +111,7 @@ public class PartyCreate extends Fragment {
         initializeAbortButton();
         initializeDateButtons();
         initializeSubmitButton();
+        initializeEndDateRemoveButton();
 
         return view;
     }
@@ -129,7 +130,7 @@ public class PartyCreate extends Fragment {
         buttonChangeStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDateTimeDialog(startDateText);
+                showDateTimeDialog(startDateText, false);
             }
         });
 
@@ -138,7 +139,7 @@ public class PartyCreate extends Fragment {
         buttonChangeEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDateTimeDialog(endDateText);
+                showDateTimeDialog(endDateText, true);
             }
         });
     }
@@ -150,6 +151,15 @@ public class PartyCreate extends Fragment {
             if (checkFields(party)) {
                 submitParty(party);
             }
+        });
+    }
+
+    private void initializeEndDateRemoveButton() {
+        Button buttonChangeEnd = view.findViewById(R.id.button_remove_end);
+        TextView endDateText = view.findViewById(R.id.textView_end);
+        buttonChangeEnd.setOnClickListener(view -> {
+            endDateText.setText("No date set");
+            updateEndDateRemoveButton();
         });
     }
 
@@ -189,7 +199,7 @@ public class PartyCreate extends Fragment {
         return new Party(partyName, partyDescription, startTime, endTime, maxPeople, sessionManager.getUserId(), price, null);
     }
 
-    private void showDateTimeDialog(final TextView date_time_in) {
+    private void showDateTimeDialog(final TextView date_time_in, final boolean isEndDate) {
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -207,6 +217,10 @@ public class PartyCreate extends Fragment {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
                         date_time_in.setText(simpleDateFormat.format(calendar.getTime()));
+
+                        if (isEndDate) {
+                            updateEndDateRemoveButton();
+                        }
                     }
                 };
 
@@ -216,6 +230,16 @@ public class PartyCreate extends Fragment {
 
         new DatePickerDialog(getActivity(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
 
+    }
+
+    private void updateEndDateRemoveButton() {
+        TextView endDateText = view.findViewById(R.id.textView_end);
+        Button removeButton = view.findViewById(R.id.button_remove_end);
+        if (endDateText.getText().toString().equals("No date set")) {
+            removeButton.setVisibility(View.GONE);
+        } else {
+            removeButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void submitParty(Party p) {

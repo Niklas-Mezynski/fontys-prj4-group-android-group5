@@ -53,6 +53,11 @@ public class UserPersistence implements RetrofitPersistence {
         return this.userApi.updateUser(user_id, user);
     }
 
+    public Observable<ResponseBody> updateUser(User user) {
+        //RequestBody requestBody = new RequestBody
+        return this.userApi.updateUser(user.getId(), user);
+    }
+
     public Observable<ResponseBody> downloadProfilePic(String user_id) {
         //RequestBody requestBody = new RequestBody
         return this.userApi.downloadProfilePicture(user_id);
