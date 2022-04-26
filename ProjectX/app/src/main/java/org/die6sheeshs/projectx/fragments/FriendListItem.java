@@ -34,6 +34,8 @@ public class FriendListItem extends Fragment {
     private boolean isFriend;
     private View view;
 
+    public FriendListItem() {}
+
     public FriendListItem(Friend friend,boolean isFriend) {
         this.friend = friend;
         this.isFriend = isFriend;
@@ -67,19 +69,19 @@ public class FriendListItem extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        init();
         this.view = inflater.inflate(R.layout.fragment_friend_list_item, container, false);
+        init();
         return view;
     }
 
     private void init(){
-        setUserName();
         setPicture();
+        setUserName();
         setAction();
     }
 
     private void setUserName(){
-        TextView username = view.findViewById(R.id.username);
+        TextView username = view.findViewById(R.id.userName);
         username.setText(friend.getNick_name());
     }
     private void setPicture(){

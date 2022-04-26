@@ -25,4 +25,14 @@ public class Friend {
     public String getAbout_me() {
         return about_me;
     }
+
+    @Override
+    public String toString() {
+        return "Friend{" +
+                "friend_id='" + friend_id + '\'' +
+                ", nick_name='" + nick_name + '\'' +
+                ", profile_pic='" + profile_pic + '\'' +
+                ", about_me='" + about_me + '\'' +
+                '}';
+    }
 }

@@ -2,6 +2,7 @@ package org.die6sheeshs.projectx.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,16 +53,17 @@ public class ProfileFriendsTab extends Fragment {
         resp.subscribeOn(Schedulers.io())
                 .subscribe(friends -> {
                     for (Friend f :friends) {
+                        System.out.println("NewFriendfsfdsfs: "+f.toString());
                         getActivity().runOnUiThread(()->{
                             FragmentManager fragMan = getChildFragmentManager();
                             FragmentTransaction fragTransaction = fragMan.beginTransaction();
-                            Fragment fragment = new FriendListItem(f, true);
+                            Fragment fragment = FriendListItem.newInstance(f, true);
 
                             fragTransaction.add(linearLayoutV.getId(), fragment, "friend#" + f.getFriend_id());
 
                             fragTransaction.commit();
                         });
                     }
-                });
+                }, error -> Log.e("FriendTabs", error.getMessage()));
     }
 }

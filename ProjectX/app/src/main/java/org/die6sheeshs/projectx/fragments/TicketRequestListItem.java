@@ -19,6 +19,7 @@ import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
@@ -133,9 +134,10 @@ public class TicketRequestListItem extends Fragment {
     private void setProfilePicture(View v, String pictureURL) {
         ImageView profile_pic = (ImageView) v.findViewById(R.id.image_profilepic);
         //Picasso.get().load(pictureURL).into(profile_pic);
-        byte[] decodedString = Base64.getDecoder().decode(pictureURL);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        profile_pic.setImageBitmap(decodedByte);
+        /*byte[] decodedString = Base64.getDecoder().decode(pictureURL);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);*/
+        Bitmap decodedPic = ImageConversion.base64ToBitmap(pictureURL);
+        profile_pic.setImageBitmap(decodedPic);
     }
 
     private void initAcceptButton(View v) {
