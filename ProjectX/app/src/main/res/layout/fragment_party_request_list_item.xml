@@ -19,7 +19,7 @@
             android:id="@+id/image_profilepic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:scaleType="centerInside"
             tools:src="@tools:sample/avatars" />
 

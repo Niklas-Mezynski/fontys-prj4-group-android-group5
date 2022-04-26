@@ -56,15 +56,7 @@ public class TicketRequestListItem extends Fragment {
             this.ticketRequest = ticketRequest;
         }
         try {
-            Observable<User> userObservable = UserPersistence.getInstance().getUserData(this.ticketRequest.getUserId());
-            userObservable.subscribeOn(Schedulers.io())
-                    .subscribe(user1 -> {
-                        this.user = user1;
-                        Log.println(Log.INFO,"UserMain", this.user.toString());
-                        getActivity().runOnUiThread(() -> {
-                            initView(ticketRequest, user);
-                        });
-                    });
+
             /*userObservable.subscribe(user1 -> {
                     Log.println(Log.INFO, "!!!USER-OBSERVABLE!!!", user1.toString());
             });*/
@@ -103,16 +95,24 @@ public class TicketRequestListItem extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_party_request_list_item, container, false);
 
-        // initView(ticketRequest, user);
+        initView(ticketRequest);
 
         // Inflate the layout for this fragment
         return view;
     }
 
-    private void initView(TicketRequest ticketRequest, User user) {
-        initAcceptButton(view);
-        initDeclineButton(view);
-        setRequestData(view);
+    private void initView(TicketRequest ticketRequest) {
+        Observable<User> userObservable = UserPersistence.getInstance().getUserData(this.ticketRequest.getUserId());
+        userObservable.subscribeOn(Schedulers.io())
+                .subscribe(user1 -> {
+                    this.user = user1;
+                    Log.println(Log.INFO,"UserMain", this.user.toString());
+                    getActivity().runOnUiThread(() -> {
+                        initAcceptButton(view);
+                        initDeclineButton(view);
+                        setRequestData(view);
+                    });
+                }, error -> Log.e("UserMainError", error.getMessage()));
     }
 
     private void setRequestData(View v) {
