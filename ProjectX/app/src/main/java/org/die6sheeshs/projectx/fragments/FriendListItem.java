@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Friend;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,8 +44,6 @@ public class FriendListItem extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FriendListItem.
      */
     // TODO: Rename and change types and number of parameters
@@ -84,7 +84,10 @@ public class FriendListItem extends Fragment {
     }
     private void setPicture(){
         ImageView profile_pic = view.findViewById(R.id.image_profilepic);
-
+        Bitmap image = ImageConversion.base64ToBitmap(friend.getProfile_pic());
+        if(image!=null){
+            profile_pic.setImageBitmap(image);
+        }
     }
 
     private void setAction(){
