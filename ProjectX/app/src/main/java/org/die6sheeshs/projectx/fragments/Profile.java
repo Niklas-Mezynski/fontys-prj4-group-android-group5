@@ -167,21 +167,28 @@ public class Profile extends Fragment {
     }
 
     private void initProfileData() {
-        User user = SessionManager.getInstance().getUser();
-        tv_firstName.setText(user.getFirstName());
-        tv_lastName.setText(user.getLastName());
-        tv_email.setText(user.getEmail());
-        tv_nickname.setText(user.getNick_name());
-        if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
-            displayProfilePicture(user.getProfile_pic());
-        }
+//        User user = SessionManager.getInstance().getUser();
+        Observable<User> userData = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
+        userData.subscribeOn(Schedulers.io())
+                .subscribe(
+                        user -> getActivity().runOnUiThread(() -> {
+                            tv_firstName.setText(user.getFirstName());
+                            tv_lastName.setText(user.getLastName());
+                            tv_email.setText(user.getEmail());
+                            tv_nickname.setText(user.getNick_name());
+                            if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
+                                displayProfilePicture(user.getProfile_pic());
+                            }
+                        })
+                );
+
     }
 
     private void displayProfilePicture(String base64) {
         //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
         Schedulers.io().scheduleDirect(() -> {
             Bitmap bmp = ImageConversion.base64ToBitmap(base64);
-            
+
             if (bmp == null) {
                 return;
             }
@@ -193,21 +200,21 @@ public class Profile extends Fragment {
     private void uploadPicture(String fileName) {
         //TODO Run that on a separate thread
         Schedulers.io().scheduleDirect(() -> {
-            String id = SessionManager.getInstance().getUserId();
             //Reading the file
             File file = new File(getContext().getExternalFilesDir("my_images"), fileName);
-            byte[] bytes;
-            //Converting it into a byte array
-            try {
-                bytes = Files.readAllBytes(file.toPath());
-            } catch (IOException e) {
-                Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show();
-                Log.e("File upload", e.getMessage());
-                return;
-            }
+//            byte[] bytes;
+//            //Converting it into a byte array
+//            try {
+//                bytes = Files.readAllBytes(file.toPath());
+//            } catch (IOException e) {
+//                Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show();
+//                Log.e("File upload", e.getMessage());
+//                return;
+//            }
             //Encode to base64 and send it to the restAPI
-            String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+            String base64 = ImageConversion.fileToBase64(file);
 
+            String id = SessionManager.getInstance().getUserId();
             Observable<ResponseBody> response = UserPersistence.getInstance().uploadPicture(id, base64);
             response.subscribeOn(Schedulers.io())
                     .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
