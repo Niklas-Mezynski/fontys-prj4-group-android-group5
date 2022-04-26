@@ -175,7 +175,7 @@ public class PartyListItem extends Fragment {
                     if(firstImgOpt.isPresent()){
                         byte[] decode = Base64.decode(firstImgOpt.get().getPicture(), Base64.DEFAULT);
                         Bitmap decodedBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
-                        getActivity().runOnUiThread(()->{
+                        getActivity().runOnUiThread(()->{// todo fix throws error attempt to invoke method(runOnUiThread) on null object reference(get activity seems to be null, du to long loading times)
                             img.setImageBitmap(decodedBmp);
                         });
                     }else{

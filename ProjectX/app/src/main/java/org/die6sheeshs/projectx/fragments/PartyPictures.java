@@ -27,6 +27,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.io.File;
@@ -70,7 +71,7 @@ public class PartyPictures extends Fragment {
                 }
             });
 
-    private List<byte[]> images = new ArrayList<>();
+    private List<String> images = new ArrayList<>();
 
     PartyPictures(Party p){
         this.p = p;
@@ -97,11 +98,7 @@ public class PartyPictures extends Fragment {
         this.takeImageUri = getUriForFile(getContext(), "org.die6sheeshs.projectx.fileprovider", newFile);
         takePhotoActivity = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
             if(result){
-                try {
-                    images.add(Files.readAllBytes(newFile.toPath()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    images.add(ImageConversion.fileToBase64(newFile));
                 updateImageViews();
             }
         });
@@ -214,7 +211,8 @@ public class PartyPictures extends Fragment {
         uploadPicsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PartyPersistence.getInstance().deletePartyPictures(p.getId()).subscribe(count -> {
+                PartyPersistence.getInstance().deletePartyPictures(p.getId()).subscribeOn(Schedulers.io())
+                        .subscribe(count -> {
                     Schedulers.io().scheduleDirect(() -> {
                         if(images.size() != 0 && mainImageIndex < images.size() && mainImageIndex >= 0){
                             uploadPic(images.get(mainImageIndex));
@@ -225,7 +223,7 @@ public class PartyPictures extends Fragment {
                         for(int i = 0; i < images.size(); i++){
                             if(i != mainImageIndex){
                                 int finalI = i;
-                                        byte[] bytes = images.get(finalI);
+                                        String bytes = images.get(finalI);
                                         uploadPic(bytes);
                             }
                         }
@@ -240,8 +238,8 @@ public class PartyPictures extends Fragment {
     }
 
 
-    private void uploadPic(byte[] bytes){
-        String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+    private void uploadPic(String bytes){
+        String base64 = bytes;
         Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64);
         response.subscribeOn(Schedulers.io())
                 .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
