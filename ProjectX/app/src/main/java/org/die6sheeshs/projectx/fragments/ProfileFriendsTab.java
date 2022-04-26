@@ -28,4 +28,8 @@ public class ProfileFriendsTab extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tab_friends, container, false);
         return view;
     }
+
+    init(){
+
+    }
 }

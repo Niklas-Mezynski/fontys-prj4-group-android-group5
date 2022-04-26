@@ -740,65 +740,19 @@ public class PartyDetail extends Fragment {
                                 response2.subscribeOn(Schedulers.io())
                                         .subscribe(user->{
                                             getActivity().runOnUiThread(()->{
-                                                LayoutInflater inflater = getLayoutInflater();
-                                                View layout = inflater.inflate(R.layout.toast_layout,null);
-
-                                                ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                                image.setImageResource(R.drawable.ic_baseline_check_24);
-                                                TextView text = (TextView) layout.findViewById(R.id.text);
-                                                text.setText("Valid ticket: "+user.getFirstName() +" "+ user.getLastName());
-                                                layout.setBackgroundColor(Color.parseColor("#ff00ff00"));
-                                                Toast toast = new Toast(getContext());
-                                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                                toast.setDuration(Toast.LENGTH_LONG);
-                                                toast.setView(layout);
-                                                toast.show();
+                                                OurToast.makeToast( "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(),"#ff00ff00",R.drawable.ic_baseline_check_24,getContext(),getLayoutInflater());
                                             });
 
                                         },error -> Log.v("User","Error get User with id "+error.getMessage()));
                             }else{
                                 getActivity().runOnUiThread(()-> {
-                                    LayoutInflater inflater = getLayoutInflater();
-                                    View layout = inflater.inflate(R.layout.toast_layout, null);
-
-                                    ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                    image.setImageResource(R.drawable.ic_baseline_clear_24);
-                                    TextView text = (TextView) layout.findViewById(R.id.text);
-                                    text.setText("Not your party bro");
-                                    layout.setBackgroundColor(Color.parseColor("#ffff0000"));
-                                    Toast toast = new Toast(getContext());
-                                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                    toast.setDuration(Toast.LENGTH_LONG);
-                                    toast.setView(layout);
-                                    toast.show();
+                                    OurToast.makeToast("Not your party bro" ,"#ffff0000",R.drawable.ic_baseline_clear_24,getContext(),getLayoutInflater());
                                 });
                             }
                         },(error) ->{
                             Log.v("Ticket","Error get Ticket with id "+error.getMessage());
                             getActivity().runOnUiThread(()->{
-                                LayoutInflater inflater = getLayoutInflater();
-                                View layout = inflater.inflate(R.layout.toast_layout,null);
-
-                                ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                image.setImageResource(R.drawable.ic_baseline_clear_24);
-                                TextView text = (TextView) layout.findViewById(R.id.text);
-                                text.setText("Ticket not found");
-                                layout.setBackgroundColor(Color.parseColor("#ffff0000"));
-                                Toast toast = new Toast(getContext());
-                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                toast.setDuration(Toast.LENGTH_LONG);
-                                toast.setView(layout);
-                                toast.show();
-                                /*
-                                Toast toast = Toast.makeText(getContext(), "Ticket not found", Toast.LENGTH_LONG);
-                                View view = toast.getView();
-
-                                //Gets the actual oval background of the Toast then sets the colour filter
-                                view.setBackgroundColor(Color.parseColor("#ffff0000"));
-
-                                //Gets the TextView from the Toast so it can be editted
-                                TextView text = view.findViewById(android.R.id.message);
-                                toast.show();*/
+                                OurToast.makeToast("Ticket not found","#ffff0000",R.drawable.ic_baseline_clear_24,getContext(),getLayoutInflater());
                             });
                         });
             }
