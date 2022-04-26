@@ -114,6 +114,9 @@ ALTER TABLE event
 
 
 -- Custom function to get all friends from the database
+
+--DROP FUNCTION getfriendinfos(character varying);
+
 CREATE OR REPLACE function getFriendInfos(user_id varchar)
     RETURNS TABLE
             (
