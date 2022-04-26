@@ -28,6 +28,8 @@ import org.die6sheeshs.projectx.entities.Party;
 import java.io.File;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,7 @@ public class PartyPictures extends Fragment {
                 if (isGranted) {
                     // Permission is granted. Continue the action or workflow in your app.
                     takePhotoActivity.launch(takeImageUri);
+
                 } else {
                     // Explain to the user that the feature is unavailable because the
                     // features requires a permission that the user has denied. At the
@@ -85,7 +88,14 @@ public class PartyPictures extends Fragment {
         File newFile = new File(getContext().getExternalFilesDir("my_images"), "fileName.jpg");
         this.takeImageUri = getUriForFile(getContext(), "org.die6sheeshs.projectx.fileprovider", newFile);
         takePhotoActivity = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
-
+            if(result){
+                try {
+                    images.add(Files.readAllBytes(newFile.toPath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                updateImageViews();
+            }
         });
     }
 
@@ -102,7 +112,6 @@ public class PartyPictures extends Fragment {
     }
 
     private void initElements(){
-        initAddPictureButton();
         loadPicturesOfParty();
         initUploadPictures();
         updateImageViews();
@@ -112,6 +121,7 @@ public class PartyPictures extends Fragment {
 
     private void updateImageViews(){
         LinearLayout linearLayout = v.findViewById(R.id.party_pictures_linear_layout);
+        linearLayout.removeAllViews();
 
         FragmentManager fragMan = getChildFragmentManager();
         FragmentTransaction fragTransaction = fragMan.beginTransaction();
@@ -196,19 +206,19 @@ public class PartyPictures extends Fragment {
         uploadPicsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //todo delete all images in backed associated with this party
+
                 //todo upload images
                 for(byte[] bytes: images){
-
+                
                 }
+                //todo return to partyOverview
             }
         });
 
     }
 
-    private void initAddPictureButton(){
-        Button addPicBtn = (Button) v.findViewById(R.id.addPictureButton);
 
-    }
 
     private void askPermAndTakeImg(View clickedView) {
         //Checking for camera permissions
