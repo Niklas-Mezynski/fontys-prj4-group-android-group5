@@ -23,14 +23,14 @@ INSERT INTO userlocation (user_id, latitude, longitude, created_on)
 VALUES ('5243fwersdgerv', 0.69, -1.87, current_timestamp)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO event (id, user_id, name, description, start, "end", max_people)
-VALUES ('abc', '12', 'Fette party', 'SAUFEEEEEn', '2025-04-04', '2025-04-05', 187),
-       ('uerhfgweo', '12', 'PRALLES PARTY', 'Hier riechts nach gras', '2025-04-04', '2025-04-05', 69),
-       ('bf3rihhbe', '12', 'Techno Party', 'Baba mukke baba drogen', '2025-04-04', '2025-04-05', 420)
+INSERT INTO event (id, user_id, name, description, start, "end", max_people, price)
+VALUES ('abc', '12', 'Fette party', 'SAUFEEEEEn', '2025-04-04', '2025-04-05', 187, 20),
+       ('uerhfgweo', '12', 'PRALLES PARTY', 'Hier riechts nach gras', '2025-04-04', '2025-04-05', 69, 13),
+       ('bf3rihhbe', '12', 'Techno Party', 'Baba mukke baba drogen', '2025-04-04', '2025-04-05', 420, 12)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO event (id, user_id, name, description, start, "end", max_people)
-VALUES ('def', 'db7c3024-d53d-4bcf-85df-718cc5198b90', 'Andere fette party', 'Suff suff suff', '2025-04-04', '2025-04-05', 420)
+INSERT INTO event (id, user_id, name, description, start, "end", max_people, price)
+VALUES ('def', 'db7c3024-d53d-4bcf-85df-718cc5198b90', 'Andere fette party', 'Suff suff suff', '2025-04-04', '2025-04-05', 420, 16)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO eventlocation (event_id, latitude, longitude, created_on)
