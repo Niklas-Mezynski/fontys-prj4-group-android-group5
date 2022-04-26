@@ -2,6 +2,8 @@ package org.die6sheeshs.projectx.fragments;
 
 import static androidx.core.content.FileProvider.getUriForFile;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,13 +21,13 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
@@ -52,6 +54,8 @@ public class Profile extends Fragment {
 
     static final int REQUEST_IMAGE_CAPTURE = 187;
 
+    private static final String fileName = "cameraProfilePic.jpg";
+
     // TODO: Rename and change types of parameters
     private ActivityResultLauncher<Uri> takePhotoActivity;
     private Uri takeImageUri;
@@ -67,6 +71,22 @@ public class Profile extends Fragment {
     private AppCompatImageButton cancelUpload;
     private TabLayout tabLayout;
     private ViewPager profileViewPager;
+
+    //Register the callback (action to perform) when user answered the permission request
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Permission is granted. Continue the action or workflow in your app.
+                    takePhotoActivity.launch(takeImageUri);
+                } else {
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
+                    Toast.makeText(getContext(), "Cannot take a new profile picture without permission", Toast.LENGTH_SHORT).show();
+                }
+            });
 
 
     public Profile() {
@@ -99,7 +119,7 @@ public class Profile extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        File newFile = new File(getContext().getExternalFilesDir("my_images"), "cameraProfilePic.jpg");
+        File newFile = new File(getContext().getExternalFilesDir("my_images"), fileName);
         this.takeImageUri = getUriForFile(getContext(), "org.die6sheeshs.projectx.fileprovider", newFile);
         takePhotoActivity = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
             //Do something with the image after a picture was taken
@@ -128,18 +148,17 @@ public class Profile extends Fragment {
         cancelUpload = view.findViewById(R.id.button_retakeProfilePicture);
 
         //Add listeners
-        imageView.setOnClickListener(clickedView -> {
-            ((MainActivity) getActivity()).requestCameraPermission();
-            takePhotoActivity.launch(takeImageUri);
 
-        });
-
+        //Listener for taking an image
+        imageView.setOnClickListener(this::askPermAndTakeImg);
+        //Listener for uploading the taken image
         uploadPicture.setOnClickListener(this::upload);
-
+        //Listener for cancelling the profile picture update
         cancelUpload.setOnClickListener(view1 -> {
             initProfileData();
         });
 
+        //Display the Users data (and profile pic) in the fragment
         initProfileData();
 
         initTabs();
@@ -156,20 +175,6 @@ public class Profile extends Fragment {
         if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
             displayProfilePicture(user.getProfile_pic());
         }
-//        Observable<User> userDataResponse = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
-//        userDataResponse.subscribeOn(Schedulers.io())
-//                .subscribe(user -> {
-//                    getActivity().runOnUiThread(() -> {
-//                        tv_firstName.setText(user.getFirstName());
-//                        tv_lastName.setText(user.getLastName());
-//                        tv_email.setText(user.getEmail());
-//                        tv_nickname.setText(user.getNick_name());
-//                        if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
-//                            displayProfilePicture(user.getProfile_pic());
-//                        }
-//                    });
-//                }, (error) -> Log.e("Get user data in profile", error.getMessage()));
-
     }
 
     private void displayProfilePicture(String base64) {
@@ -185,12 +190,12 @@ public class Profile extends Fragment {
 //        getActivity().runOnUiThread(() -> imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, imageView.getWidth(), imageView.getHeight(), false)));
     }
 
-    private void uploadPicture() {
+    private void uploadPicture(String fileName) {
         //TODO Run that on a separate thread
         Schedulers.io().scheduleDirect(() -> {
             String id = SessionManager.getInstance().getUserId();
             //Reading the file
-            File file = new File(getContext().getExternalFilesDir("my_images"), "cameraProfilePic.jpg");
+            File file = new File(getContext().getExternalFilesDir("my_images"), fileName);
             byte[] bytes;
             //Converting it into a byte array
             try {
@@ -215,7 +220,7 @@ public class Profile extends Fragment {
     }
 
     private void upload(View clickedView) {
-        uploadPicture();
+        uploadPicture(fileName);
     }
 
     private void initTabs() {
@@ -234,5 +239,19 @@ public class Profile extends Fragment {
                 tabLayout.setupWithViewPager(profileViewPager);
             }
         });
+    }
+
+    private void askPermAndTakeImg(View clickedView) {
+        //Checking for camera permissions
+        if (ContextCompat.checkSelfPermission(
+                getContext(), Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // You can use the API that requires the permission.
+            takePhotoActivity.launch(takeImageUri);
+        } else {
+            // You can directly ask for the permission.
+            // The registered ActivityResultCallback gets the result of this request.
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
     }
 }
