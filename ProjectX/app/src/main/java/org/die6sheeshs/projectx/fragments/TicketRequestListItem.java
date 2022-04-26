@@ -100,7 +100,6 @@ public class TicketRequestListItem extends Fragment {
     private void setRequestData(View v) {
         setFirstName(v, user.getFirstName());
         setLastName(v, user.getLastName());
-        setAboutMe(v, user.getAbout_me());
         setProfilePicture(v, user.getProfile_pic());
     }
 
@@ -112,11 +111,6 @@ public class TicketRequestListItem extends Fragment {
     private void setLastName(View v, String lastName) {
         TextView lName = (TextView) v.findViewById(R.id.lastName);
         lName.setText(lastName);
-    }
-
-    private void setAboutMe(View v, String aboutMe) {
-        TextView aMe = (TextView) v.findViewById(R.id.aboutMe);
-        aMe.setText(aboutMe);
     }
 
     private void setProfilePicture(View v, String pictureURL) {
