@@ -19,15 +19,16 @@ CREATE TABLE ticket
 );
 CREATE TABLE "user"
 (
-    id          varchar(128) NOT NULL,
-    firstName   varchar(40)  NOT NULL,
-    lastName    varchar(40)  NOT NULL,
-    email       varchar(320) NOT NULL UNIQUE,
-    nick_name   varchar(40)  NOT NULL UNIQUE,
-    birth_date  date         NOT NULL,
-    profile_pic varchar,
-    about_me    varchar(2048),
-    password    varchar(256) NOT NULL,
+    id            varchar(128) NOT NULL,
+    firstName     varchar(40)  NOT NULL,
+    lastName      varchar(40)  NOT NULL,
+    email         varchar(320) NOT NULL UNIQUE,
+    nick_name     varchar(40)  NOT NULL UNIQUE,
+    birth_date    date         NOT NULL,
+    profile_pic   varchar,
+    about_me      varchar(2048),
+    password      varchar(256) NOT NULL,
+    firebaseToken varchar,
     PRIMARY KEY (id)
 );
 CREATE TABLE event

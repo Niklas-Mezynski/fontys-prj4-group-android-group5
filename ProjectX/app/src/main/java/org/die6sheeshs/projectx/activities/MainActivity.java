@@ -1,7 +1,6 @@
 package org.die6sheeshs.projectx.activities;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -9,27 +8,36 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.databinding.ActivityMainBinding;
-import org.die6sheeshs.projectx.fragments.PartyOverview;
+import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.fragments.Home;
+import org.die6sheeshs.projectx.fragments.PartyOverview;
 import org.die6sheeshs.projectx.fragments.Profile;
 import org.die6sheeshs.projectx.fragments.Tickets;
 import org.die6sheeshs.projectx.helpers.PropertyService;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.FirebaseMessagingHandler;
+import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.util.function.Consumer;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 //        getAndConsumeLastLocation(location -> Log.v("Location", "Location fetched successfully"));
 
-        //Initialize Firebase Messaging Handler
-        firebaseMessagingHandler = new FirebaseMessagingHandler();
+        sendFirebaseTokenToServer();
+
 
         findViewById(R.id.createParty);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -69,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         binding.bottomNavigationView.setOnItemSelectedListener(menuListener);
 
     }
+
 
     public void getAndConsumeLastLocation(Consumer<Location> func) {
         //Get user permission
@@ -120,8 +129,26 @@ public class MainActivity extends AppCompatActivity {
         return true;
     };
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void sendFirebaseTokenToServer() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("FirebaseTokenGeneration", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log and toast
+                        String msg = getString(R.string.msg_token_fmt, token);
+                        Log.d("FirebaseTokenGeneration", msg);
+
+                        //Upload the new token to the server
+                        FirebaseMessagingHandler.uploadFirebaseTokenToServer(token);
+                    }
+                });
     }
 }
