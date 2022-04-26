@@ -6,6 +6,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +14,9 @@ import java.nio.file.Files;
 import io.reactivex.schedulers.Schedulers;
 
 public class ImageConversion {
+
+    private static final int QUALITY = 85;
+
     public static Bitmap base64ToBitmap(String base64) {
         //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
         byte[] decode = Base64.decode(base64, Base64.DEFAULT);
@@ -30,7 +34,34 @@ public class ImageConversion {
             return null;
         }
         //Encode to base64 and send it to the restAPI
-        return Base64.encodeToString(bytes, Base64.DEFAULT);
+        return Base64.encodeToString(compressToJPEG(bytes, 1080), Base64.DEFAULT);
+    }
+
+    private static byte[] compressToJPEG(byte[] input, int maxLandcapeHeight){
+        Bitmap bmpLarge = BitmapFactory.decodeByteArray(input, 0, input.length);
+        double factor = 1;
+        if(bmpLarge.getWidth() > bmpLarge.getHeight() ){//landscape picture
+            if(bmpLarge.getHeight() > maxLandcapeHeight){
+                factor = maxLandcapeHeight*1.00/bmpLarge.getHeight();
+            }
+        }else{// portrait picture
+            if(bmpLarge.getWidth() > maxLandcapeHeight){
+                factor = maxLandcapeHeight*1.00/bmpLarge.getWidth();
+            }
+        }
+        Bitmap bmp;
+        if(factor < 1){//downscale img to maxLandcapeHeight
+            int calcWidth = (int)(bmpLarge.getWidth()*factor);
+            int calcHeight = (int) (bmpLarge.getHeight()*factor);
+            bmp = Bitmap.createScaledBitmap(bmpLarge, calcWidth, calcHeight, false);
+        }else{
+            bmp = bmpLarge;
+        }
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, QUALITY, stream);
+        byte[] byteArray = stream.toByteArray();
+        return byteArray;
     }
 
 }

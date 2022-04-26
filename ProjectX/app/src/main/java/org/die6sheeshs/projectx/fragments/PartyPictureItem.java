@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +35,15 @@ public class PartyPictureItem extends Fragment {
 
     private final View.OnClickListener deleteHandler, mainImageHandler;
 
-    PartyPictureItem(byte[] image, View.OnClickListener deleteHandler, View.OnClickListener mainImageHandler, boolean mainImage){
-        this.image = BitmapFactory.decodeByteArray(image, 0, image.length);
+    PartyPictureItem(String image, View.OnClickListener deleteHandler, View.OnClickListener mainImageHandler, boolean mainImage){
+        this.image = ImageConversion.base64ToBitmap(image);
         this.deleteHandler = deleteHandler;
         this.mainImageHandler = mainImageHandler;
         isMainImage = mainImage;
     }
 
 
-    public static PartyPictureItem newInstance(String param1, String param2, byte[] image, View.OnClickListener deleteHandler, View.OnClickListener mainImageHandler, boolean  mainImage) {
+    public static PartyPictureItem newInstance(String param1, String param2, String image, View.OnClickListener deleteHandler, View.OnClickListener mainImageHandler, boolean  mainImage) {
         PartyPictureItem fragment = new PartyPictureItem(image, deleteHandler, mainImageHandler, mainImage);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
