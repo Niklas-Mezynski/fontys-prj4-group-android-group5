@@ -7,6 +7,7 @@
     tools:context=".fragments.PartyListItem">
 
     <LinearLayout
+        android:id="@+id/wrapper"
         android:layout_width="0dp"
         android:layout_height="128dp"
         android:layout_marginTop="8dp"
@@ -19,7 +20,7 @@
             android:id="@+id/image_profilepic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:scaleType="centerInside"
             tools:src="@tools:sample/avatars" />
 
@@ -34,30 +35,10 @@
                 android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/first_name" />
-
-            <TextView
-                android:id="@+id/lastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="50px"
-                android:text="@string/last_name" />
-
-            <TextView
-                android:id="@+id/aboutMe"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/about_me" />
+                android:text="username"
+                android:textSize="20sp" />
 
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_acceptDecline"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical"/>
 
     </LinearLayout>
 

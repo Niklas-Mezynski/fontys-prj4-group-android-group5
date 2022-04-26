@@ -1,11 +1,9 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,20 +12,12 @@ import androidx.fragment.app.Fragment;
 import com.squareup.picasso.Picasso;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
-import org.die6sheeshs.projectx.restAPI.TicketPersistence;
-import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.NoSuchElementException;
-
-import io.reactivex.Observable;
 
 public class TicketRequestListItem extends Fragment {
 
@@ -104,7 +94,7 @@ public class TicketRequestListItem extends Fragment {
     }
 
     private void setFirstName(View v, String firstName) {
-        TextView fName = (TextView) v.findViewById(R.id.firstName);
+        TextView fName = (TextView) v.findViewById(R.id.username);
         fName.setText(firstName);
     }
 
