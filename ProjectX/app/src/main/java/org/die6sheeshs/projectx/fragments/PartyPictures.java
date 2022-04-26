@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.io.File;
 
@@ -32,6 +36,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public class PartyPictures extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -45,6 +52,7 @@ public class PartyPictures extends Fragment {
     private Button takePicture;
     private ActivityResultLauncher<Uri> takePhotoActivity;
     private Uri takeImageUri;
+    private Button submitPictures;
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -209,9 +217,19 @@ public class PartyPictures extends Fragment {
                 //todo delete all images in backed associated with this party
 
                 //todo upload images
-                for(byte[] bytes: images){
-                
-                }
+
+                    Schedulers.io().scheduleDirect(() -> {
+                        for(byte[] bytes: images) {
+                            String base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                            Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64);
+                            response.subscribeOn(Schedulers.io())
+                                    .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
+                                                Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
+                                            })
+                                            , throwable -> getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show()));
+                        }
+                    });
+
                 //todo return to partyOverview
             }
         });

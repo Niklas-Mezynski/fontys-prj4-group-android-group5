@@ -93,7 +93,7 @@ public class PartyPersistence implements RetrofitPersistence {
     public Observable<List<Pictures>> getPartyPictures(String partyId) {return this.partyApi.getPicturesOfParty(partyId);}
 
     public Observable<Pictures> uploadPartyPictures(String event_id, String base64){
-        Pictures pictures = new Pictures(event_id, base64);
+        Pictures pictures = new Pictures(base64);
         return this.partyApi.uploadPictures(event_id, pictures);
     }
 }

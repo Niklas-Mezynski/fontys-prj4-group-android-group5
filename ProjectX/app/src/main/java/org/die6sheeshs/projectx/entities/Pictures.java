@@ -14,6 +14,10 @@ public class Pictures {
         this.base64 = base64;
     }
 
+    public Pictures(String base64){
+        this.base64 = base64;
+    }
+
     public String getId() {
         return event_id;
     }
