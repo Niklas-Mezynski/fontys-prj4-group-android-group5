@@ -499,20 +499,7 @@ public class PartyDetail extends Fragment {
                                             getActivity().runOnUiThread(()->{
                                                 Fragment frag = new PartyOverview();
                                                 ((MainActivity) getActivity()).replaceFragment(frag);
-
-                                                LayoutInflater inflater = getLayoutInflater();
-                                                View layout = inflater.inflate(R.layout.toast_layout,null);
-
-                                                ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                                image.setImageResource(R.drawable.ic_baseline_clear_24);
-                                                TextView text = (TextView) layout.findViewById(R.id.text);
-                                                text.setText("Ticket not found");
-                                                layout.setBackgroundColor(Color.parseColor("#ffff0000"));
-                                                Toast toast = new Toast(getContext());
-                                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                                toast.setDuration(Toast.LENGTH_LONG);
-                                                toast.setView(layout);
-                                                toast.show();
+                                                OurToast.makeToast("Party deleted successfully" ,"#ff00ff00",R.drawable.ic_baseline_clear_24,getContext(),getLayoutInflater());
                                             });
                                         },(error) ->{
                                             Log.v("Party","Error delete party by party id  "+error.getMessage());});
