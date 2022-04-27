@@ -121,10 +121,10 @@ DROP FUNCTION getfriendinfos(character varying)
 CREATE OR REPLACE function getFriendInfos(user_id varchar)
     RETURNS TABLE
             (
-                friend_id varchar,
-                nick_name varchar,
-			profile_pic varchar,
-			about_me varchar
+                friend_id   varchar,
+                nick_name   varchar,
+                profile_pic varchar,
+                about_me    varchar
             )
     language plpgsql
 as

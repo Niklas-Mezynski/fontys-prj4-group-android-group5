@@ -19,9 +19,16 @@ import { LocalDbDataSource } from './datasources';
 import { UserRepository } from './repositories';
 import { CustomUserService } from './services';
 import { UserService } from '@loopback/authentication';
-
+import { applicationDefault, cert, Credential, initializeApp } from "firebase-admin/app";
 
 export { ApplicationConfig };
+
+// const firebasePath = "C:\\Users\\nikla\\Documents\\Uni\\Semester_4\\PRJ4\\projectx_admin_sdk.json";
+const firebasePath = "..\\..\\projectx_admin_sdk.json";
+
+// Initialize firebase-admin app
+export const firebaseApp = initializeApp({ credential: cert(firebasePath) });
+// export const firebaseApp = initializeApp({ credential: applicationDefault() });
 
 export class ProjectX extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
