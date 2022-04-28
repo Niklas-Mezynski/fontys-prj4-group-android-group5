@@ -17,6 +17,12 @@ export class Pictures extends Entity {
   })
   base64: string;
 
+  @property({
+    type: 'boolean',
+    required: false,
+  })
+  main_img: boolean;
+
   @belongsTo(() => Event, { name: 'event' })
   event_id: string;
 
