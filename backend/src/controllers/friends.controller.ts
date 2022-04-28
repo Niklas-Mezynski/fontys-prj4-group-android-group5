@@ -2,17 +2,15 @@
 import {
   del,
   get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
   param,
-  patch,
-  post,
-  requestBody,
+  response,
 } from '@loopback/rest';
-import { AnyObject, Filter, repository } from "@loopback/repository";
+import {AnyObject, Filter, repository} from '@loopback/repository';
 import { FriendsRepository } from "../repositories";
-import { Friends, User } from '../models';
+import {Friends} from '../models';
 import { authenticate } from '@loopback/authentication';
+import {inject} from '@loopback/core';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 
 // import {inject} from '@loopback/core';
 
@@ -45,4 +43,37 @@ export class FriendsController {
     let queryResult = await this.friendsRepository.getFriendsForUser(id);
     return queryResult;
   }
+
+  @get('/users/search/{name}')
+  @response(200, {
+    responses: {
+      '200': {
+        description: 'Get all friends for a user',
+        content: {
+          'application/json': {
+            // schema: {type: 'array', items: getModelSchemaRef(Friends)},
+          },
+        },
+      },
+    },
+  })
+  async findByName(
+    @param.path.string('name') username: string,
+    @param.query.object('filter') filter?: Filter<Friends>,
+  ): Promise<AnyObject> {
+    return this.friendsRepository.getFriendByName(username);
+  }
+
+  @del("/users/{user_id}/friends/{friend_id}")
+  @response(204, {
+    description: 'Event DELETE success',
+  })
+  async deleteByIds(
+    @param.path.string('user_id') userId: string,
+    @param.path.string('friend_id') friendId: string,
+    @inject(SecurityBindings.USER) currentUserProfile: UserProfile
+  ): Promise<void> {
+    await this.friendsRepository.deleteByIds(userId, friendId, currentUserProfile);
+  }
+
 }
