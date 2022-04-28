@@ -240,7 +240,7 @@ public class Profile extends Fragment {
             @Override
             public void run() {
                 profileViewPagerAdapter.addFragment(ProfileFriendsTab.getInstance(), "Friends");
-                // profileViewPagerAdapter.addFragment(ProfileSearchTab.getInstance(), "Search");
+                profileViewPagerAdapter.addFragment(ProfileSearchTab.getInstance(), "Search");
                 profileViewPagerAdapter.addFragment(ProfileNotificationsTab.getInstance(), "Notifications");
                 profileViewPager.setAdapter(profileViewPagerAdapter);
                 tabLayout.setupWithViewPager(profileViewPager);

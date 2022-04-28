@@ -2,9 +2,15 @@ package org.die6sheeshs.projectx.helpers;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+//import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,21 +30,13 @@ public class ImageConversion {
     }
 
     public static String fileToBase64(File file) {
-        //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
-        byte[] bytes;
-        //Converting it into a byte array
-        try {
-            bytes = Files.readAllBytes(file.toPath());
-        } catch (IOException e) {
-            Log.e("File upload", e.getMessage());
-            return null;
-        }
         //Encode to base64 and send it to the restAPI
-        return Base64.encodeToString(compressToJPEG(bytes, 1080), Base64.DEFAULT);
+        return Base64.encodeToString(compressToJPEG(rotateImageToExifData(file), 1080, false), Base64.DEFAULT);
     }
 
-    private static byte[] compressToJPEG(byte[] input, int maxLandcapeHeight){
-        Bitmap bmpLarge = BitmapFactory.decodeByteArray(input, 0, input.length);
+
+
+    private static byte[] compressToJPEG(Bitmap bmpLarge, int maxLandcapeHeight, boolean portraitToSquareImg){
         double factor = 1;
         if(bmpLarge.getWidth() > bmpLarge.getHeight() ){//landscape picture
             if(bmpLarge.getHeight() > maxLandcapeHeight){
@@ -62,6 +60,60 @@ public class ImageConversion {
         bmp.compress(Bitmap.CompressFormat.JPEG, QUALITY, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
+    }
+
+    private static Bitmap fileToBitmap(File file){
+        byte[] bytes;
+        //Converting it into a byte array
+        try {
+            bytes = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            Log.e("File upload", e.getMessage());
+            return null;
+        }
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public static Bitmap rotateImageToExifData(File image){
+        Bitmap bmp = fileToBitmap(image);
+        Bitmap rotatedBitmap = null;
+            try {
+                ExifInterface imageData = new ExifInterface(image.getPath());
+                int orientation = imageData.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_UNDEFINED);
+
+                switch(orientation) {
+
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotatedBitmap = rotateImage(bmp, 90);
+                        break;
+
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotatedBitmap = rotateImage(bmp, 180);
+                        break;
+
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotatedBitmap = rotateImage(bmp, 270);
+                        break;
+
+                    case ExifInterface.ORIENTATION_NORMAL:
+                    default:
+                        rotatedBitmap = bmp;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return rotatedBitmap;
+
+
+    }
+
+    private static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
     }
 
 }

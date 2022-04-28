@@ -3,6 +3,7 @@ package org.die6sheeshs.projectx.fragments;
 import static androidx.core.content.FileProvider.getUriForFile;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.graphics.Bitmap;
@@ -25,9 +26,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
+import org.die6sheeshs.projectx.helpers.UIThread;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.io.File;
@@ -211,9 +214,10 @@ public class PartyPictures extends Fragment {
         uploadPicsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                        "Uploadinf Event. Please wait...", true);
                 PartyPersistence.getInstance().deletePartyPictures(p.getId()).subscribeOn(Schedulers.io())
                         .subscribe(count -> {
-                    Schedulers.io().scheduleDirect(() -> {
                         if(images.size() != 0 && mainImageIndex < images.size() && mainImageIndex >= 0){
                             uploadPic(images.get(mainImageIndex), true);
                         }
@@ -227,11 +231,16 @@ public class PartyPictures extends Fragment {
                                         uploadPic(bytes, false);
                             }
                         }
-                    });
+                    dialog.dismiss();
+                            Fragment frag = new PartyOverview();
+                            ((MainActivity) getActivity()).replaceFragment(frag);
                 }, throwable -> {
                     Log.v("Image Upload", throwable.getMessage());
+                    dialog.dismiss();
+                            Fragment frag = new PartyOverview();
+                            ((MainActivity) getActivity()).replaceFragment(frag);
                 });
-                //todo return to partyOverview
+
             }
         });
 
@@ -242,10 +251,7 @@ public class PartyPictures extends Fragment {
         String base64 = bytes;
         Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64, main_img);
         response.subscribeOn(Schedulers.io())
-                .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
-                        }), throwable -> {
-                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show());
+                .subscribe(responseBody -> {}, throwable -> {
                             Log.v("Image Upload", throwable.getMessage());
                         }
 

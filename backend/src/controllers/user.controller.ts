@@ -38,6 +38,8 @@ import {
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { genSalt, hash } from 'bcryptjs';
 import _ from 'lodash';
+import { getMessaging, Messaging } from 'firebase-admin/messaging';
+import { applicationDefault, initializeApp } from 'firebase-admin/app';
 
 @model()
 export class LoginResponse {
@@ -250,7 +252,7 @@ export class UserController {
     return this.userLocationRepository.user(id);
   }
 
-  
+
   @authenticate.skip()
   @post('/users/login', {
     responses: {
@@ -277,6 +279,12 @@ export class UserController {
     let loginResponse = new LoginResponse();
     loginResponse.token = token;
     loginResponse.user_id = userProfile.id;
+
+
+    let userDeviceToken = this.userRepository.findById(loginResponse.user_id, {fields: {profile_pic: false}});
+    userDeviceToken.then(user => sendWelcomeMessage(user));
+    
+
     return loginResponse;
   }
 
@@ -296,45 +304,68 @@ export class UserController {
   })
   async whoAmI(
     @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile ,
+    currentUserProfile: UserProfile,
   ): Promise<string> {
     return currentUserProfile.id;
   }
 
-//   @post('/signup', {
-//     responses: {
-//       '200': {
-//         description: 'User',
-//         content: {
-//           'application/json': {
-//             schema: {
-//               'x-ts-type': User,
-//             },
-//           },
-//         },
-//       },
-//     },
-//   })
-//   async signUp(
-//     @requestBody({
-//       content: {
-//         'application/json': {
-//           schema: getModelSchemaRef(NewUserRequest, {
-//             title: 'NewUser',
-//           }),
-//         },
-//       },
-//     })
-//     newUserRequest: NewUserRequest,
-//   ): Promise<User> {
-//     const password = await hash(newUserRequest.password, await genSalt());
-//     const savedUser = await this.userRepository.create(
-//       _.omit(newUserRequest, 'password'),
-//     );
+  //   @post('/signup', {
+  //     responses: {
+  //       '200': {
+  //         description: 'User',
+  //         content: {
+  //           'application/json': {
+  //             schema: {
+  //               'x-ts-type': User,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   })
+  //   async signUp(
+  //     @requestBody({
+  //       content: {
+  //         'application/json': {
+  //           schema: getModelSchemaRef(NewUserRequest, {
+  //             title: 'NewUser',
+  //           }),
+  //         },
+  //       },
+  //     })
+  //     newUserRequest: NewUserRequest,
+  //   ): Promise<User> {
+  //     const password = await hash(newUserRequest.password, await genSalt());
+  //     const savedUser = await this.userRepository.create(
+  //       _.omit(newUserRequest, 'password'),
+  //     );
 
-//     await this.userRepository.userCredentials(savedUser.id).create({ password });
+  //     await this.userRepository.userCredentials(savedUser.id).create({ password });
 
-//     return savedUser;
-// }
+  //     return savedUser;
+  // }
 
 }
+function sendWelcomeMessage(user: User) {
+  if (!user.firebaseToken) {
+    return;
+  }
+  const registrationToken = user.firebaseToken;
+
+    const message = {
+      notification : {
+        title : 'Welcome!',
+        body : `Nice to see you ${user.nick_name}!`
+      },
+      // data: {
+      //   score: '850',
+      //   time: '2:45'
+      // },
+      token: registrationToken
+    };
+
+    // Send a message to the device corresponding to the provided
+    // registration token.
+    getMessaging().send(message);
+}
+

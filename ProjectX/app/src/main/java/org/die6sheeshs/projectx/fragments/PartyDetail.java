@@ -173,7 +173,7 @@ public class PartyDetail extends Fragment {
                     }
                     dialog.dismiss();
                 }, error -> {
-                    dialog.dismiss();
+                    dialog.dismiss();*
                     returnValue.setValue(NO_TICKET);
                     Log.v("Error retrieveing Tickets: ", error.getMessage());
                 });

@@ -41,7 +41,8 @@ public class ProfileNotificationsTab extends Fragment {
         fragmentManager = getChildFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        TicketRequestListItem ticketRequestListItem = NotificationListItemProvider.newTicketRequestListItem(null);
+        TicketRequest ticketRequest = new TicketRequest(LocalDateTime.of(2022, 4, 14, 13, 58, 27), "12", "def");
+        TicketRequestListItem ticketRequestListItem = NotificationListItemProvider.newTicketRequestListItem(ticketRequest);
 
         if (fragmentManager.findFragmentById(ticketRequestListItem.getId()) == null) {
             ft.add(notificationLayout.getId(), ticketRequestListItem);
