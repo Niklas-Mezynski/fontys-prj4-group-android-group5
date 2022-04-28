@@ -1,13 +1,13 @@
 INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password)
-VALUES ('5243fwersdgerv', 'Hans', 'Peter', 'peter@gmail.com', 'Milfhunter69', '2004-04-04', 'fgwefwef')
+VALUES ('5243fwersdgerv', 'Hans', 'Peter', 'peter@gmail.com', 'Milfhunter69', '2004-04-04', '$2a$10$Ds37m4r/MnEu0e2Vz7M75OmRd/dsYO//Cn0EcKBnvnWx39sXiPVoO')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password)
-VALUES ('12', 'Hans', 'Peter', 'f3@gmail.com', 'eggert', '2004-04-04', 'fgwefwef')
+VALUES ('12', 'f', 'drei', 'f3@gmail.com', 'eggert', '2004-04-04', '$2a$10$Ds37m4r/MnEu0e2Vz7M75OmRd/dsYO//Cn0EcKBnvnWx39sXiPVoO')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password)
-VALUES ('34', 'Hans', 'Peter', 'fw@gmail.com', 'pralle', '2004-04-04', 'fgwefwef')
+VALUES ('34', 'f', 'Whiskey', 'fw@gmail.com', 'pralle', '2004-04-04', '$2a$10$Ds37m4r/MnEu0e2Vz7M75OmRd/dsYO//Cn0EcKBnvnWx39sXiPVoO')
 ON CONFLICT DO NOTHING;
 INSERT INTO "user" (id, firstName, lastName, email, nick_name, birth_date, password, profile_pic)
 VALUES ('db7c3024-d53d-4bcf-85df-718cc5198b90', 'Daniel', 'Weinstein', 'd@w.de', 'MCDanDanHD', '2003-05-15',
