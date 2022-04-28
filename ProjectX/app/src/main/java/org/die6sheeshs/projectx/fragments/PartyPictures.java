@@ -215,7 +215,7 @@ public class PartyPictures extends Fragment {
                         .subscribe(count -> {
                     Schedulers.io().scheduleDirect(() -> {
                         if(images.size() != 0 && mainImageIndex < images.size() && mainImageIndex >= 0){
-                            uploadPic(images.get(mainImageIndex));
+                            uploadPic(images.get(mainImageIndex), true);
                         }
 
 
@@ -224,7 +224,7 @@ public class PartyPictures extends Fragment {
                             if(i != mainImageIndex){
                                 int finalI = i;
                                         String bytes = images.get(finalI);
-                                        uploadPic(bytes);
+                                        uploadPic(bytes, false);
                             }
                         }
                     });
@@ -238,9 +238,9 @@ public class PartyPictures extends Fragment {
     }
 
 
-    private void uploadPic(String bytes){
+    private void uploadPic(String bytes, boolean main_img){
         String base64 = bytes;
-        Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64);
+        Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64, main_img);
         response.subscribeOn(Schedulers.io())
                 .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
                             Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
