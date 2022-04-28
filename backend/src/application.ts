@@ -23,11 +23,7 @@ import { applicationDefault, cert, Credential, initializeApp } from "firebase-ad
 
 export { ApplicationConfig };
 
-// const firebasePath = "C:\\Users\\nikla\\Documents\\Uni\\Semester_4\\PRJ4\\projectx_admin_sdk.json";
-const firebasePath = "..\\..\\projectx_admin_sdk.json";
-
 // Initialize firebase-admin app
-// export const firebaseApp = initializeApp({ credential: cert(firebasePath) });
 export const firebaseApp = initializeApp({ credential: applicationDefault() });
 
 export class ProjectX extends BootMixin(
