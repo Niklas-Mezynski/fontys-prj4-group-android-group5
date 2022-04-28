@@ -27,8 +27,8 @@ export { ApplicationConfig };
 const firebasePath = "..\\..\\projectx_admin_sdk.json";
 
 // Initialize firebase-admin app
-export const firebaseApp = initializeApp({ credential: cert(firebasePath) });
-// export const firebaseApp = initializeApp({ credential: applicationDefault() });
+// export const firebaseApp = initializeApp({ credential: cert(firebasePath) });
+export const firebaseApp = initializeApp({ credential: applicationDefault() });
 
 export class ProjectX extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
