@@ -3,6 +3,7 @@ package org.die6sheeshs.projectx.fragments;
 import static androidx.core.content.FileProvider.getUriForFile;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
@@ -211,6 +213,8 @@ public class PartyPictures extends Fragment {
         uploadPicsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ProgressDialog dialog = ProgressDialog.show(getActivity(), "",
+                        "Uploadinf Event. Please wait...", true);
                 PartyPersistence.getInstance().deletePartyPictures(p.getId()).subscribeOn(Schedulers.io())
                         .subscribe(count -> {
                     Schedulers.io().scheduleDirect(() -> {
@@ -228,10 +232,13 @@ public class PartyPictures extends Fragment {
                             }
                         }
                     });
+                    dialog.dismiss();
                 }, throwable -> {
                     Log.v("Image Upload", throwable.getMessage());
+                    dialog.dismiss();
                 });
-                //todo return to partyOverview
+                Fragment frag = new PartyOverview();
+                ((MainActivity) getActivity()).replaceFragment(frag);
             }
         });
 
