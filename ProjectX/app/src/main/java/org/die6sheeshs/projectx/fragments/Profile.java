@@ -22,9 +22,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.User;
@@ -70,7 +71,7 @@ public class Profile extends Fragment {
     private AppCompatImageButton uploadPicture;
     private AppCompatImageButton cancelUpload;
     private TabLayout tabLayout;
-    private ViewPager profileViewPager;
+    private ViewPager2 profileViewPager;
 
     //Register the callback (action to perform) when user answered the permission request
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -233,19 +234,16 @@ public class Profile extends Fragment {
     private void initTabs() {
         tabLayout = view.findViewById(R.id.profile_tabLayout);
         profileViewPager = view.findViewById(R.id.profile_viewPager);
+        String userId = SessionManager.getInstance().getUserId();
+        ProfileTabAdapter profileTabAdapter = new ProfileTabAdapter(getActivity());
 
-        final ProfileViewPagerAdapter profileViewPagerAdapter = new ProfileViewPagerAdapter(getActivity().getSupportFragmentManager());
+        profileTabAdapter.addFragment(ProfileFriendsTab.newInstance(userId), "Friends");
+        profileTabAdapter.addFragment(ProfileSearchTab.newInstance(userId), "Search");
+        profileTabAdapter.addFragment(ProfileNotificationsTab.newInstance(userId), "Notifications");
 
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                profileViewPagerAdapter.addFragment(ProfileFriendsTab.getInstance(), "Friends");
-                profileViewPagerAdapter.addFragment(ProfileSearchTab.getInstance(), "Search");
-                profileViewPagerAdapter.addFragment(ProfileNotificationsTab.getInstance(), "Notifications");
-                profileViewPager.setAdapter(profileViewPagerAdapter);
-                tabLayout.setupWithViewPager(profileViewPager);
-            }
-        });
+        profileViewPager.setAdapter(profileTabAdapter);
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, profileViewPager, new ProfileTabConfigurationStrategy(profileTabAdapter));
+        tabLayoutMediator.attach();
     }
 
     private void askPermAndTakeImg(View clickedView) {

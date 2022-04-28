@@ -1,42 +1,39 @@
 package org.die6sheeshs.projectx.fragments;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileViewPagerAdapter extends FragmentStatePagerAdapter {
+public class ProfileTabAdapter extends FragmentStateAdapter {
 
     private List<String> titleList = new ArrayList<>();
     private List<Fragment> fragmentList = new ArrayList<>();
 
-    public ProfileViewPagerAdapter(FragmentManager fm) {
-        super(fm);
+    public ProfileTabAdapter(@NonNull FragmentActivity fragmentActivity) {
+        super(fragmentActivity);
     }
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         return this.fragmentList.get(position);
     }
 
     @Override
-    public int getCount() {
-        return this.fragmentList.size();
-    }
-
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return this.titleList.get(position);
+    public int getItemCount() {
+        return this.titleList.size();
     }
 
     public void addFragment(Fragment fragment, String title) {
         this.titleList.add(title);
         this.fragmentList.add(fragment);
+    }
+
+    public CharSequence getPageTitle(int position) {
+        return this.titleList.get(position);
     }
 }

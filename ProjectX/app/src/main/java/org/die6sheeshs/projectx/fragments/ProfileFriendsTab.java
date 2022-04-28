@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,27 +30,28 @@ public class ProfileFriendsTab extends Fragment {
 
     private View view;
 
-    public static ProfileFriendsTab getInstance() {
-        return new ProfileFriendsTab();
+    public static ProfileFriendsTab newInstance(String userId) {
+        ProfileFriendsTab profileFriendsTab = new ProfileFriendsTab();
+        Bundle args = new Bundle();
+        args.putString("userId", userId);
+        profileFriendsTab.setArguments(args);
+        return profileFriendsTab;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
+    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.view = inflater.inflate(R.layout.fragment_tab_friends, container, false);
+        this.view = inflater.inflate(R.layout.fragment_tab_friends, container);
         init();
         return view;
     }
 
-    private void init(){
-        LinearLayout linearLayoutV = view.findViewById(R.id.linLay);
-        String id = SessionManager.getInstance().getUserId();
+    private void init() {
+        LinearLayout linearLayoutV = view.findViewById(R.id.friendItems_layout);
+        //String id = SessionManager.getInstance().getUserId();
+        String userId = getArguments().getString("userId");
         String jwt = SessionManager.getInstance().getToken();
-        Observable<List<Friend>> resp = FriendsPersistence.getInstance().getFriendsOfUser(id);
+        Observable<List<Friend>> resp = FriendsPersistence.getInstance().getFriendsOfUser(userId);
         resp.subscribeOn(Schedulers.io())
                 .subscribe(friends -> {
                     for (Friend f :friends) {

@@ -152,19 +152,19 @@
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/button_uploadProfilePicture"/>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/profile_viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_tabLayout" >
+        app:layout_constraintTop_toBottomOf="@+id/profile_tabLayout"/>
 
-        <LinearLayout
-            android:id="@+id/itemList_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
-    </androidx.viewpager.widget.ViewPager>
+    <!-- <fragment
+        android:id="@+id/fragment_friendsTab"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:name="org.die6sheeshs.projectx.fragments.ProfileFriendsTab"
+        app:layout_constraintTop_toBottomOf="@+id/profile_tabLayout" /> -->
 
     <!-- For TabLayout:
     app:tabTextColor="@color/black"
