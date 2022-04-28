@@ -30,6 +30,7 @@ import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
+import org.die6sheeshs.projectx.helpers.UIThread;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.io.File;
@@ -217,7 +218,6 @@ public class PartyPictures extends Fragment {
                         "Uploadinf Event. Please wait...", true);
                 PartyPersistence.getInstance().deletePartyPictures(p.getId()).subscribeOn(Schedulers.io())
                         .subscribe(count -> {
-                    Schedulers.io().scheduleDirect(() -> {
                         if(images.size() != 0 && mainImageIndex < images.size() && mainImageIndex >= 0){
                             uploadPic(images.get(mainImageIndex), true);
                         }
@@ -231,14 +231,16 @@ public class PartyPictures extends Fragment {
                                         uploadPic(bytes, false);
                             }
                         }
-                    });
                     dialog.dismiss();
+                            Fragment frag = new PartyOverview();
+                            ((MainActivity) getActivity()).replaceFragment(frag);
                 }, throwable -> {
                     Log.v("Image Upload", throwable.getMessage());
                     dialog.dismiss();
+                            Fragment frag = new PartyOverview();
+                            ((MainActivity) getActivity()).replaceFragment(frag);
                 });
-                Fragment frag = new PartyOverview();
-                ((MainActivity) getActivity()).replaceFragment(frag);
+
             }
         });
 
@@ -249,10 +251,7 @@ public class PartyPictures extends Fragment {
         String base64 = bytes;
         Observable<Pictures> response = PartyPersistence.getInstance().uploadPartyPictures(p.getId(), base64, main_img);
         response.subscribeOn(Schedulers.io())
-                .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
-                        }), throwable -> {
-                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show());
+                .subscribe(responseBody -> {}, throwable -> {
                             Log.v("Image Upload", throwable.getMessage());
                         }
 
