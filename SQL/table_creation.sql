@@ -64,7 +64,7 @@ CREATE TABLE pictures
     event_id varchar(128) NOT NULL,
     img_uuid varchar(128) NOT NULL,
     base64   varchar      NOT NULL,
-    main_img boolean      DEFAULT 0,
+    main_img boolean      DEFAULT false,
     PRIMARY KEY (event_id, img_uuid)
 );
 CREATE TABLE friends

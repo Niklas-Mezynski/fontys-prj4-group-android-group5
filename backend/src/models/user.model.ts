@@ -64,7 +64,7 @@ export class User extends Entity {
   @property({
     type: 'string',
   })
-  firebaseToken: string;
+  firebaseToken?: string;
 
   userCredentials: UserCredentials;
 

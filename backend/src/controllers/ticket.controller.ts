@@ -18,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import { Helpers } from '../helpers/helper_functions';
 import {Ticket} from '../models';
 import {TicketRepository} from '../repositories';
 
@@ -28,26 +29,27 @@ export class TicketController {
     public ticketRepository : TicketRepository,
   ) {}
 
-  @post('/tickets')
-  @response(200, {
-    description: 'Ticket model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Ticket)}},
-  })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Ticket, {
-            title: 'NewTicket',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    ticket: Omit<Ticket, 'id'>,
-  ): Promise<Ticket> {
-    return this.ticketRepository.create(ticket);
-  }
+  // @post('/tickets')
+  // @response(200, {
+  //   description: 'Ticket model instance',
+  //   content: {'application/json': {schema: getModelSchemaRef(Ticket)}},
+  // })
+  // async create(
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Ticket, {
+  //           title: 'NewTicket',
+  //           exclude: ['id'],
+  //         }),
+  //       },
+  //     },
+  //   })
+  //   ticket: Ticket,
+  // ): Promise<Ticket> {
+  //   ticket.id = Helpers.generateUUID();
+  //   return this.ticketRepository.create(ticket);
+  // }
 
   @get('/tickets/count')
   @response(200, {

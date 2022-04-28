@@ -34,10 +34,24 @@ public class ImageConversion {
             return null;
         }
         //Encode to base64 and send it to the restAPI
-        return Base64.encodeToString(compressToJPEG(bytes, 1080), Base64.DEFAULT);
+        return Base64.encodeToString(compressToJPEG(bytes, 1080, false), Base64.DEFAULT);
     }
 
-    private static byte[] compressToJPEG(byte[] input, int maxLandcapeHeight){
+    public static String fileToBase64(File file, boolean makePortraitToSquareImage) {
+        //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
+        byte[] bytes;
+        //Converting it into a byte array
+        try {
+            bytes = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            Log.e("File upload", e.getMessage());
+            return null;
+        }
+        //Encode to base64 and send it to the restAPI
+        return Base64.encodeToString(compressToJPEG(bytes, 1080, makePortraitToSquareImage), Base64.DEFAULT);
+    }
+
+    private static byte[] compressToJPEG(byte[] input, int maxLandcapeHeight, boolean portraitToSquareImg){
         Bitmap bmpLarge = BitmapFactory.decodeByteArray(input, 0, input.length);
         double factor = 1;
         if(bmpLarge.getWidth() > bmpLarge.getHeight() ){//landscape picture
