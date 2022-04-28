@@ -1,11 +1,15 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -13,10 +17,16 @@ import androidx.fragment.app.Fragment;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
+import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -80,17 +90,16 @@ public class TicketDetail extends Fragment {
     }
 
     private void init(){
-        TextView name = view.findViewById(R.id.nameT);
-        name.setText(party.getName());
-        TextView price = view.findViewById(R.id.priceT);
-        price.setText("PRICE IN BACKEND MUST BE ADDED");
-        TextView address = view.findViewById(R.id.addressT);
-        address.setText("ADRESS IN BACKEND MUST BE ADDED");
-        TextView start = view.findViewById(R.id.startT);
+
+        setPicture();
+        setName();
+        setPrice();
+        setAddress();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        start.setText(party.getStart().format(formatter));
-        TextView end = view.findViewById(R.id.endT);
-        end.setText(party.getEnd().format(formatter));
+        setStart(formatter);
+        setEnd(formatter);
+
+
         Button gotoPartyDetail = (Button) view.findViewById(R.id.toPartyDetail);
         gotoPartyDetail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,4 +129,50 @@ public class TicketDetail extends Fragment {
             ((MainActivity) getActivity()).replaceFragment(frag);
         });
     }
+
+    private void setPicture(){
+        ImageView image = view.findViewById(R.id.imageView2);
+        String partyId = party.getId();
+        Observable<List<Pictures>> picsObservable = PartyPersistence.getInstance().getPartyPictures(partyId);
+        picsObservable.subscribeOn(Schedulers.io())
+                .subscribe(pictureList -> {
+                    Optional<Pictures> firstImgOpt = pictureList.stream().findFirst();
+                    if(firstImgOpt.isPresent()){
+                        byte[] decode = Base64.decode(firstImgOpt.get().getPicture(), Base64.DEFAULT);
+                        Bitmap decodedBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                        getActivity().runOnUiThread(()->{// todo fix throws error attempt to invoke method(runOnUiThread) on null object reference(get activity seems to be null, du to long loading times)
+                            image.setImageBitmap(decodedBmp);
+                        });
+                    }else{
+
+                    }
+
+                });
+    }
+
+    private void setName(){
+        TextView name = view.findViewById(R.id.nameT);
+        name.setText(party.getName());
+    }
+
+    private void setPrice(){
+        TextView price = view.findViewById(R.id.priceT);
+        price.setText(String.format("%.2f €", party.getPrice()));
+    }
+
+    private void setAddress(){
+        TextView address = view.findViewById(R.id.addressT);
+        address.setText("ADRESS IN BACKEND MUST BE ADDED");
+    }
+
+    private void setStart(DateTimeFormatter formatter){
+        TextView start = view.findViewById(R.id.startT);
+        start.setText(party.getStart().format(formatter));
+    }
+
+    private void setEnd(DateTimeFormatter formatter){
+        TextView end = view.findViewById(R.id.endT);
+        end.setText(party.getEnd().format(formatter));
+    }
+
 }

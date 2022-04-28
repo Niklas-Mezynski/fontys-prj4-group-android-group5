@@ -5,23 +5,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Friend;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FriendListItem#newInstance} factory method to
+ * Use the {@link FriendInfo#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FriendListItem extends Fragment {
+public class FriendInfo extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,9 +34,7 @@ public class FriendListItem extends Fragment {
     private boolean isFriend;
     private View view;
 
-    public FriendListItem() {}
-
-    public FriendListItem(Friend friend,boolean isFriend) {
+    public FriendInfo(Friend friend, boolean isFriend) {
         this.friend = friend;
         this.isFriend = isFriend;
         // Required empty public constructor
@@ -47,12 +44,13 @@ public class FriendListItem extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FriendListItem.
+     * @return A new instance of fragment FriendInfo.
      */
     // TODO: Rename and change types and number of parameters
-    public static FriendListItem newInstance(Friend friend,boolean isFriend) {
-        FriendListItem fragment = new FriendListItem(friend,isFriend);
+    public static FriendInfo newInstance(Friend friend,boolean isFriend) {
+        FriendInfo fragment = new FriendInfo(friend,isFriend);
         Bundle args = new Bundle();
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,34 +68,48 @@ public class FriendListItem extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        this.view = inflater.inflate(R.layout.fragment_friend_list_item, container, false);
+        this.view = inflater.inflate(R.layout.fragment_friend_info, container, false);
         init();
         return view;
     }
 
     private void init(){
         setPicture();
-        setUserName();
-        setAction();
+        setButton();
+        setNickname();
+        setAboutMe();
     }
 
-    private void setUserName(){
-        TextView username = view.findViewById(R.id.userName);
-        username.setText(friend.getNick_name());
+    private void setNickname(){
+        TextView nick = view.findViewById(R.id.nickname);
+        nick.setText(friend.getNick_name());
     }
+
+    private void setAboutMe(){
+        TextView about = view.findViewById(R.id.aboutMeText);
+        about.setText(friend.getAbout_me());
+    }
+
+    private void setButton(){
+        Button addOdel = view.findViewById(R.id.addORemove);
+        if(isFriend){
+            addOdel.setText("Remove friend");
+            addOdel.setOnClickListener((l)->{
+
+            });
+        }else{
+            addOdel.setText("add as Friend");
+            addOdel.setOnClickListener((l)->{
+
+            });
+        }
+    }
+
     private void setPicture(){
-        ImageView profile_pic = view.findViewById(R.id.image_profilepic);
+        ImageView profile_pic = view.findViewById(R.id.friend_profile_pic);
         Bitmap image = ImageConversion.base64ToBitmap(friend.getProfile_pic());
         if(image!=null){
             profile_pic.setImageBitmap(image);
         }
-    }
-
-    private void setAction(){
-        LinearLayout wrapper = view.findViewById(R.id.wrapper);
-        wrapper.setOnClickListener(view -> {
-            Fragment frag = new FriendInfo(friend,true);
-            ((MainActivity)getActivity()).replaceFragment(frag);
-          });
     }
 }
