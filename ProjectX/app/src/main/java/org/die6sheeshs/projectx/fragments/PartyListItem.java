@@ -171,7 +171,7 @@ public class PartyListItem extends Fragment {
         Observable<List<Pictures>> picsObservable = PartyPersistence.getInstance().getPartyPictures(partyId);
         picsObservable.subscribeOn(Schedulers.io())
                 .subscribe(pictureList -> {
-                    Optional<Pictures> firstImgOpt = pictureList.stream().findFirst();
+                    Optional<Pictures> firstImgOpt = pictureList.stream().filter(pic -> pic.isMain_img()).findFirst();
                     if(firstImgOpt.isPresent()){
                         byte[] decode = Base64.decode(firstImgOpt.get().getPicture(), Base64.DEFAULT);
                         Bitmap decodedBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
