@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -43,6 +44,7 @@ public class TicketRequestListItem extends Fragment {
     private static final String INDEX_PARAM = "list_index";
     private User user;
     private TicketRequest ticketRequest;
+    private LinearLayout layout_acceptDecline;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -51,18 +53,18 @@ public class TicketRequestListItem extends Fragment {
 
     public TicketRequestListItem(TicketRequest ticketRequest) {
         if (ticketRequest == null) {
-            this.ticketRequest = new TicketRequest(LocalDateTime.of(2022, 4, 14, 13, 58, 27), "12", "def");
+            Log.e("Error", "No TicketRequest given!");
         } else {
             this.ticketRequest = ticketRequest;
         }
-        try {
+        /*try {
 
             /*userObservable.subscribe(user1 -> {
                     Log.println(Log.INFO, "!!!USER-OBSERVABLE!!!", user1.toString());
-            });*/
+            });
         } catch (NoSuchElementException e) {
             Log.println(Log.ERROR, "NoSuchUser", e.getMessage());
-        }
+        }*/
     }
 
     /**
@@ -96,6 +98,7 @@ public class TicketRequestListItem extends Fragment {
         view = inflater.inflate(R.layout.fragment_party_request_list_item, container, false);
 
         initView(ticketRequest);
+        layout_acceptDecline = view.findViewById(R.id.layout_acceptDecline);
 
         // Inflate the layout for this fragment
         return view;
