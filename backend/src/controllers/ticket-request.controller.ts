@@ -224,9 +224,6 @@ export class TicketRequestController {
     @param.path.string('event_id') r_event_id: string,
     @param.path.string('user_id') r_user_id: string,
   ): Promise<Ticket> {
-
-
-
     //Delete the request
     let where = new WhereBuilder<TicketRequest>()
       .and({ event_id: r_event_id }, { user_id: r_user_id })
@@ -248,7 +245,7 @@ export class TicketRequestController {
     return ticket;
   }
 
-  async sendAcceptMessage(ticket: Ticket) {    
+  async sendAcceptMessage(ticket: Ticket) {
     //Get the ticket requester creator (and his device token) and the event infos
     let event = await this.eventRepository.findById(ticket.event_id);
     let request_user = await this.userRepository.findById(ticket.user_id);
@@ -261,7 +258,7 @@ export class TicketRequestController {
     const message = {
       notification: {
         title: 'Ticket request accepted!',
-        body: `Your request for the party '${event.name}' was accepted.`
+        body: `Your request for '${event.name}' was accepted.`
       },
       token: registrationToken
     };
@@ -269,6 +266,6 @@ export class TicketRequestController {
     //Sending the message
     getMessaging().send(message);
   }
-  
+
 
 }
