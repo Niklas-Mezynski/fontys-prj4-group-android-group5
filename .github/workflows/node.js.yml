@@ -28,11 +28,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Install node modules
-      run: npm ci
-      working-directory: ${{env.working-directory}}
+      run: cd backend && npm ci
     - name: Build the node project
-      run: npm run build --if-present
-      working-directory: ${{env.working-directory}}
+      run: cd backend && npm run build --if-present
     - name: Run the tests
-      run: npm test
-      working-directory: ${{env.working-directory}}
+      run: cd backend && npm test
