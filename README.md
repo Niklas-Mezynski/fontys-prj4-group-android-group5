@@ -49,7 +49,6 @@ Db: aertac.tk:5432
 - then navigate in cmd to "\<RepoRoot\>"/backend
 - First time: run command "npm install" and "npm i --save @loopback/authentication @loopback/authentication-jwt multer" and "npm i --save-dev @types/multer"
 - For tests: "npm install --save-dev mocha @loopback/testlab"
-- Remove user credentials from "backend\node_modules\@loopback\authentication-jwt\dist\models\user.model.d.ts"
 - To start: run command "npm start"
 
 ## Database
