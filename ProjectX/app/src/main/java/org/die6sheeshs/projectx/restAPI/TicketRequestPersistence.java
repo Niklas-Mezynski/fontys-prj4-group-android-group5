@@ -1,11 +1,13 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import io.reactivex.Observable;
+import retrofit2.http.Path;
 
 public class TicketRequestPersistence implements RetrofitPersistence {
 
@@ -38,6 +40,10 @@ public class TicketRequestPersistence implements RetrofitPersistence {
     public Observable<TicketRequest> createTicketRequest(String userId, String partyId, LocalDateTime createdOn) {
         TicketRequest tq = new TicketRequest(createdOn, userId, partyId);
         return this.ticketRequestApi.createTicketRequest(tq);
+    }
+
+    public Observable<Ticket> acceptTicketRequest(String eventId, String userId) {
+        return this.ticketRequestApi.acceptTicketRequest(eventId, userId);
     }
 
     public Observable<List<TicketRequest>> getTicketRequestsOfParty(String partyId) {

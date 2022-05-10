@@ -96,9 +96,6 @@ public class FirebaseMessagingHandler extends FirebaseMessagingService {
         user.setFirebaseToken(token);
         Observable<ResponseBody> response = UserPersistence.getInstance().updateUser(user);
         response.subscribeOn(Schedulers.io())
-                .subscribe(
-                        responseBody -> Log.v(TAG, "Token updated successfully"),
-                        error -> Log.v(TAG, error.getMessage())
-                );
+                .doOnError(error -> Log.v(TAG, error.getMessage()));
     }
 }
