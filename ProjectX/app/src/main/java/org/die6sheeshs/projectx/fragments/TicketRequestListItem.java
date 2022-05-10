@@ -172,17 +172,15 @@ public class TicketRequestListItem extends Fragment {
             public void onClick(View view) {
                 //new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
                 try {
-                    byte[] bytesOfUserPartyId = (ticketRequest.getUserId()+ticketRequest.getPartyId()).getBytes("UTF-8");
-                    MessageDigest md = MessageDigest.getInstance("MD5");
-                    String newTicketId = Base64.getEncoder().encodeToString(md.digest(bytesOfUserPartyId));
-                    Ticket newTicket = new Ticket(newTicketId, ticketRequest.getPartyId(), ticketRequest.getUserId());
+//                    byte[] bytesOfUserPartyId = (ticketRequest.getUserId()+ticketRequest.getPartyId()).getBytes("UTF-8");
+//                    MessageDigest md = MessageDigest.getInstance("MD5");
+//                    String newTicketId = Base64.getEncoder().encodeToString(md.digest(bytesOfUserPartyId));
+                    Observable<Ticket> resp = TicketRequestPersistence.getInstance().acceptTicketRequest(ticketRequest.getPartyId(), ticketRequest.getUserId());
                     // TODO: Implement createTicket in TicketPersistence and uncomment afterwards
                     // TicketPersistence.getInstance().createTicket(newTicket);
-                    Observable<Integer> resp = TicketRequestPersistence.getInstance().deleteTicketRequest(ticketRequest.getUserId(), ticketRequest.getPartyId());
-                    resp.subscribeOn(Schedulers.io()).subscribe(deletedCount -> {
-                        Log.i("Deleted TicketRequests", ""+deletedCount);
+                    resp.subscribeOn(Schedulers.io()).subscribe(ticket -> {
+                        Log.i("New Ticket", ""+ticket.toString());
                     });
-                    Log.i("New Ticket", newTicket.toString());
                 } catch (Exception e) {
                     Log.w("Error", e.getMessage());
                 }
