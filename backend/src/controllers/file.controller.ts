@@ -59,7 +59,7 @@ export class FileController {
     if (id !== currentUserProfile.id) {
       throw new HttpErrors.Unauthorized('You are not authorized to perform this action.');
     }
-    let imageUploader = multer(this.getMulterOptions(`u${id}`)).any();
+    const imageUploader = multer(this.getMulterOptions(`u${id}`)).any();
     return new Promise<object>((resolve, reject) => {
       imageUploader(request, response, err => {
         if (err) reject(err);
@@ -79,9 +79,9 @@ export class FileController {
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
   ) {
-    let user = await this.userRepository.findById(id);
+    const user = await this.userRepository.findById(id);
     // let fileName = `u${id}.png`;
-    let fileName = user.profile_pic;
+    const fileName = user.profile_pic;
     if (!fileName) {
       throw new HttpErrors.NotFound("No profile pic for that user");
     }
@@ -108,7 +108,7 @@ export class FileController {
    */
   private getFilesAndFields(request: Request, user_id: string) {
     const uploadedFiles = request.files;
-    let filenames: string[] = [];
+    const filenames: string[] = [];
     const mapper = (file: globalThis.Express.Multer.File) => {
       // if (!file.mimetype.startsWith('image')) {
       //   throw new HttpErrors.UnsupportedMediaType(`Unsupported file type: ${file.mimetype}`);

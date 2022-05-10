@@ -40,7 +40,7 @@ export class FriendsController {
     // let sql: string = `SELECT "user".nick_name FROM ((SELECT f.usera as friendId FROM friends f where (userb = '${id}')) UNION (SELECT f.userb as friendId FROM friends f where (usera = '${id}'))) AS friends INNER JOIN "user" ON "user".id = friends.friendId;`;
     // let sql: string = `SELECT * FROM getFriendInfos('${id}');`;
     // let queryResult = await this.friendsRepository.execute(sql);
-    let queryResult = await this.friendsRepository.getFriendsForUser(id);
+    const queryResult = await this.friendsRepository.getFriendsForUser(id);
     return queryResult;
   }
 

@@ -16,17 +16,17 @@ export class FriendsRepository extends DefaultCrudRepository<
   }
 
   getFriendsForUser(userId: string): Promise<AnyObject> {
-    let sql: string = `SELECT * FROM getFriendInfos($1);`;
+    const sql = `SELECT * FROM getFriendInfos($1);`;
     return this.dataSource.execute(sql, [userId]);
   }
 
   getFriendByName(username: string): Promise<AnyObject> {
-    let sql: string = `SELECT "user".id, "user".nick_name, "user".profile_pic, "user".about_me FROM "user" WHERE "user".nick_name = $1;`;
+    const sql = `SELECT "user".id, "user".nick_name, "user".profile_pic, "user".about_me FROM "user" WHERE "user".nick_name = $1;`;
     return this.dataSource.execute(sql, [username]);
   }
 
   deleteByIds(userId: string, friendId: string, currentUserProfile: UserProfile): Promise<void> {
-    let sql: string = `
+    const sql = `
         DELETE FROM "friends"
         WHERE "friends".usera = $1 AND "friends".userb = $2 AND
         ("friends".usera = $3 OR "friends".userb = $3);`;

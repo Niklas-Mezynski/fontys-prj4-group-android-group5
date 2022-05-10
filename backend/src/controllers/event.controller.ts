@@ -109,7 +109,7 @@ export class EventController {
     const tx = await repo2.beginTransaction(IsolationLevel.READ_COMMITTED);
 
     event.id = Helpers.generateUUID();
-    let e = new Event({
+    const e = new Event({
       id: event.id,
       name: event.name,
       description: event.description,
@@ -123,7 +123,7 @@ export class EventController {
     }
     const createdEvent = await repo1.create(e, { transaction: tx });
 
-    let timestamp = new Date().toDateString();
+    const timestamp = new Date().toDateString();
     const location = new EventLocation({
       event_id: event.id,
       latitude: event.latitude,
@@ -259,7 +259,7 @@ export class EventController {
     @param.filter(Event, { exclude: 'where' }) filter?: FilterExcludingWhere<Event>
   ): Promise<AnyObject> {
     //Calling a custom SQL function to get the nearby parties
-    let sql: string = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius}, '${currentUserProfile[securityId]}');`;
+    const sql = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius}, '${currentUserProfile[securityId]}');`;
     return this.eventRepository.execute(sql);
   }
 }
