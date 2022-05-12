@@ -276,12 +276,12 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-    let loginResponse = new LoginResponse();
+    const loginResponse = new LoginResponse();
     loginResponse.token = token;
     loginResponse.user_id = userProfile.id;
 
 
-    let userDeviceToken = this.userRepository.findById(loginResponse.user_id, {fields: {profile_pic: false}});
+    const userDeviceToken = this.userRepository.findById(loginResponse.user_id, {fields: {profile_pic: false}});
     userDeviceToken.then(user => sendWelcomeMessage(user));
     
 

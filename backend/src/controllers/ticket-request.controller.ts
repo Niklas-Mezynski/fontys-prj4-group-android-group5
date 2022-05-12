@@ -54,7 +54,7 @@ export class TicketRequestController {
     })
     ticketRequest: TicketRequest,
   ): Promise<TicketRequest> {
-    let newRequest = await this.ticketRequestRepository.create(ticketRequest);
+    const newRequest = await this.ticketRequestRepository.create(ticketRequest);
     this.newTicketRequestMessage(ticketRequest);
     return newRequest;
   }
@@ -62,14 +62,14 @@ export class TicketRequestController {
   async newTicketRequestMessage(ticketRequest: TicketRequest) {
 
     //Get the event creator (and his device token)
-    let event = await this.eventRepository.findById(ticketRequest.event_id);
-    let event_creator = await this.userRepository.findById(event.user_id);
+    const event = await this.eventRepository.findById(ticketRequest.event_id);
+    const event_creator = await this.userRepository.findById(event.user_id);
     if (!event_creator.firebaseToken) {
       return;
     }
     const registrationToken = event_creator.firebaseToken;
 
-    let requestingUser = await this.userRepository.findById(ticketRequest.user_id);
+    const requestingUser = await this.userRepository.findById(ticketRequest.user_id);
     //Send the message
     const message = {
       notification: {
@@ -225,16 +225,16 @@ export class TicketRequestController {
     @param.path.string('user_id') r_user_id: string,
   ): Promise<Ticket> {
     //Delete the request
-    let where = new WhereBuilder<TicketRequest>()
+    const where = new WhereBuilder<TicketRequest>()
       .and({ event_id: r_event_id }, { user_id: r_user_id })
       .build();
-    let count = (await this.ticketRequestRepository.deleteAll(where)).count;
+    const count = (await this.ticketRequestRepository.deleteAll(where)).count;
     if (!count) {
       throw new HttpErrors[404]("Ticket request not found");
     }
 
     //Create the ticket
-    let ticket = await this.ticketRepository.create({
+    const ticket = await this.ticketRepository.create({
       event_id: r_event_id,
       user_id: r_user_id,
       id: Helpers.generateUUID()
@@ -247,8 +247,8 @@ export class TicketRequestController {
 
   async sendAcceptMessage(ticket: Ticket) {
     //Get the ticket requester creator (and his device token) and the event infos
-    let event = await this.eventRepository.findById(ticket.event_id);
-    let request_user = await this.userRepository.findById(ticket.user_id);
+    const event = await this.eventRepository.findById(ticket.event_id);
+    const request_user = await this.userRepository.findById(ticket.user_id);
     if (!request_user.firebaseToken) {
       return;
     }

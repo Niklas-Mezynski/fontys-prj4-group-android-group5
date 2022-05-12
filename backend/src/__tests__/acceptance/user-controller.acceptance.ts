@@ -30,7 +30,7 @@ describe('UserController Test', () => {
             userRepository,
             userLocationRepository,
         )
-        let newUser = new User({
+        const newUser = new User({
             email: 'd@w1235342.com',
             password: '123456789',
             firstName: 'Dfweiopkf',
@@ -39,7 +39,7 @@ describe('UserController Test', () => {
             birth_date: '2002-04-19T09:51:19.229Z',
         });
 
-        let res = await controller.create(newUser);
+        const res = await controller.create(newUser);
         sinon.assert.calledWithMatch(userRepository.stubs.create, sinon.match.has("id", sinon.match.string));
     });
 
