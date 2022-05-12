@@ -28,14 +28,16 @@
         app:srcCompat="@android:drawable/ic_menu_search" />
 
     <ScrollView
-        android:layout_width="393dp"
-        android:layout_height="698dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nickNameSearchField">
 
         <LinearLayout
+            android:id="@+id/searches"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />

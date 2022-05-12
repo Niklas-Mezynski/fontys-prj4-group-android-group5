@@ -44,7 +44,7 @@ public class ProfileSearchTab extends Fragment {
     }
 
     private void init() {
-        LinearLayout searchLayout = view.findViewById(R.id.searchItems_layout);
+        LinearLayout searchLayout = view.findViewById(R.id.searches);
         String userId = getArguments().getString("userId");
     }
 }
