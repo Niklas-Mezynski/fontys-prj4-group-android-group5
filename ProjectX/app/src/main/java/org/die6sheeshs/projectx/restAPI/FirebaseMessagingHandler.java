@@ -3,29 +3,15 @@ package org.die6sheeshs.projectx.restAPI;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.User;
-import org.die6sheeshs.projectx.fragments.OurToast;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 
 import io.reactivex.Observable;
@@ -86,7 +72,7 @@ public class FirebaseMessagingHandler extends FirebaseMessagingService {
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(cloudNotification.getTitle())
                 .setContentText(cloudNotification.getBody())
-                .setSmallIcon(R.drawable.ic_app_icon)
+                .setSmallIcon(R.drawable.ic_app_icon_black)
                 .setAutoCancel(true);
         NotificationManagerCompat.from(this).notify(187, notification.build());
     }
@@ -96,6 +82,7 @@ public class FirebaseMessagingHandler extends FirebaseMessagingService {
         user.setFirebaseToken(token);
         Observable<ResponseBody> response = UserPersistence.getInstance().updateUser(user);
         response.subscribeOn(Schedulers.io())
-                .doOnError(error -> Log.v(TAG, error.getMessage()));
+                .subscribe(responseBody -> Log.i("FirebaseService", "New token saved to DB"),
+                        error -> Log.v(TAG, error.getMessage()));
     }
 }
