@@ -111,7 +111,7 @@ public class PartyListItem extends Fragment {
         if (!optionalEventLocation.isPresent())
             return;
         EventLocation eventLocation = optionalEventLocation.get();
-        
+        //TODO (Niklas) get the name of the city where the party location is in
     }
 
     private void setButtonAction() {
