@@ -12,6 +12,7 @@ public class User {
     private String profile_pic;
     private String about_me;
     private String password;
+    private String firebaseToken;
 
     public User(String firstName, String lastName, String email, String nick_name, LocalDateTime birth_date, String profile_pic, String about_me, String password) {
         this.firstName = firstName;
@@ -72,5 +73,13 @@ public class User {
                 ", profile_pic='" + profile_pic + '\'' +
                 ", about_me='" + about_me + '\'' +
                 '}';
+    }
+
+    public String getFirebaseToken() {
+        return firebaseToken;
+    }
+
+    public void setFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
     }
 }

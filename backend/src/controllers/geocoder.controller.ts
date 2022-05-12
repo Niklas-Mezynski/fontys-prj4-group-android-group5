@@ -21,7 +21,7 @@ export class GeocoderController {
     @param.path.string('address') address: string,
   ): Promise<string> {
     const response = await this.geoService.toCoordinates(address);
-    let json = JSON.stringify(response[0]);
+    const json = JSON.stringify(response[0]);
     return json;
   }
 
@@ -38,7 +38,7 @@ export class GeocoderController {
     @param.path.number('longitude') lng: number,
   ): Promise<string> {
     const response = await this.geoService.toAddress(lat, lng);
-    let json = JSON.stringify(response[0]);
+    const json = JSON.stringify(response[0]);
     return json;
   }
 }

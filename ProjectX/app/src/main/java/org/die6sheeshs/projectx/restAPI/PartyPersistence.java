@@ -1,27 +1,18 @@
 package org.die6sheeshs.projectx.restAPI;
 
-import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
-import org.die6sheeshs.projectx.helpers.PropertyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import io.reactivex.Observable;
-import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import okhttp3.ResponseBody;
 
 public class PartyPersistence implements RetrofitPersistence {
 
@@ -66,6 +57,10 @@ public class PartyPersistence implements RetrofitPersistence {
         return this.partyApi.createEventLocation(eventLocation.getEvent_id(), eventLocation);
     }
 
+    public Observable<Party> createEventWithLocation(EventWithLocation eventWithLocation) {
+        return this.partyApi.createEventWithLocation(eventWithLocation);
+    }
+
     @Override
     public void refreshApi() {
         this.partyApi = RetrofitService.getInstance().getRetrofitClient().create(PartyApi.class);
@@ -93,5 +88,21 @@ public class PartyPersistence implements RetrofitPersistence {
 
     public Observable<Void> deleteEvent(String id){
         return this.partyApi.deleteEvent(id);
+    }
+
+    public Observable<List<Pictures>> getPartyPictures(String partyId) {return this.partyApi.getPicturesOfParty(partyId);}
+
+    public Observable<Pictures> uploadPartyPictures(String event_id, String base64){
+        Pictures pictures = new Pictures(base64);
+        return this.partyApi.uploadPictures(event_id, pictures);
+    }
+
+    public Observable<Pictures> uploadPartyPictures(String event_id, String base64, boolean main_img){
+        Pictures pictures = new Pictures(base64, main_img);
+        return this.partyApi.uploadPictures(event_id, pictures);
+    }
+
+    public Observable<Count> deletePartyPictures(String event_id){
+        return this.partyApi.deletePictures(event_id);
     }
 }

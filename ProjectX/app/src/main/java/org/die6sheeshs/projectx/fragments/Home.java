@@ -1,16 +1,13 @@
 package org.die6sheeshs.projectx.fragments;
 
-import static org.die6sheeshs.projectx.activities.MainActivity.PERMISSIONS_FINE_LOCATION;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,19 +17,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
-import org.die6sheeshs.projectx.entities.Party;
-import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.util.List;
@@ -61,6 +52,21 @@ public class Home extends Fragment {
     private MainActivity mainActivity;
     private LinearLayout linearLayout;
     private TextView tv_kilometers;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Permission is granted. Continue the action or workflow in your app.
+                    updateLocation(seekBar.getProgress());
+                } else {
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
+                    Toast.makeText(getContext(), "Cannot list nearby parties without having location permissions", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     public Home() {
         // Required empty public constructor
@@ -129,11 +135,23 @@ public class Home extends Fragment {
 
         this.mainActivity = (MainActivity) getActivity();
 
-        updateLocation(5);
+        //Checking for location permissions
+        if (ContextCompat.checkSelfPermission(
+                getContext(), Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // You can use the API that requires the permission.
+            updateLocation(seekBar.getProgress());
+        } else {
+            // You can directly ask for the permission.
+            // The registered ActivityResultCallback gets the result of this request.
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+//        updateLocation(5);
     }
 
     private void updateLocation(int radius) {
-        mainActivity.updateLocation(location -> listParties(location, radius));
+        mainActivity.getAndConsumeLastLocation(location -> listParties(location, radius));
     }
 
 

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.LoginResponse;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.User;
 import org.die6sheeshs.projectx.helpers.PropertyService;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
@@ -82,10 +83,17 @@ public class LoginActivity extends AppCompatActivity {
                     SessionManager.getInstance().setUserId(token.getUser_id());
                     RetrofitService.getInstance().addAuthInterceptor();
 
+                    Observable<User> userData = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
+                    userData.subscribeOn(Schedulers.io())
+                            .subscribe(user1 -> {
+                                        SessionManager.getInstance().setUser(user1);
+                                        Intent intent = new Intent(this, MainActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intent);
+                                    },
+                                    error -> Log.v("Fetch user on login", error.getMessage()));
+
                     //Starting the main activity
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
                     Log.v("New JWT token", token.getToken());
                     Log.v("Logged in user: ", SessionManager.getInstance().getUserId());
                     dialog.dismiss();

@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.collection.CircularArray;
 import androidx.fragment.app.Fragment;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -39,6 +43,7 @@ import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.TicketRequest;
 import org.die6sheeshs.projectx.entities.User;
@@ -53,6 +58,7 @@ import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -80,6 +86,9 @@ public class PartyDetail extends Fragment {
     private static final int TICKET_ACCEPTED = 2;
 
     private View partyDetail;
+    private ImageView imageView;
+
+    List<Bitmap> partyImages = new ArrayList<>();
 
     public PartyDetail(String partyID){
         partyId = partyID;
@@ -117,6 +126,7 @@ public class PartyDetail extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_party_detail, container, false);
+        imageView = v.findViewById(R.id.displayedLocationImage);
         initShareButton(v);
         initLocationImages(v);
         setPartyData(v);
@@ -250,6 +260,16 @@ public class PartyDetail extends Fragment {
 
     }
 
+    private SimpleFuture<List<Pictures>> getPictures(){
+        SimpleFuture<List<Pictures>> listOfPictures = new SimpleFuture<>();
+        Observable<List<Pictures>> pictures = PartyPersistence.getInstance().getPartyPictures(partyId);
+        pictures.subscribeOn(Schedulers.io())
+                .subscribe(pictureList -> {
+                        listOfPictures.setValue(pictureList);
+                });
+        return listOfPictures;
+    }
+
     private void setDescription(View v, String s) {
         TextView title = (TextView) v.findViewById(R.id.descText);
         title.setText(s);
@@ -259,7 +279,11 @@ public class PartyDetail extends Fragment {
     private void setEnd(View v, LocalDateTime end){
         TextView title = (TextView) v.findViewById(R.id.endText);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        title.setText(end.format(formatter));
+        if (end == null) {
+            title.setText("Open-End");
+        } else {
+            title.setText(end.format(formatter));
+        }
     }
 
     private void setStart(View v, LocalDateTime start){
@@ -299,6 +323,8 @@ public class PartyDetail extends Fragment {
         title.setText(s);
     }
 
+    SimpleObservable<Integer> imageIndex = new SimpleObservable<>();
+
     private void initLocationImages(View v) {
         ImageView curImg = (ImageView) v.findViewById(R.id.displayedLocationImage);
         Bitmap bmp = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
@@ -307,7 +333,143 @@ public class PartyDetail extends Fragment {
                 bmp.setPixel(x,y, Color.rgb(x%256,y%256,0));
             }
         }
-        curImg.setImageBitmap(bmp);
+        /**
+
+        Bitmap bmp1 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
+        for(int x = 0; x < 1919; x++){
+            for(int y = 0; y < 1079; y++){
+                bmp1.setPixel(x,y, Color.rgb(x%256,y%256,x%256));
+            }
+        }
+        Bitmap bmp2 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
+        for(int x = 0; x < 1919; x++){
+            for(int y = 0; y < 1079; y++){
+                bmp2.setPixel(x,y, Color.rgb(x%256,0,x%256));
+            }
+        }
+        Bitmap bmp3 = Bitmap.createBitmap(1920,1080, Bitmap.Config.ARGB_8888);
+        for(int x = 0; x < 1919; x++){
+            for(int y = 0; y < 1079; y++){
+                bmp3.setPixel(x,y, Color.rgb(0,y%256,x%256));
+            }
+        }
+
+         partyImages.add(bmp);
+         partyImages.add(bmp1);
+         partyImages.add(bmp3);
+         partyImages.add(bmp2);
+
+
+
+         **/
+        SimpleFuture<List<Pictures>> future = getPictures();
+        //SimpleFuture<List<Pictures>> future = new SimpleFuture<>();
+        //future.setValue(new ArrayList<>());
+        future.doActionWhenValueSet( pics ->{
+            for(Pictures p: pics){
+                byte[] decode = Base64.decode(p.getPicture(), Base64.DEFAULT);
+                Bitmap decodeBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                if (bmp != null) {
+                    partyImages.add(decodeBmp);
+                }
+            }
+
+
+
+            if(partyImages.size() == 0){
+                partyImages.add(bmp);
+            }
+
+
+            SimpleObserver<Integer> indexChangeObserver = new SimpleObserver<Integer>() {
+                @Override
+                public void doAction(Integer value) {
+                    getActivity().runOnUiThread(()->{
+                        ProgressBar pgb = (ProgressBar) v.findViewById(R.id.imgProgBar);
+                        pgb.setMax(partyImages.size()-1);
+                        pgb.setProgress(value, true);
+                        if(value >= partyImages.size()){
+
+                        }else{
+                            curImg.setImageBitmap(partyImages.get(value));
+                        }
+                    });
+
+
+                }
+            };
+            imageIndex.subscribe(indexChangeObserver);
+            initNextImageButton(imageIndex, partyImages, v);
+            initPreviousImageButton(imageIndex, partyImages, v);
+
+            imageIndex.runActions(0);
+        });
+
+    }
+
+
+
+    private void initNextImageButton(SimpleObservable<Integer> index, List<Bitmap> images, View v){
+        Button nextImageButton = (Button) v.findViewById(R.id.nextImgBtn);
+
+        index.subscribe(new SimpleObserver<Integer>() {
+            @Override
+            public void doAction(Integer value) {
+                if(value >= images.size()-1){
+                    //disable next button
+                    disableButton(nextImageButton);
+                }else{
+                    // enable next button
+                    enableButton(nextImageButton, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            index.runActions(value+1);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void initPreviousImageButton(SimpleObservable<Integer> index, List<Bitmap> images, View v){
+        Button previousImageButton = (Button) v.findViewById(R.id.previousImgBtn);
+
+        index.subscribe(new SimpleObserver<Integer>() {
+            @Override
+            public void doAction(Integer value) {
+                if(value <= 0){
+                    // disable previous button
+                    disableButton(previousImageButton);
+                }else{
+                    // enable next button
+                    enableButton(previousImageButton, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            index.runActions(value-1);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void disableButton(Button b){
+        getActivity().runOnUiThread(()->{
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+            b.setBackgroundColor(Color.GRAY);
+        });
+    }
+
+    private void enableButton(Button b, View.OnClickListener o){
+        getActivity().runOnUiThread(()->{
+            b.setBackgroundColor(Color.BLUE);
+            b.setOnClickListener(o);
+        });
     }
 
 
@@ -337,20 +499,7 @@ public class PartyDetail extends Fragment {
                                             getActivity().runOnUiThread(()->{
                                                 Fragment frag = new PartyOverview();
                                                 ((MainActivity) getActivity()).replaceFragment(frag);
-
-                                                LayoutInflater inflater = getLayoutInflater();
-                                                View layout = inflater.inflate(R.layout.toast_layout,null);
-
-                                                ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                                image.setImageResource(R.drawable.ic_baseline_clear_24);
-                                                TextView text = (TextView) layout.findViewById(R.id.text);
-                                                text.setText("Ticket not found");
-                                                layout.setBackgroundColor(Color.parseColor("#ffff0000"));
-                                                Toast toast = new Toast(getContext());
-                                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                                toast.setDuration(Toast.LENGTH_LONG);
-                                                toast.setView(layout);
-                                                toast.show();
+                                                OurToast.makeToast("Party deleted successfully" ,"#ff00ff00",R.drawable.ic_baseline_clear_24,getContext(),getLayoutInflater());
                                             });
                                         },(error) ->{
                                             Log.v("Party","Error delete party by party id  "+error.getMessage());});
@@ -578,65 +727,19 @@ public class PartyDetail extends Fragment {
                                 response2.subscribeOn(Schedulers.io())
                                         .subscribe(user->{
                                             getActivity().runOnUiThread(()->{
-                                                LayoutInflater inflater = getLayoutInflater();
-                                                View layout = inflater.inflate(R.layout.toast_layout,null);
-
-                                                ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                                image.setImageResource(R.drawable.ic_baseline_check_24);
-                                                TextView text = (TextView) layout.findViewById(R.id.text);
-                                                text.setText("Valid ticket: "+user.getFirstName() +" "+ user.getLastName());
-                                                layout.setBackgroundColor(Color.parseColor("#ff00ff00"));
-                                                Toast toast = new Toast(getContext());
-                                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                                toast.setDuration(Toast.LENGTH_LONG);
-                                                toast.setView(layout);
-                                                toast.show();
+                                                OurToast.makeToast( "Valid ticket: "+user.getFirstName() +" "+ user.getLastName(),"#ff00ff00",R.drawable.ic_baseline_check_24,getContext(),getLayoutInflater());
                                             });
 
                                         },error -> Log.v("User","Error get User with id "+error.getMessage()));
                             }else{
                                 getActivity().runOnUiThread(()-> {
-                                    LayoutInflater inflater = getLayoutInflater();
-                                    View layout = inflater.inflate(R.layout.toast_layout, null);
-
-                                    ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                    image.setImageResource(R.drawable.ic_baseline_clear_24);
-                                    TextView text = (TextView) layout.findViewById(R.id.text);
-                                    text.setText("Not your party bro");
-                                    layout.setBackgroundColor(Color.parseColor("#ffff0000"));
-                                    Toast toast = new Toast(getContext());
-                                    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                    toast.setDuration(Toast.LENGTH_LONG);
-                                    toast.setView(layout);
-                                    toast.show();
+                                    OurToast.makeToast("Not your party bro" ,"#ffff0000",R.drawable.ic_baseline_clear_24,getContext(),getLayoutInflater());
                                 });
                             }
                         },(error) ->{
                             Log.v("Ticket","Error get Ticket with id "+error.getMessage());
                             getActivity().runOnUiThread(()->{
-                                LayoutInflater inflater = getLayoutInflater();
-                                View layout = inflater.inflate(R.layout.toast_layout,null);
-
-                                ImageView image = (ImageView) layout.findViewById(R.id.image);
-                                image.setImageResource(R.drawable.ic_baseline_clear_24);
-                                TextView text = (TextView) layout.findViewById(R.id.text);
-                                text.setText("Ticket not found");
-                                layout.setBackgroundColor(Color.parseColor("#ffff0000"));
-                                Toast toast = new Toast(getContext());
-                                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-                                toast.setDuration(Toast.LENGTH_LONG);
-                                toast.setView(layout);
-                                toast.show();
-                                /*
-                                Toast toast = Toast.makeText(getContext(), "Ticket not found", Toast.LENGTH_LONG);
-                                View view = toast.getView();
-
-                                //Gets the actual oval background of the Toast then sets the colour filter
-                                view.setBackgroundColor(Color.parseColor("#ffff0000"));
-
-                                //Gets the TextView from the Toast so it can be editted
-                                TextView text = view.findViewById(android.R.id.message);
-                                toast.show();*/
+                                OurToast.makeToast("Ticket not found","#ffff0000",R.drawable.ic_baseline_clear_24,getContext(),getLayoutInflater());
                             });
                         });
             }

@@ -2,36 +2,43 @@ package org.die6sheeshs.projectx.fragments;
 
 import static androidx.core.content.FileProvider.getUriForFile;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.User;
+import org.die6sheeshs.projectx.helpers.ImageConversion;
 import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.UserPersistence;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.function.Consumer;
+import java.nio.file.Files;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 /**
@@ -48,6 +55,8 @@ public class Profile extends Fragment {
 
     static final int REQUEST_IMAGE_CAPTURE = 187;
 
+    private static final String fileName = "cameraProfilePic.jpg";
+
     // TODO: Rename and change types of parameters
     private ActivityResultLauncher<Uri> takePhotoActivity;
     private Uri takeImageUri;
@@ -59,6 +68,26 @@ public class Profile extends Fragment {
     private TextView tv_lastName;
     private TextView tv_email;
     private TextView tv_nickname;
+    private AppCompatImageButton uploadPicture;
+    private AppCompatImageButton cancelUpload;
+    private TabLayout tabLayout;
+    private ViewPager2 profileViewPager;
+
+    //Register the callback (action to perform) when user answered the permission request
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Permission is granted. Continue the action or workflow in your app.
+                    takePhotoActivity.launch(takeImageUri);
+                } else {
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
+                    Toast.makeText(getContext(), "Cannot take a new profile picture without permission", Toast.LENGTH_SHORT).show();
+                }
+            });
 
 
     public Profile() {
@@ -91,12 +120,17 @@ public class Profile extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        File newFile = new File(getContext().getExternalFilesDir("my_images"), "test123.jpg");
+        File newFile = new File(getContext().getExternalFilesDir("my_images"), fileName);
         this.takeImageUri = getUriForFile(getContext(), "org.die6sheeshs.projectx.fileprovider", newFile);
         takePhotoActivity = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
             //Do something with the image after a picture was taken
-//            imageViewForUpload.setImageURI(takeImageUri);
+            if (result && imageView != null) {
+                imageView.setImageURI(takeImageUri);
+                uploadPicture.setVisibility(View.VISIBLE);
+                cancelUpload.setVisibility(View.VISIBLE);
+            }
         });
+
     }
 
     @Override
@@ -104,120 +138,125 @@ public class Profile extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        //Assign all the views
         imageView = view.findViewById(R.id.imageView);
         tv_firstName = view.findViewById(R.id.tv_profile_firstname);
         tv_lastName = view.findViewById(R.id.tv_profile_lastname);
         tv_email = view.findViewById(R.id.tv_profile_email);
         tv_nickname = view.findViewById(R.id.tv_profile_nickname);
+        uploadPicture = view.findViewById(R.id.button_uploadProfilePicture);
+        cancelUpload = view.findViewById(R.id.button_retakeProfilePicture);
 
+        //Add listeners
+
+        //Listener for taking an image
+        imageView.setOnClickListener(this::askPermAndTakeImg);
+        //Listener for uploading the taken image
+        uploadPicture.setOnClickListener(this::upload);
+        //Listener for cancelling the profile picture update
+        cancelUpload.setOnClickListener(view1 -> {
+            initProfileData();
+        });
+
+        //Display the Users data (and profile pic) in the fragment
         initProfileData();
-        downloadProfilePicture();
 
-        //Take picture action
-//        pictureButton.setOnClickListener(view1 -> {
-//            ((MainActivity) getActivity()).requestCameraPermission();
-//            takePhotoActivity.launch(takeImageUri);
-//        });
-
-        //Upload action
-//        uploadButton.setOnClickListener(this::onClick);
+        initTabs();
 
         return view;
     }
 
     private void initProfileData() {
-        Observable<User> userDataResponse = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
-        userDataResponse.subscribeOn(Schedulers.io())
-                .subscribe(user -> {
-                    getActivity().runOnUiThread(() -> {
-                        tv_firstName.setText(user.getFirstName());
-                        tv_lastName.setText(user.getLastName());
-                        tv_email.setText(user.getEmail());
-                        tv_nickname.setText(user.getNick_name());
-                    });
-                }, (error) -> Log.e("Get user data in profile", error.getMessage()));
-    }
-
-    private void downloadProfilePicture() {
-        String id = SessionManager.getInstance().getUserId();
-        Observable<ResponseBody> imageRequest = UserPersistence.getInstance().downloadProfilePic(id);
-
-        imageRequest.subscribeOn(Schedulers.io())
-                .subscribe(response -> {
-                    Log.v("File download", "Server has file");
-                    boolean success = writeResponseBodyToDisk(response, "profile_pic.png", imageView, (file) -> getActivity().runOnUiThread(() -> imageView.setImageURI(Uri.fromFile(file))));
-                    Log.v("File download", "Successfully converted file");
-                }, (error) -> Log.v("File download", error.getMessage()));
+//        User user = SessionManager.getInstance().getUser();
+        Observable<User> userData = UserPersistence.getInstance().getUserData(SessionManager.getInstance().getUserId());
+        userData.subscribeOn(Schedulers.io())
+                .subscribe(
+                        user -> getActivity().runOnUiThread(() -> {
+                            tv_firstName.setText(user.getFirstName());
+                            tv_lastName.setText(user.getLastName());
+                            tv_email.setText(user.getEmail());
+                            tv_nickname.setText(user.getNick_name());
+                            if (user.getProfile_pic() != null || !user.getProfile_pic().isEmpty()) {
+                                displayProfilePicture(user.getProfile_pic());
+                            }
+                        })
+                );
 
     }
 
-    private void uploadPicture() {
-        String id = SessionManager.getInstance().getUserId();
-        File file = new File(getContext().getExternalFilesDir("my_images"), "test123.jpg");
-        if (!file.exists()) {
-            Log.v("File upload", "File doesn't exist.");
-            return;
-        }
+    private void displayProfilePicture(String base64) {
+        //Convert base64 string into a byte array and then into a bitmap in order to set it to the imageView
+        Schedulers.io().scheduleDirect(() -> {
+            Bitmap bmp = ImageConversion.base64ToBitmap(base64);
 
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part imageBody = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
-        Observable<ResponseBody> uploadResponse = UserPersistence.getInstance().uploadPicture(id, imageBody);
-
-        uploadResponse.subscribeOn(Schedulers.io())
-                .subscribe(responseBody -> {
-                    Log.v("Upload successful", "Profile picture update");
-                }, error -> Log.v("Upload error", error.getMessage()));
-    }
-
-    private boolean writeResponseBodyToDisk(ResponseBody bodyWithFile, String filename, ImageView imageView, Consumer<File> func) {
-        try {
-            File file = new File(view.getContext().getFilesDir(), filename);
-
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-//                byte[] fileReader = new byte[8192];
-                byte[] fileReader = new byte[4096];
-
-                inputStream = bodyWithFile.byteStream();
-                outputStream = new FileOutputStream(file);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-//                    Log.d("File success", "file download: " + fileSizeDownloaded + " of " + fileSize);
-                }
-//                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                outputStream.close();
-//                getActivity().runOnUiThread(() -> imageView.setImageURI(Uri.fromFile(file)));
-                func.accept(file);
-                outputStream.flush();
-
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
+            if (bmp == null) {
+                return;
             }
-        } catch (IOException e) {
-            return false;
-        }
+            getActivity().runOnUiThread(() -> imageView.setImageBitmap(bmp));
+        });
+//        getActivity().runOnUiThread(() -> imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, imageView.getWidth(), imageView.getHeight(), false)));
     }
 
-    private void onClick(View view1) {
-        uploadPicture();
+    private void uploadPicture(String fileName) {
+        //TODO Run that on a separate thread
+        Schedulers.io().scheduleDirect(() -> {
+            //Reading the file
+            File file = new File(getContext().getExternalFilesDir("my_images"), fileName);
+//            byte[] bytes;
+//            //Converting it into a byte array
+//            try {
+//                bytes = Files.readAllBytes(file.toPath());
+//            } catch (IOException e) {
+//                Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show();
+//                Log.e("File upload", e.getMessage());
+//                return;
+//            }
+            //Encode to base64 and send it to the restAPI
+            String base64 = ImageConversion.fileToBase64(file);
+
+            String id = SessionManager.getInstance().getUserId();
+            Observable<ResponseBody> response = UserPersistence.getInstance().uploadPicture(id, base64);
+            response.subscribeOn(Schedulers.io())
+                    .subscribe(responseBody -> getActivity().runOnUiThread(() -> {
+                                uploadPicture.setVisibility(View.GONE);
+                                cancelUpload.setVisibility(View.GONE);
+                                Toast.makeText(getContext(), "Upload was successful", Toast.LENGTH_SHORT).show();
+                            })
+                            , throwable -> getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Upload failure :(", Toast.LENGTH_SHORT).show()));
+        });
+    }
+
+    private void upload(View clickedView) {
+        uploadPicture(fileName);
+    }
+
+    private void initTabs() {
+        tabLayout = view.findViewById(R.id.profile_tabLayout);
+        profileViewPager = view.findViewById(R.id.profile_viewPager);
+        String userId = SessionManager.getInstance().getUserId();
+        ProfileTabAdapter profileTabAdapter = new ProfileTabAdapter(getActivity());
+
+        profileTabAdapter.addFragment(ProfileFriendsTab.newInstance(userId), "Friends");
+        profileTabAdapter.addFragment(ProfileSearchTab.newInstance(userId), "Search");
+        profileTabAdapter.addFragment(ProfileNotificationsTab.newInstance(userId), "Notifications");
+
+        profileViewPager.setAdapter(profileTabAdapter);
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, profileViewPager, new ProfileTabConfigurationStrategy(profileTabAdapter));
+        tabLayoutMediator.attach();
+    }
+
+    private void askPermAndTakeImg(View clickedView) {
+        //Checking for camera permissions
+        if (ContextCompat.checkSelfPermission(
+                getContext(), Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // You can use the API that requires the permission.
+            takePhotoActivity.launch(takeImageUri);
+        } else {
+            // You can directly ask for the permission.
+            // The registered ActivityResultCallback gets the result of this request.
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
     }
 }

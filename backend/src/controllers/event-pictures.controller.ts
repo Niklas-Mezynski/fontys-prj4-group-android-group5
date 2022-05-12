@@ -16,6 +16,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import { Helpers } from '../helpers/helper_functions';
 import {
   Event,
   Pictures,
@@ -62,16 +63,17 @@ export class EventPicturesController {
         'application/json': {
           schema: getModelSchemaRef(Pictures, {
             title: 'NewPicturesInEvent',
-            exclude: ['event_id'],
+            exclude: ['event_id', 'img_uuid'],
             optional: ['event_id']
           }),
         },
       },
-    }) pictures: Omit<Pictures, 'event_id'>,
+    }) pictures: Pictures,
   ): Promise<Pictures> {
+    pictures.img_uuid = Helpers.generateUUID();
     return this.eventRepository.pictures(id).create(pictures);
   }
-
+  
   @patch('/events/{id}/pictures', {
     responses: {
       '200': {

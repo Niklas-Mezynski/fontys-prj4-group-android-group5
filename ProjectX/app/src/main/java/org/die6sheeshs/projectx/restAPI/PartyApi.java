@@ -1,17 +1,18 @@
 package org.die6sheeshs.projectx.restAPI;
 
 import org.die6sheeshs.projectx.entities.Count;
-import com.fasterxml.jackson.annotation.JsonFilter;
 
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
+import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
 import org.die6sheeshs.projectx.entities.User;
 
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -36,6 +37,9 @@ public interface PartyApi {
     @POST("events/{id}/event-location")
     Observable<EventLocation> createEventLocation(@Path("id") String event_id, @Body EventLocation eventLocation);
 
+    @POST("event-with-location")
+    Observable<Party> createEventWithLocation(@Body EventWithLocation eventWithLocation);
+
     @GET("events/{id}/event-location")
     Observable<EventLocation> getEventLocation(@Path("id") String id);
 
@@ -56,4 +60,13 @@ public interface PartyApi {
 
     @DELETE("events/{id}")
     Observable<Void> deleteEvent(@Path("id") String partyId);
+
+    @GET("events/{id}/pictures")
+    Observable<List<Pictures>> getPicturesOfParty(@Path("id") String id);
+
+    @POST("events/{id}/pictures")
+    Observable<Pictures> uploadPictures(@Path("id") String event_id, @Body Pictures pictures);
+
+    @DELETE("events/{id}/pictures")
+    Observable<Count> deletePictures(@Path("id") String partyId);
 }

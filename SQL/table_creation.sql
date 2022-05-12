@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS eventlocation CASCADE;
 DROP TABLE IF EXISTS pictures CASCADE;
 DROP TABLE IF EXISTS friends CASCADE;
 DROP TABLE IF EXISTS requests CASCADE;
+DROP TABLE IF EXISTS ticketrequest CASCADE;
 
 
 -- Create tables
@@ -18,15 +19,16 @@ CREATE TABLE ticket
 );
 CREATE TABLE "user"
 (
-    id          varchar(128) NOT NULL,
-    firstName   varchar(40)  NOT NULL,
-    lastName    varchar(40)  NOT NULL,
-    email       varchar(320) NOT NULL UNIQUE,
-    nick_name   varchar(40)  NOT NULL UNIQUE,
-    birth_date  date         NOT NULL,
-    profile_pic varchar(1024),
-    about_me    varchar(2048),
-    password    varchar(256) NOT NULL,
+    id            varchar(128) NOT NULL,
+    firstName     varchar(40)  NOT NULL,
+    lastName      varchar(40)  NOT NULL,
+    email         varchar(320) NOT NULL UNIQUE,
+    nick_name     varchar(40)  NOT NULL UNIQUE,
+    birth_date    date         NOT NULL,
+    profile_pic   varchar,
+    about_me      varchar(2048),
+    password      varchar(256) NOT NULL,
+    firebaseToken varchar,
     PRIMARY KEY (id)
 );
 CREATE TABLE event
@@ -35,9 +37,9 @@ CREATE TABLE event
     user_id     varchar(128)  NOT NULL,
     name        varchar(80)   NOT NULL,
     description varchar(2048) NOT NULL,
---     pictures    integer,
     "start"     timestamp     NOT NULL,
     "end"       timestamp,
+    price       double precision DEFAULT 0,
     max_people  integer       NOT NULL,
     PRIMARY KEY (id)
 );
@@ -59,9 +61,11 @@ CREATE TABLE eventlocation
 );
 CREATE TABLE pictures
 (
-    event_id varchar(128)  NOT NULL,
-    url      varchar(1024) NOT NULL,
-    PRIMARY KEY (event_id, url)
+    event_id varchar(128) NOT NULL,
+    img_uuid varchar(128) NOT NULL,
+    base64   varchar      NOT NULL,
+    main_img boolean      DEFAULT false,
+    PRIMARY KEY (event_id, img_uuid)
 );
 CREATE TABLE friends
 (
@@ -76,9 +80,8 @@ CREATE TABLE ticketrequest
     user_id    varchar(128) NOT NULL,
     event_id   varchar(128) NOT NULL,
     created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, created_on)
+    PRIMARY KEY (user_id, event_id)
 );
-
 
 -- Create relations
 ALTER TABLE pictures
@@ -111,13 +114,18 @@ ALTER TABLE "user"
 ALTER TABLE event
     ADD CONSTRAINT event_start_in_future CHECK ( "start" > CURRENT_TIMESTAMP );
 
-
+DROP FUNCTION getfriendinfos(character varying)
 -- Custom function to get all friends from the database
+
+--DROP FUNCTION getfriendinfos(character varying);
+
 CREATE OR REPLACE function getFriendInfos(user_id varchar)
     RETURNS TABLE
             (
-                friend_id varchar,
-                nick_name varchar
+                friend_id   varchar,
+                nick_name   varchar,
+                profile_pic varchar,
+                about_me    varchar
             )
     language plpgsql
 as
@@ -125,7 +133,7 @@ $$
 Declare
 
 Begin
-    return QUERY SELECT DISTINCT "user".id as freind_id, "user".nick_name
+    return QUERY SELECT DISTINCT "user".id as friend_id, "user".nick_name, "user".profile_pic, "user".about_me
                  FROM ((SELECT f.usera as friendId
                         FROM friends f
                         where (userb = user_id))

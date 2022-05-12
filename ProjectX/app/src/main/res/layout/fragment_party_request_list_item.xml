@@ -19,8 +19,8 @@
             android:id="@+id/image_profilepic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
+            android:layout_weight="0"
+            android:scaleType="fitCenter"
             tools:src="@tools:sample/avatars" />
 
         <LinearLayout
@@ -40,35 +40,39 @@
                 android:id="@+id/lastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="50px"
+                android:layout_marginBottom="10dp"
                 android:text="@string/last_name" />
 
             <TextView
-                android:id="@+id/aboutMe"
+                android:id="@+id/partyName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/about_me" />
+                android:text="@string/party_name" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_acceptDecline"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/acceptButton"
+            <ImageView
+                android:id="@+id/imageView_acceptButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Accept" />
+                android:layout_marginBottom="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_baseline_check_24" />
 
-            <Button
-                android:id="@+id/declineButton"
+            <ImageView
+                android:id="@+id/imageView_declineButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Decline" />
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_baseline_clear_24" />
         </LinearLayout>
 
     </LinearLayout>

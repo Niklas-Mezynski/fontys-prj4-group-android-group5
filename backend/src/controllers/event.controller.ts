@@ -4,8 +4,10 @@ import {
   AnyObject,
   Count,
   CountSchema,
+  DefaultTransactionalRepository,
   Filter,
   FilterExcludingWhere,
+  IsolationLevel,
   model,
   property,
   repository,
@@ -23,7 +25,7 @@ import {
   response,
 } from '@loopback/rest';
 import { Helpers } from '../helpers/helper_functions';
-import { Event, EventLocation, EventWithRelations } from '../models';
+import { Event, EventLocation, EventWithRelations, EventWithLocation as EventWithALocation } from '../models';
 import { EventRepository } from '../repositories';
 import { SecurityBindings, securityId, UserProfile } from "@loopback/security";
 
@@ -76,6 +78,65 @@ export class EventController {
   ): Promise<Event> {
     event.id = Helpers.generateUUID();
     return this.eventRepository.create(event);
+  }
+
+
+
+
+
+
+  @post('/event-with-location')
+  @response(200, {
+    description: 'Success',
+    content: { 'application/json': { schema: getModelSchemaRef(Event) } },
+  })
+  async createEventWithLocation(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(EventWithALocation, {
+            title: 'NewEventWithALocation',
+            exclude: ['id',],
+          }),
+        },
+      },
+    })
+    event: EventWithALocation,
+  ): Promise<Event> {
+    const repo1 = new DefaultTransactionalRepository(Event, this.eventRepository.dataSource);
+    const repo2 = new DefaultTransactionalRepository(EventLocation, this.eventRepository.dataSource);
+
+    const tx = await repo2.beginTransaction(IsolationLevel.READ_COMMITTED);
+
+    event.id = Helpers.generateUUID();
+    const e = new Event({
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      start: event.start,
+      price: event.price,
+      max_people: event.max_people,
+      user_id: event.user_id
+    })
+    if (event.end !== null) {
+      e.end = event.end;
+    }
+    const createdEvent = await repo1.create(e, { transaction: tx });
+
+    const timestamp = new Date().toDateString();
+    const location = new EventLocation({
+      event_id: event.id,
+      latitude: event.latitude,
+      longitude: event.longitude,
+      created_on: timestamp,
+    });
+
+
+    await repo2.create(location, { transaction: tx });
+
+    await tx.commit();
+
+    return createdEvent;
   }
 
   @get('/events/count')
@@ -198,7 +259,7 @@ export class EventController {
     @param.filter(Event, { exclude: 'where' }) filter?: FilterExcludingWhere<Event>
   ): Promise<AnyObject> {
     //Calling a custom SQL function to get the nearby parties
-    let sql: string = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius}, '${currentUserProfile[securityId]}');`;
+    const sql = `SELECT * FROM getNearbyEvents(${lat}, ${lon}, ${radius}, '${currentUserProfile[securityId]}');`;
     return this.eventRepository.execute(sql);
   }
 }

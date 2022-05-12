@@ -16,4 +16,5 @@
     <string name="nickname">Nickname</string>
     <string name="invalid_login">Invalid email password combination</string>
     <string name="profile_picture">Profile picture</string>
+    <string name="tab_to_edit">Tab to edit</string>
 </resources>

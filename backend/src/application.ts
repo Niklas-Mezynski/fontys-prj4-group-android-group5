@@ -19,9 +19,12 @@ import { LocalDbDataSource } from './datasources';
 import { UserRepository } from './repositories';
 import { CustomUserService } from './services';
 import { UserService } from '@loopback/authentication';
-
+import { applicationDefault, cert, Credential, initializeApp } from "firebase-admin/app";
 
 export { ApplicationConfig };
+
+// Initialize firebase-admin app
+export const firebaseApp = initializeApp({ credential: applicationDefault() });
 
 export class ProjectX extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
