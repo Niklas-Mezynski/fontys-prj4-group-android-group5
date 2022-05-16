@@ -53,7 +53,8 @@ public class TicketRequestListItem extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
 
-    public TicketRequestListItem() {}
+    public TicketRequestListItem() {
+    }
 
     public TicketRequestListItem(TicketRequest ticketRequest) {
         if (ticketRequest == null) {
@@ -143,12 +144,12 @@ public class TicketRequestListItem extends Fragment {
 
     private void setFirstName(View v, String firstName) {
         TextView fName = (TextView) v.findViewById(R.id.firstName);
-        fName.setText("Firstname: "+firstName);
+        fName.setText("Firstname: " + firstName);
     }
 
     private void setLastName(View v, String lastName) {
         TextView lName = (TextView) v.findViewById(R.id.lastName);
-        lName.setText("Lastname: "+lastName);
+        lName.setText("Lastname: " + lastName);
     }
 
     private void setProfilePicture(View v, String pictureURL) {
@@ -162,30 +163,20 @@ public class TicketRequestListItem extends Fragment {
 
     private void setPartyName(View v, String partyName) {
         TextView pName = (TextView) v.findViewById(R.id.partyName);
-        pName.setText("Party: "+partyName);
+        pName.setText("Party: " + partyName);
     }
 
     private void initAcceptButton(View v) {
         ImageView imageView_accept = (ImageView) v.findViewById(R.id.imageView_acceptButton);
-        imageView_accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
-                try {
-//                    byte[] bytesOfUserPartyId = (ticketRequest.getUserId()+ticketRequest.getPartyId()).getBytes("UTF-8");
-//                    MessageDigest md = MessageDigest.getInstance("MD5");
-//                    String newTicketId = Base64.getEncoder().encodeToString(md.digest(bytesOfUserPartyId));
-                    Observable<Ticket> resp = TicketRequestPersistence.getInstance().acceptTicketRequest(ticketRequest.getPartyId(), ticketRequest.getUserId());
-                    // TODO: Implement createTicket in TicketPersistence and uncomment afterwards (should work already)
-                    // TicketPersistence.getInstance().createTicket(newTicket);
-                    resp.subscribeOn(Schedulers.io()).subscribe(ticket -> {
-                        Log.i("New Ticket", ""+ticket.toString());
-                    });
-                } catch (Exception e) {
-                    Log.w("Error", e.getMessage());
-                }
-                Log.w("Info", "Request accepted!");
-            }
+        imageView_accept.setOnClickListener(view -> {
+            //new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
+            //Accepting the request and retrieving the newly generated ticket as response
+            Observable<Ticket> resp = TicketRequestPersistence.getInstance().acceptTicketRequest(ticketRequest.getPartyId(), ticketRequest.getUserId());
+
+            resp.subscribeOn(Schedulers.io()).subscribe(ticket -> {
+                Log.i("New Ticket", "" + ticket.toString());
+                Log.w("Info ticket request", "Request accepted!");
+            });
         });
     }
 
@@ -197,9 +188,9 @@ public class TicketRequestListItem extends Fragment {
                 //new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
                 Observable<Integer> resp = TicketRequestPersistence.getInstance().deleteTicketRequest(ticketRequest.getUserId(), ticketRequest.getPartyId());
                 resp.subscribeOn(Schedulers.io()).subscribe(deletedCount -> {
-                    Log.i("Deleted TicketRequests", ""+deletedCount);
+                    Log.i("Deleted TicketRequests", "" + deletedCount);
                 });
-                Log.w("Info","Request declined!");
+                Log.w("Info", "Request declined!");
             }
         });
     }
