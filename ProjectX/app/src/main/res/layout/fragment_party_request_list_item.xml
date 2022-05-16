@@ -21,7 +21,8 @@
                 android:layout_height="128dp"
                 android:layout_weight="0"
                 android:scaleType="fitCenter"
-                tools:src="@tools:sample/avatars" />
+                tools:src="@tools:sample/avatars"
+                tools:ignore="ImageContrastCheck" />
 
         <LinearLayout
             android:layout_width="wrap_content"
