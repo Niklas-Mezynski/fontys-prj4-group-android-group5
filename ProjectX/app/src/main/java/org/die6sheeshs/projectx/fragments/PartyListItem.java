@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,13 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.entities.City;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.helpers.UIThread;
+import org.die6sheeshs.projectx.restAPI.GeocoderPersistence;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
@@ -112,6 +115,18 @@ public class PartyListItem extends Fragment {
             return;
         EventLocation eventLocation = optionalEventLocation.get();
         //TODO (Niklas) get the name of the city where the party location is in
+        Observable<City> cityByCoordinate = GeocoderPersistence.getInstance().getCityByCoordinate(eventLocation.getLatitude(), eventLocation.getLongtitude());
+        cityByCoordinate.subscribeOn(Schedulers.io())
+                .subscribe(
+                        city -> {
+                            getActivity().runOnUiThread(() -> {
+                                TextView cityTV = view.findViewById(R.id.tv_city_name);
+                                cityTV.setVisibility(View.VISIBLE);
+                                cityTV.setText(city.getLong_name());
+                            });
+                        },
+                        error -> Log.v("PartyListItem - getCityName", error.getMessage())
+                );
     }
 
     private void setButtonAction() {

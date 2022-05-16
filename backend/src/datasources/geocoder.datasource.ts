@@ -33,7 +33,7 @@ const config = {
           latlng: '{lat},{lng}',
           key: 'AIzaSyBqbaGO0CeLvfzhYyaBCAVFzYSfDWl6xJQ',
         },
-        responsePath: '$.results[*].formatted_address',
+        responsePath: '$.results[*].address_components',
       },
       functions: {
         toAddress: ['lat', 'lng'],
