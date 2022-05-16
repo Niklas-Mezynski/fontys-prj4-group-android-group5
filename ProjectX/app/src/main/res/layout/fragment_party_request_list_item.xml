@@ -16,12 +16,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/image_profilepic"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0"
-            android:scaleType="fitCenter"
-            tools:src="@tools:sample/avatars" />
+                android:id="@+id/image_profilepic"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_weight="0"
+                android:scaleType="fitCenter"
+                tools:src="@tools:sample/avatars" />
 
         <LinearLayout
             android:layout_width="wrap_content"

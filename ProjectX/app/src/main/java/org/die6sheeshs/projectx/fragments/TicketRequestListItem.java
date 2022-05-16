@@ -176,7 +176,7 @@ public class TicketRequestListItem extends Fragment {
 //                    MessageDigest md = MessageDigest.getInstance("MD5");
 //                    String newTicketId = Base64.getEncoder().encodeToString(md.digest(bytesOfUserPartyId));
                     Observable<Ticket> resp = TicketRequestPersistence.getInstance().acceptTicketRequest(ticketRequest.getPartyId(), ticketRequest.getUserId());
-                    // TODO: Implement createTicket in TicketPersistence and uncomment afterwards
+                    // TODO: Implement createTicket in TicketPersistence and uncomment afterwards (should work already)
                     // TicketPersistence.getInstance().createTicket(newTicket);
                     resp.subscribeOn(Schedulers.io()).subscribe(ticket -> {
                         Log.i("New Ticket", ""+ticket.toString());
