@@ -21,6 +21,7 @@ import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
+import org.die6sheeshs.projectx.helpers.EntityHelpers;
 import org.die6sheeshs.projectx.helpers.UIThread;
 import org.die6sheeshs.projectx.restAPI.GeocoderPersistence;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
@@ -110,7 +111,7 @@ public class PartyListItem extends Fragment {
     }
 
     private void setCityName(Party party) {
-        Optional<EventLocation> optionalEventLocation = partyToEnvLocation(party);
+        Optional<EventLocation> optionalEventLocation = EntityHelpers.partyToEnvLocation(party);
         if (!optionalEventLocation.isPresent())
             return;
         EventLocation eventLocation = optionalEventLocation.get();
@@ -170,7 +171,7 @@ public class PartyListItem extends Fragment {
         }
         float distance;
         float[] result = new float[3];
-        Optional<EventLocation> el = partyToEnvLocation(party);
+        Optional<EventLocation> el = EntityHelpers.partyToEnvLocation(party);
         if (!el.isPresent()) {
             return;
         }
@@ -184,15 +185,15 @@ public class PartyListItem extends Fragment {
         tv_distance.setText(roundedDistKm + "km");
     }
 
-    private Optional<EventLocation> partyToEnvLocation(Party party) {
-        if (party instanceof EventWithLocation) {
-            EventWithLocation eventWithLocation = (EventWithLocation) party;
-            return Optional.of(new EventLocation(eventWithLocation.getLatitude(), eventWithLocation.getLongitude(), LocalDateTime.now(), party.getId()));
-        }
-        if (party.getEventLocation() == null)
-            return Optional.empty();
-        return Optional.of(party.getEventLocation());
-    }
+//    private Optional<EventLocation> partyToEnvLocation(Party party) {
+//        if (party instanceof EventWithLocation) {
+//            EventWithLocation eventWithLocation = (EventWithLocation) party;
+//            return Optional.of(new EventLocation(eventWithLocation.getLatitude(), eventWithLocation.getLongitude(), LocalDateTime.now(), party.getId()));
+//        }
+//        if (party.getEventLocation() == null)
+//            return Optional.empty();
+//        return Optional.of(party.getEventLocation());
+//    }
 
     private void setImage(Party p) {
         ImageView img = (ImageView) view.findViewById(R.id.party_list_item_img);
