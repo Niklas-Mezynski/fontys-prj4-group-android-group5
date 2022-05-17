@@ -70,4 +70,24 @@ export class GeocoderController {
     }
     return returnValue;
   }
+
+  @get('/toAddressShort/{latitude},{longitude}', {
+    responses: {
+      '200': {
+        description: 'Get address of coordinates',
+        // content: {'application/json': {schema: GeoSchema}},
+      },
+    },
+  })
+  async toAddressShort(
+    @param.path.number('latitude') lat: number,
+    @param.path.number('longitude') lng: number,
+  ): Promise<any> {
+    const response = await this.geoService.toAddressShort(lat, lng);
+    const jsonString = JSON.stringify(response[0]);
+    let json = JSON.parse(jsonString);
+    return {
+      "address": json
+    }
+  }
 }

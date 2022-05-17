@@ -16,10 +16,14 @@ import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.Address;
+import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.entities.Ticket;
+import org.die6sheeshs.projectx.helpers.EntityHelpers;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
+import org.die6sheeshs.projectx.restAPI.GeocoderPersistence;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 
@@ -44,13 +48,13 @@ public class TicketDetail extends Fragment {
     private View view;
     private Party party;
     private Ticket t;
-    private TicketPersistence ticketPersistence= TicketPersistence.getInstance();
+    private TicketPersistence ticketPersistence = TicketPersistence.getInstance();
 
-    public TicketDetail(Party party,Ticket t) {
+    public TicketDetail(Party party, Ticket t) {
         // Required empty public constructor
         this.party = party;
         this.t = t;
-        System.out.println("ticket id: "+t.getId());
+        System.out.println("ticket id: " + t.getId());
     }
 
     /**
@@ -62,8 +66,8 @@ public class TicketDetail extends Fragment {
      * @return A new instance of fragment Profile.
      */
     // TODO: Rename and change types and number of parameters
-    public static TicketDetail newInstance(String param1, String param2,Party party,Ticket t) {
-        TicketDetail fragment = new TicketDetail(party,t);
+    public static TicketDetail newInstance(String param1, String param2, Party party, Ticket t) {
+        TicketDetail fragment = new TicketDetail(party, t);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -89,7 +93,7 @@ public class TicketDetail extends Fragment {
         return view;
     }
 
-    private void init(){
+    private void init() {
 
         setPicture();
         setName();
@@ -101,77 +105,87 @@ public class TicketDetail extends Fragment {
 
 
         Button gotoPartyDetail = (Button) view.findViewById(R.id.toPartyDetail);
-        gotoPartyDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().runOnUiThread(()->{
-                    Fragment pDetail = new PartyDetail(party.getId());
-                    ((MainActivity) getActivity()).replaceFragment(pDetail);
-                });
-            }
-        });
+        gotoPartyDetail.setOnClickListener(view -> getActivity().runOnUiThread(() -> {
+            Fragment pDetail = new PartyDetail(party.getId());
+            ((MainActivity) getActivity()).replaceFragment(pDetail);
+        }));
 
         Button cancel = view.findViewById(R.id.cancel);
-        cancel.setOnClickListener((l)-> {
+        cancel.setOnClickListener((l) -> {
             Observable<Void> resp = ticketPersistence.deleteTicket(t.getId());
             resp.subscribeOn(Schedulers.io())
-                    .subscribe(v ->{
-                        getActivity().runOnUiThread(()->{
+                    .subscribe(v -> {
+                        getActivity().runOnUiThread(() -> {
                             Fragment frag = new Tickets();
                             ((MainActivity) getActivity()).replaceFragment(frag);
                         });
-                    },(error)->Log.v("Error deleting ticket","User Ticket DELETE error "+error.getMessage()));
+                    }, (error) -> Log.v("Error deleting ticket", "User Ticket DELETE error " + error.getMessage()));
         });
 
         Button show = view.findViewById(R.id.qr);
-        show.setOnClickListener((l)->{
+        show.setOnClickListener((l) -> {
             Fragment frag = new ShowQR(t);
             ((MainActivity) getActivity()).replaceFragment(frag);
         });
     }
 
-    private void setPicture(){
+    private void setPicture() {
         ImageView image = view.findViewById(R.id.imageView2);
         String partyId = party.getId();
         Observable<List<Pictures>> picsObservable = PartyPersistence.getInstance().getPartyPictures(partyId);
         picsObservable.subscribeOn(Schedulers.io())
                 .subscribe(pictureList -> {
                     Optional<Pictures> firstImgOpt = pictureList.stream().findFirst();
-                    if(firstImgOpt.isPresent()){
+                    if (firstImgOpt.isPresent()) {
                         byte[] decode = Base64.decode(firstImgOpt.get().getPicture(), Base64.DEFAULT);
                         Bitmap decodedBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
-                        getActivity().runOnUiThread(()->{// todo fix throws error attempt to invoke method(runOnUiThread) on null object reference(get activity seems to be null, du to long loading times)
+                        getActivity().runOnUiThread(() -> {// todo fix throws error attempt to invoke method(runOnUiThread) on null object reference(get activity seems to be null, du to long loading times)
                             image.setImageBitmap(decodedBmp);
                         });
-                    }else{
+                    } else {
 
                     }
 
                 });
     }
 
-    private void setName(){
+    private void setName() {
         TextView name = view.findViewById(R.id.nameT);
         name.setText(party.getName());
     }
 
-    private void setPrice(){
+    private void setPrice() {
         TextView price = view.findViewById(R.id.priceT);
         price.setText(String.format("%.2f €", party.getPrice()));
     }
 
-    private void setAddress(){
-        TextView address = view.findViewById(R.id.addressT);
-        address.setText("ADRESS IN BACKEND MUST BE ADDED");
+    private void setAddress() {
+        TextView address_tv = view.findViewById(R.id.addressT);
+        Optional<EventLocation> optional = EntityHelpers.partyToEnvLocation(party);
+        if (!optional.isPresent()) {
+            address_tv.setText("Location not found");
+            return;
+        }
+        EventLocation eventLocation = optional.get();
+        Observable<Address> addressObservable = GeocoderPersistence.getInstance().getAddressShort(eventLocation.getLatitude(), eventLocation.getLongtitude());
+        addressObservable.subscribeOn(Schedulers.io())
+                .subscribe(
+                        (address) -> getActivity().runOnUiThread(() -> address_tv.setText(address.getAddress())),
+                        (error) -> getActivity().runOnUiThread(() -> address_tv.setText(String.format("Lat: %f | Lon: %f", eventLocation.getLatitude(), eventLocation.getLongtitude())))
+                );
     }
 
-    private void setStart(DateTimeFormatter formatter){
+    private void setStart(DateTimeFormatter formatter) {
         TextView start = view.findViewById(R.id.startT);
         start.setText(party.getStart().format(formatter));
     }
 
-    private void setEnd(DateTimeFormatter formatter){
+    private void setEnd(DateTimeFormatter formatter) {
         TextView end = view.findViewById(R.id.endT);
+        if (party.getEnd() == null) {
+            end.setText("Open end");
+            return;
+        }
         end.setText(party.getEnd().format(formatter));
     }
 
