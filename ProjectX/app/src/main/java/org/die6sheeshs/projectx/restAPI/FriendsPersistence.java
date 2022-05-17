@@ -26,6 +26,10 @@ public class FriendsPersistence implements RetrofitPersistence {
         return this.friendsApi.getFriendsOfUser(id);
     }
 
+    public void deleteFriend(String userId, String friendId) {
+        this.friendsApi.deleteFriend(userId, friendId);
+    }
+
     @Override
     public void refreshApi() {
         this.friendsApi = RetrofitService.getInstance().getRetrofitClient().create(FriendsApi.class);
