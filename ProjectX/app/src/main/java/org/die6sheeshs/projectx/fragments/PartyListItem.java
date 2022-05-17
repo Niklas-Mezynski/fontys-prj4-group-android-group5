@@ -16,19 +16,19 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
-import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.City;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.EventWithLocation;
 import org.die6sheeshs.projectx.entities.Party;
 import org.die6sheeshs.projectx.entities.Pictures;
 import org.die6sheeshs.projectx.helpers.UIThread;
+import org.die6sheeshs.projectx.restAPI.GeocoderPersistence;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -106,6 +106,27 @@ public class PartyListItem extends Fragment {
         setEndDate(party.getEnd());
         setDistance(party, userLocation);
         setImage(party);
+        setCityName(party);
+    }
+
+    private void setCityName(Party party) {
+        Optional<EventLocation> optionalEventLocation = partyToEnvLocation(party);
+        if (!optionalEventLocation.isPresent())
+            return;
+        EventLocation eventLocation = optionalEventLocation.get();
+        //TODO (Niklas) get the name of the city where the party location is in
+        Observable<City> cityByCoordinate = GeocoderPersistence.getInstance().getCityByCoordinate(eventLocation.getLatitude(), eventLocation.getLongtitude());
+        cityByCoordinate.subscribeOn(Schedulers.io())
+                .subscribe(
+                        city -> {
+                            getActivity().runOnUiThread(() -> {
+                                TextView cityTV = view.findViewById(R.id.tv_city_name);
+                                cityTV.setVisibility(View.VISIBLE);
+                                cityTV.setText(city.getLong_name());
+                            });
+                        },
+                        error -> Log.v("PartyListItem - getCityName", error.getMessage())
+                );
     }
 
     private void setButtonAction() {
@@ -149,16 +170,13 @@ public class PartyListItem extends Fragment {
         }
         float distance;
         float[] result = new float[3];
-        if (party instanceof EventWithLocation) {
-            EventWithLocation eventWithLocation = (EventWithLocation) party;
-            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), eventWithLocation.getLatitude(), eventWithLocation.getLongitude(), result);
-            distance = result[0];
-        } else {
-            if (party.getEventLocation() == null)
-                return;
-            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), party.getEventLocation().getLatitude(), party.getEventLocation().getLongtitude(), result);
-            distance = result[0];
+        Optional<EventLocation> el = partyToEnvLocation(party);
+        if (!el.isPresent()) {
+            return;
         }
+        EventLocation eventLocation = el.get();
+        Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), eventLocation.getLatitude(), eventLocation.getLongtitude(), result);
+        distance = result[0];
 
         TextView tv_distance = (TextView) view.findViewById(R.id.tv_distance);
         tv_distance.setVisibility(View.VISIBLE);
@@ -166,28 +184,38 @@ public class PartyListItem extends Fragment {
         tv_distance.setText(roundedDistKm + "km");
     }
 
-    private void setImage(Party p){
-        ImageView img = (ImageView)view.findViewById(R.id.imageView3);
+    private Optional<EventLocation> partyToEnvLocation(Party party) {
+        if (party instanceof EventWithLocation) {
+            EventWithLocation eventWithLocation = (EventWithLocation) party;
+            return Optional.of(new EventLocation(eventWithLocation.getLatitude(), eventWithLocation.getLongitude(), LocalDateTime.now(), party.getId()));
+        }
+        if (party.getEventLocation() == null)
+            return Optional.empty();
+        return Optional.of(party.getEventLocation());
+    }
+
+    private void setImage(Party p) {
+        ImageView img = (ImageView) view.findViewById(R.id.party_list_item_img);
         String partyId = p.getId();
         Observable<List<Pictures>> picsObservable = PartyPersistence.getInstance().getPartyPictures(partyId);
         picsObservable.subscribeOn(Schedulers.io())
                 .subscribe(pictureList -> {
                     Optional<Pictures> firstImgOpt = pictureList.stream().filter(pic -> pic.isMain_img()).findFirst();
-                    if(firstImgOpt.isPresent()){
+                    if (firstImgOpt.isPresent()) {
                         byte[] decode = Base64.decode(firstImgOpt.get().getPicture(), Base64.DEFAULT);
                         Bitmap decodedBmp = BitmapFactory.decodeByteArray(decode, 0, decode.length);
                         /**
-                        getActivity().runOnUiThread(()->{// todo fix throws error attempt to invoke method(runOnUiThread) on null object reference(get activity seems to be null, du to long loading times)
-                            img.setImageBitmap(decodedBmp);
-                        });*/
-                        UIThread.runOnUiThread(()->{
+                         getActivity().runOnUiThread(()->{// todo fix throws error attempt to invoke method(runOnUiThread) on null object reference(get activity seems to be null, du to long loading times)
+                         img.setImageBitmap(decodedBmp);
+                         });*/
+                        UIThread.runOnUiThread(() -> {
                             img.setImageBitmap(decodedBmp);//experimetal. Report if throws error
                         });
-                    }else{
+                    } else {
 
                     }
 
-        });
+                });
 
     }
 

@@ -1,13 +1,13 @@
 import { authenticate } from '@loopback/authentication';
-import {inject} from '@loopback/core';
-import {get, param} from '@loopback/rest';
-import {Geocoder} from '../services';
+import { inject } from '@loopback/core';
+import { get, HttpErrors, param } from '@loopback/rest';
+import { Geocoder } from '../services';
 
 @authenticate('jwt')
 export class GeocoderController {
   constructor(
     @inject('services.Geocoder') protected geoService: Geocoder,
-  ) {}
+  ) { }
 
   @get('/toCoordinates/{address}', {
     responses: {
@@ -36,9 +36,38 @@ export class GeocoderController {
   async toAddress(
     @param.path.number('latitude') lat: number,
     @param.path.number('longitude') lng: number,
-  ): Promise<string> {
+  ): Promise<any> {
     const response = await this.geoService.toAddress(lat, lng);
-    const json = JSON.stringify(response[0]);
+    const jsonString = JSON.stringify(response[0]);
+    let json = JSON.parse(jsonString);
     return json;
+  }
+
+  @get('/toCity/{latitude},{longitude}', {
+    responses: {
+      '200': {
+        description: 'Get address of coordinates',
+        // content: {'application/json': {schema: GeoSchema}},
+      },
+    },
+  })
+  async toCity(
+    @param.path.number('latitude') lat: number,
+    @param.path.number('longitude') lng: number,
+  ): Promise<any> {
+    const response = await this.geoService.toAddress(lat, lng);
+    const jsonString = JSON.stringify(response[0]);
+    let json = JSON.parse(jsonString);
+    let returnValue;
+    json.forEach((element: any) => {
+      if (element.types.includes("locality")) {
+        returnValue = element;
+        return;
+      }
+    })
+    if (!returnValue) {
+      throw new HttpErrors.NotFound("There is no city name for these coordinates.");
+    }
+    return returnValue;
   }
 }
