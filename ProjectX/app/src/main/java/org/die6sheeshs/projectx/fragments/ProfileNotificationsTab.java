@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Friend;
@@ -29,6 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ProfileNotificationsTab extends Fragment {
 
     private View view;
+    private SwipeRefreshLayout refreshLayout;
 
     public static ProfileNotificationsTab newInstance(String userId) {
         ProfileNotificationsTab profileNotificationsTab = new ProfileNotificationsTab();
@@ -42,14 +44,25 @@ public class ProfileNotificationsTab extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_tab_notifications, container);
-        init();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        init(fragmentManager);
+        refreshLayout = view.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                List<Fragment> existingFrags = fragmentManager.getFragments();
+                for (Fragment frag : existingFrags)
+                {
+                    fragmentManager.beginTransaction().remove(frag).commit();
+                }
+            }
+        });
         return view;
     }
 
-    private void init() {
+    private void init(FragmentManager fragmentManager) {
         LinearLayout notificationLayout = view.findViewById(R.id.notificationItems_layout);
         String userId = getArguments().getString("userId");
-        FragmentManager fragmentManager = getChildFragmentManager();
 
         Observable<List<Party>> partiesFromUser = PartyPersistence.getInstance().getPartiesFromUser(userId);
         partiesFromUser.subscribeOn(Schedulers.io())

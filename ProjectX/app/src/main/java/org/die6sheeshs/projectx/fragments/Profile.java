@@ -73,7 +73,6 @@ public class Profile extends Fragment {
     private AppCompatImageButton cancelUpload;
     private TabLayout tabLayout;
     private ViewPager2 profileViewPager;
-    private SwipeRefreshLayout refreshLayout;
 
     //Register the callback (action to perform) when user answered the permission request
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -245,15 +244,6 @@ public class Profile extends Fragment {
         profileViewPager.setAdapter(profileTabAdapter);
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, profileViewPager, new ProfileTabConfigurationStrategy(profileTabAdapter));
         tabLayoutMediator.attach();
-
-        refreshLayout = view.findViewById(R.id.refreshLayout);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                tabLayoutMediator.detach();
-                tabLayoutMediator.attach();
-            }
-        });
     }
 
     private void askPermAndTakeImg(View clickedView) {
