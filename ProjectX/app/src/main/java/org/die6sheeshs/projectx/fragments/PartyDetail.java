@@ -479,8 +479,11 @@ public class PartyDetail extends Fragment {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo share with friends
-                new UnsupportedOperationException("Sharing with friends not supported yet!").printStackTrace();
+                getActivity().runOnUiThread(()->{
+                    Fragment frag = new ShareParty(partyId);
+                    ((MainActivity) getActivity()).replaceFragment(frag);
+                });
+
             }
         });
     }
@@ -536,7 +539,10 @@ public class PartyDetail extends Fragment {
                 });
                 Button scanButton = (Button) v.findViewById(R.id.scanQRButton);
                 scanButton.setVisibility(View.VISIBLE);
+                Button guestListButton = (Button) v.findViewById(R.id.guestListBtn);
+                guestListButton.setVisibility(View.VISIBLE);
                 initQRCodeScanButton(v);
+                initGuestListButton(v);
             });
 
 
@@ -692,6 +698,14 @@ public class PartyDetail extends Fragment {
 
         });
 
+    }
+
+    public void initGuestListButton(View v){
+        Button qrButton = v.findViewById(R.id.guestListBtn);
+        qrButton.setOnClickListener((l)-> {
+            //todo Show guest list
+            System.out.println("TODO: Show GuestList");
+        });
     }
 
     public void initQRCodeScanButton(View v){
