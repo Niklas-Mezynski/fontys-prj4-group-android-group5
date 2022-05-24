@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -36,6 +37,7 @@ import org.die6sheeshs.projectx.restAPI.UserPersistence;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -72,6 +74,7 @@ public class Profile extends Fragment {
     private AppCompatImageButton cancelUpload;
     private TabLayout tabLayout;
     private ViewPager2 profileViewPager;
+    private SwipeRefreshLayout refreshLayout;
 
     //Register the callback (action to perform) when user answered the permission request
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -130,7 +133,6 @@ public class Profile extends Fragment {
                 cancelUpload.setVisibility(View.VISIBLE);
             }
         });
-
     }
 
     @Override
@@ -147,6 +149,7 @@ public class Profile extends Fragment {
         tv_nickname = view.findViewById(R.id.tv_profile_nickname);
         uploadPicture = view.findViewById(R.id.button_uploadProfilePicture);
         cancelUpload = view.findViewById(R.id.button_retakeProfilePicture);
+        refreshLayout = view.findViewById(R.id.refreshLayout);
 
         //Add listeners
 
@@ -162,8 +165,21 @@ public class Profile extends Fragment {
         //Display the Users data (and profile pic) in the fragment
         initProfileData();
 
+        //Init profile tabs
         initTabs();
 
+        //Init swipe refresh listener
+        if (refreshLayout == null) {
+            Log.e("Error", "refreshLayout is null!");
+        }
+        refreshLayout.setOnRefreshListener(() -> {
+            int selectedTab = profileViewPager.getCurrentItem();
+            profileViewPager = view.findViewById(R.id.profile_viewPager);
+            profileViewPager.setAdapter(null);
+            initTabs();
+            profileViewPager.setCurrentItem(selectedTab, false);
+            refreshLayout.setRefreshing(false);
+        });
         return view;
     }
 
@@ -234,6 +250,7 @@ public class Profile extends Fragment {
     private void initTabs() {
         tabLayout = view.findViewById(R.id.profile_tabLayout);
         profileViewPager = view.findViewById(R.id.profile_viewPager);
+
         String userId = SessionManager.getInstance().getUserId();
         ProfileTabAdapter profileTabAdapter = new ProfileTabAdapter(getActivity());
 

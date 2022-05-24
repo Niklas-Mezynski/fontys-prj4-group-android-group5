@@ -1,6 +1,7 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Friend;
@@ -29,6 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ProfileNotificationsTab extends Fragment {
 
     private View view;
+    private SwipeRefreshLayout refreshLayout;
 
     public static ProfileNotificationsTab newInstance(String userId) {
         ProfileNotificationsTab profileNotificationsTab = new ProfileNotificationsTab();
@@ -42,14 +45,14 @@ public class ProfileNotificationsTab extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_tab_notifications, container);
-        init();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        initPartyRequests(fragmentManager);
         return view;
     }
 
-    private void init() {
+    private void initPartyRequests(FragmentManager fragmentManager) {
         LinearLayout notificationLayout = view.findViewById(R.id.notificationItems_layout);
         String userId = getArguments().getString("userId");
-        FragmentManager fragmentManager = getChildFragmentManager();
 
         Observable<List<Party>> partiesFromUser = PartyPersistence.getInstance().getPartiesFromUser(userId);
         partiesFromUser.subscribeOn(Schedulers.io())
