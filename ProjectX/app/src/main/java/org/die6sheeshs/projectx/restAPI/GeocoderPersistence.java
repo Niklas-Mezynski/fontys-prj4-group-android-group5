@@ -1,6 +1,7 @@
 package org.die6sheeshs.projectx.restAPI;
 
 
+import org.die6sheeshs.projectx.entities.Address;
 import org.die6sheeshs.projectx.entities.City;
 
 import java.util.List;
@@ -25,6 +26,10 @@ public class GeocoderPersistence implements RetrofitPersistence {
 
     public Observable<City> getCityByCoordinate(double latitude, double longitude){
         return this.geocoderApi.getCityByCoordinate(latitude, longitude);
+    }
+
+    public Observable<Address> getAddressShort(double latitude, double longitude){
+        return this.geocoderApi.getAddressShort(latitude, longitude);
     }
 
     @Override

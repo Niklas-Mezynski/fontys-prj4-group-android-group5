@@ -39,6 +39,20 @@ const config = {
         toAddress: ['lat', 'lng'],
       },
     },
+    {
+      template: {
+        method: 'GET',
+        url: 'https://maps.googleapis.com/maps/api/geocode/json',
+        query: {
+          latlng: '{lat},{lng}',
+          key: 'AIzaSyBqbaGO0CeLvfzhYyaBCAVFzYSfDWl6xJQ',
+        },
+        responsePath: '$.results[*].formatted_address',
+      },
+      functions: {
+        toAddressShort: ['lat', 'lng'],
+      },
+    },
   ],
 };
 

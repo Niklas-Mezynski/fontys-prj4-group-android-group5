@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.restAPI;
 
+import org.die6sheeshs.projectx.entities.Address;
 import org.die6sheeshs.projectx.entities.City;
 import org.die6sheeshs.projectx.entities.Friend;
 
@@ -13,5 +14,8 @@ public interface GeocoderApi {
 
     @GET("/toCity/{latitude},{longitude}")
     Observable<City> getCityByCoordinate(@Path("latitude") double latitude, @Path("longitude") double longitude);
+
+    @GET("/toAddressShort/{latitude},{longitude}")
+    Observable<Address> getAddressShort(@Path("latitude") double latitude, @Path("longitude") double longitude);
 
 }
