@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -49,7 +50,7 @@ public class ProfileSearchTab extends Fragment {
         LinearLayout searchLayout = view.findViewById(R.id.searches);
         String userId = getArguments().getString("userId");
         TextView search = view.findViewById(R.id.nickNameSearchField);
-        Button searchButton = view.findViewById(R.id.searchButton);
+        ImageButton searchButton = view.findViewById(R.id.searchButton);
         searchButton.setOnClickListener((l)->{
             String nickname = search.getText().toString();
 

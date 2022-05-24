@@ -1,6 +1,7 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,22 +46,11 @@ public class ProfileNotificationsTab extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_tab_notifications, container);
         FragmentManager fragmentManager = getChildFragmentManager();
-        init(fragmentManager);
-        refreshLayout = view.findViewById(R.id.refreshLayout);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                List<Fragment> existingFrags = fragmentManager.getFragments();
-                for (Fragment frag : existingFrags)
-                {
-                    fragmentManager.beginTransaction().remove(frag).commit();
-                }
-            }
-        });
+        initPartyRequests(fragmentManager);
         return view;
     }
 
-    private void init(FragmentManager fragmentManager) {
+    private void initPartyRequests(FragmentManager fragmentManager) {
         LinearLayout notificationLayout = view.findViewById(R.id.notificationItems_layout);
         String userId = getArguments().getString("userId");
 

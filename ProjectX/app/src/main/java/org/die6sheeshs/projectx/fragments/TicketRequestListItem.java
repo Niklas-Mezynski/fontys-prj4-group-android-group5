@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.squareup.picasso.Picasso;
 
@@ -176,6 +177,7 @@ public class TicketRequestListItem extends Fragment {
             resp.subscribeOn(Schedulers.io()).subscribe(ticket -> {
                 Log.i("New Ticket", "" + ticket.toString());
                 Log.w("Info ticket request", "Request accepted!");
+                // refreshTab();
             });
         });
     }
@@ -189,9 +191,16 @@ public class TicketRequestListItem extends Fragment {
                 Observable<Integer> resp = TicketRequestPersistence.getInstance().deleteTicketRequest(ticketRequest.getUserId(), ticketRequest.getPartyId());
                 resp.subscribeOn(Schedulers.io()).subscribe(deletedCount -> {
                     Log.i("Deleted TicketRequests", "" + deletedCount);
+                    // refreshTab();
                 });
                 Log.w("Info", "Request declined!");
             }
         });
+    }
+
+    private void refreshTab() {
+        SwipeRefreshLayout refreshLayout;
+        refreshLayout = view.findViewById(R.id.refreshLayout);
+        refreshLayout.setRefreshing(true);
     }
 }
