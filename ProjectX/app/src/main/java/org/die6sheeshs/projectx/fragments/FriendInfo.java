@@ -1,7 +1,9 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.os.Bundle;
+import android.os.Bundle;<<<<<<<HEAD=======
+import android.se.omapi.Session;>>>>>>>a1cc3f7(Add"remove friend"button to FriendInfo fragment)
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
@@ -42,6 +45,7 @@ public class FriendInfo extends Fragment {
     private Friend friend;
     private boolean isFriend;
     private View view;
+    private FriendsPersistence friendsPersistence = FriendsPersistence.getInstance();
 
     public FriendInfo(Friend friend) {
         this.friend = friend;
@@ -74,14 +78,14 @@ public class FriendInfo extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view = inflater.inflate(R.layout.fragment_friend_info, container, false);
         init();
         return view;
     }
 
-    private void init(){
+    private void init() {
         isFriend();
         setPicture();
         setNickname();
@@ -89,17 +93,17 @@ public class FriendInfo extends Fragment {
 
     }
 
-    private void isFriend(){
+    private void isFriend() {
         String userId = SessionManager.getInstance().getUserId();
         String jwt = SessionManager.getInstance().getToken();
         Observable<List<Friend>> resp = FriendsPersistence.getInstance().getFriendsOfUser(userId);
         isFriend = false;
         resp.subscribeOn(Schedulers.io())
                 .subscribe(friends -> {
-                    getActivity().runOnUiThread(()->{
+                    getActivity().runOnUiThread(() -> {
                         System.out.println(friend.toString());
-                        for (Friend f:friends) {
-                            if(f.equals(friend)){
+                        for (Friend f : friends) {
+                            if (f.equals(friend)) {
                                 isFriend = true;
                                 break;
                             }
@@ -111,48 +115,50 @@ public class FriendInfo extends Fragment {
 
     }
 
-    private void setNickname(){
+    private void setNickname() {
         TextView nick = view.findViewById(R.id.nickname);
         nick.setText(friend.getNick_name());
     }
 
-    private void setAboutMe(){
+    private void setAboutMe() {
         TextView about = view.findViewById(R.id.aboutMeText);
         about.setText(friend.getAbout_me());
     }
 
-    private void setButton(){
+    private void setButton() {
         Button addOdel = view.findViewById(R.id.addORemove);
-        if(isFriend){
-            addOdel.setText("remove friend");
-            addOdel.setOnClickListener((l)-> {
-                String id = SessionManager.getInstance().getUserId();
-                Observable<Void> res = FriendsPersistence.getInstance().deleteFriend(id, friend.getFriend_id());
-                res.subscribeOn(Schedulers.io())
-                        .subscribe(resp -> {
-                            getActivity().runOnUiThread(() -> {
-                                        OurToast.makeToast("Deleted successfully", "#ffff0000", R.drawable.ic_baseline_clear_24, getContext(), getLayoutInflater());
-                                        Fragment frag = new Profile();
-                                        ((MainActivity) getActivity()).replaceFragment(frag);
-                                    }
-                            );
+        if (isFriend) {
+            addOdel.setText("Remove friend");
+            addOdel.setOnClickListener((l) -> {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Remove Friend")
+                        .setMessage("Are you sure you want to remove this friend?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-                        }, error -> {
-                            Log.v("User", "Error get User with id " + error.getMessage());
-                        });
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String userId = SessionManager.getInstance().getUserId();
+                                String friendId = friend.getFriend_id();
+                                Log.e("Remove friend", userId + " : " + friendId);
+                                friendsPersistence.deleteFriend(userId, friendId);
+                                Fragment fragment = new Profile();
+                                ((MainActivity) getActivity()).replaceFragment(fragment);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
             });
-        }else{
+        } else {
             addOdel.setText("add as friend");
-            addOdel.setOnClickListener((l)->{
+            addOdel.setOnClickListener((l) -> {
 
             });
         }
     }
 
-    private void setPicture(){
+    private void setPicture() {
         ImageView profile_pic = view.findViewById(R.id.friend_profile_pic);
         Bitmap image = ImageConversion.base64ToBitmap(friend.getProfile_pic());
-        if(image!=null){
+        if (image != null) {
             profile_pic.setImageBitmap(image);
         }
     }
