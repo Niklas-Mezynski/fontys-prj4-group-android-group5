@@ -92,7 +92,7 @@ public class FriendListItem extends Fragment {
         }
     }
 
-    private void setAction(){
+    public void setAction(){
         LinearLayout wrapper = view.findViewById(R.id.wrapper);
         wrapper.setOnClickListener(view -> {
             Fragment frag = new FriendInfo(friend);
