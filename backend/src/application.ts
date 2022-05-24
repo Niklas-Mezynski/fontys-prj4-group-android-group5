@@ -20,11 +20,14 @@ import { UserRepository } from './repositories';
 import { CustomUserService } from './services';
 import { UserService } from '@loopback/authentication';
 import { applicationDefault, cert, Credential, initializeApp } from "firebase-admin/app";
+import { credential } from 'firebase-admin';
 
 export { ApplicationConfig };
 
 // Initialize firebase-admin app
-export const firebaseApp = initializeApp({ credential: applicationDefault() });
+// export const firebaseApp = initializeApp({ credential: applicationDefault() });
+let serviceAccount = require("../projectx_admin_sdk.json");
+export const firebaseApp = initializeApp({ credential: credential.cert(serviceAccount) });
 
 export class ProjectX extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
