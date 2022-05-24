@@ -15,9 +15,9 @@
     <string name="back_to_login">Back to login</string>
     <string name="date_format">YYYY-MM-DD</string>
     <string name="email">Email</string>
-    <string name="last_name">Last name</string>
+    <string name="last_name">Last name: </string>
     <string name="repeat_password">Repeat password</string>
-    <string name="first_name">First name</string>
+    <string name="first_name">First name: </string>
     <string name="nickname">Nickname</string>
     <string name="invalid_login">Invalid email password combination</string>
     <string name="party_name">Party name</string>
@@ -26,6 +26,7 @@
     <string name="generate_qr_code">Generate QR Code</string>
     <string name="profile_picture">Profile picture</string>
     <string name="tab_to_edit">Tab to edit</string>
+    <string name="guestList">Guestlist</string>
 
     <string name="quickstart_message">Click the SUBSCRIBE TO WEATHER button below to subscribe to the
         weather topic. Messages sent to the weather topic will be received. The LOG TOKEN button logs the

@@ -1,7 +1,6 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.app.ProgressDialog;
-
 import static android.app.Activity.RESULT_CANCELED;
 
 import android.app.Activity;
@@ -36,6 +35,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.collection.CircularArray;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -690,9 +691,14 @@ public class PartyDetail extends Fragment {
 
     }
 
-    public void initGuestListButton(View v) {
+    public void initGuestListButton(View v){
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Button qrButton = v.findViewById(R.id.guestListBtn);
-        qrButton.setOnClickListener((l) -> {
+        qrButton.setOnClickListener((l)-> {
+            Guestlist guestList = new Guestlist(partyId);
+            ((MainActivity)getActivity()).replaceFragment(guestList);
             //todo Show guest list
             System.out.println("TODO: Show GuestList");
         });
