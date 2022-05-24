@@ -47,7 +47,7 @@ public class FriendListItemSharing extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static FriendListItem newInstance(Friend friend,boolean isFriend) {
-        FriendListItem fragment = new FriendListItem(friend,isFriend);
+        FriendListItem fragment = new FriendListItem(friend);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

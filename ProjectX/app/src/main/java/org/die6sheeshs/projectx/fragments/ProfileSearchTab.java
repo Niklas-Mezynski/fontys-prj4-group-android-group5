@@ -55,7 +55,7 @@ public class ProfileSearchTab extends Fragment {
         LinearLayout searchLayout = view.findViewById(R.id.searches);
         String userId = getArguments().getString("userId");
 
-        TextView search = view.findViewById(R.id.nickNameSearchField);
+        TextInputLayout search = view.findViewById(R.id.nickNameSearchField);
         ImageButton searchButton = view.findViewById(R.id.searchButton);
         searchButton.setOnClickListener((l)->{
             String nickName = search.getEditText().getText().toString();
