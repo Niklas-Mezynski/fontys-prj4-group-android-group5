@@ -13,6 +13,7 @@ public interface FriendsApi {
     @GET("/users/{id}/friends")
     public Observable<List<Friend>> getFriendsOfUser(@Path("id") String id);
 
-    
+    @GET("/users/search/{name}")
+    public Observable<Friend> getFriendByNickName(@Path("name") String nickName);
 
 }

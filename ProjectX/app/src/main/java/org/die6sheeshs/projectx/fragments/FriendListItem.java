@@ -37,9 +37,8 @@ public class FriendListItem extends Fragment {
 
     public FriendListItem() {}
 
-    public FriendListItem(Friend friend,boolean isFriend) {
+    public FriendListItem(Friend friend) {
         this.friend = friend;
-        this.isFriend = isFriend;
         // Required empty public constructor
     }
 
@@ -50,8 +49,8 @@ public class FriendListItem extends Fragment {
      * @return A new instance of fragment FriendListItem.
      */
     // TODO: Rename and change types and number of parameters
-    public static FriendListItem newInstance(Friend friend,boolean isFriend) {
-        FriendListItem fragment = new FriendListItem(friend,isFriend);
+    public static FriendListItem newInstance(Friend friend) {
+        FriendListItem fragment = new FriendListItem(friend);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -96,7 +95,7 @@ public class FriendListItem extends Fragment {
     private void setAction(){
         LinearLayout wrapper = view.findViewById(R.id.wrapper);
         wrapper.setOnClickListener(view -> {
-            Fragment frag = new FriendInfo(friend,true);
+            Fragment frag = new FriendInfo(friend);
             ((MainActivity)getActivity()).replaceFragment(frag);
           });
     }

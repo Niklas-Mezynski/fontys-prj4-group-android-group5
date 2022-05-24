@@ -59,7 +59,7 @@ public class ProfileFriendsTab extends Fragment {
                         getActivity().runOnUiThread(()->{
                             FragmentManager fragMan = getChildFragmentManager();
                             FragmentTransaction fragTransaction = fragMan.beginTransaction();
-                            Fragment fragment = FriendListItem.newInstance(f, true);
+                            Fragment fragment = FriendListItem.newInstance(f);
 
                             fragTransaction.add(linearLayoutV.getId(), fragment, "friend#" + f.getFriend_id());
 

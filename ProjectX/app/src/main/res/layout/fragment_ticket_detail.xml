@@ -25,6 +25,7 @@
             android:layout_width="184dp"
             android:layout_height="162dp"
             android:scaleType="fitXY"
+            android:src="?attr/app_icon"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
         <LinearLayout

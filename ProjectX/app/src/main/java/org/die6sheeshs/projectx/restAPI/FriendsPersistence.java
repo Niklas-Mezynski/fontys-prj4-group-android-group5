@@ -26,6 +26,10 @@ public class FriendsPersistence implements RetrofitPersistence {
         return this.friendsApi.getFriendsOfUser(id);
     }
 
+    public Observable<Friend> getFriendByNickName(String nickName){
+        return this.friendsApi.getFriendByNickName(nickName);
+    }
+
     @Override
     public void refreshApi() {
         this.friendsApi = RetrofitService.getInstance().getRetrofitClient().create(FriendsApi.class);
