@@ -26,6 +26,10 @@ public class FriendsPersistence implements RetrofitPersistence {
         return this.friendsApi.getFriendsOfUser(id);
     }
 
+    public Observable<Friend> getFriendByNickName(String nickName){
+        return this.friendsApi.getFriendByNickName(nickName);
+	}
+	
     public void deleteFriend(String userId, String friendId) {
         this.friendsApi.deleteFriend(userId, friendId);
     }

@@ -15,14 +15,9 @@ import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Friend;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
+import org.die6sheeshs.projectx.helpers.Toaster;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FriendListItem#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FriendListItem extends Fragment {
-
+public class FriendListItemSharing extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -33,12 +28,14 @@ public class FriendListItem extends Fragment {
     private String mParam2;
     private Friend friend;
     private boolean isFriend;
+    private String partyId;
     private View view;
 
-    public FriendListItem() {}
+    public FriendListItemSharing() {}
 
-    public FriendListItem(Friend friend) {
+    public FriendListItemSharing(Friend friend,boolean isFriend, String partyId) {
         this.friend = friend;
+        this.isFriend = isFriend;
         // Required empty public constructor
     }
 
@@ -49,7 +46,7 @@ public class FriendListItem extends Fragment {
      * @return A new instance of fragment FriendListItem.
      */
     // TODO: Rename and change types and number of parameters
-    public static FriendListItem newInstance(Friend friend) {
+    public static FriendListItem newInstance(Friend friend,boolean isFriend) {
         FriendListItem fragment = new FriendListItem(friend);
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -69,7 +66,7 @@ public class FriendListItem extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        this.view = inflater.inflate(R.layout.fragment_friend_list_item, container, false);
+        this.view = inflater.inflate(R.layout.fragment_friend_list_item_sharing, container, false);
         init();
         return view;
     }
@@ -92,11 +89,21 @@ public class FriendListItem extends Fragment {
         }
     }
 
-    public void setAction(){
+    private void setAction(){
         LinearLayout wrapper = view.findViewById(R.id.wrapper);
         wrapper.setOnClickListener(view -> {
-            Fragment frag = new FriendInfo(friend);
-            ((MainActivity)getActivity()).replaceFragment(frag);
-          });
+            sendInvitation();
+        });
+    }
+
+    private void sendInvitation(){
+        System.out.println("Invitation method invoked");
+        //todo Api call to send invitation
+    }
+
+    private void setInvitationSent(boolean sent){
+        Toaster.makeToast(this.getContext(), "Invitation to "+friend.getNick_name()+" sent");
+
+
     }
 }

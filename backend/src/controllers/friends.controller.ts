@@ -61,7 +61,9 @@ export class FriendsController {
     @param.path.string('name') username: string,
     @param.query.object('filter') filter?: Filter<Friends>,
   ): Promise<AnyObject> {
-    return this.friendsRepository.getFriendByName(username);
+    const friendInfo =await this.friendsRepository.getFriendByName(username);
+
+    return friendInfo[0];
   }
 
   @del("/users/{user_id}/friends/{friend_id}")

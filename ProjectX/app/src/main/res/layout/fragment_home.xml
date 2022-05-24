@@ -7,15 +7,17 @@
     tools:context=".fragments.Home" >
 
     <SeekBar
-            android:id="@+id/seekBarHome"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:max="100"
-            android:progress="5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tv_kilometers"
-            android:layout_marginEnd="16dp" />
+        android:id="@+id/seekBarHome"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:max="100"
+        android:progress="5"
+        android:progressTint="?attr/colorPrimary"
+        android:thumbTint="?attr/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/tv_kilometers"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
             android:text="5 km"

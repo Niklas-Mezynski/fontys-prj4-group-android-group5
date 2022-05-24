@@ -2,6 +2,7 @@ package org.die6sheeshs.projectx.fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,13 @@ import androidx.fragment.app.Fragment;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.entities.Friend;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
+import org.die6sheeshs.projectx.helpers.SessionManager;
+import org.die6sheeshs.projectx.restAPI.FriendsPersistence;
+
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,9 +42,8 @@ public class FriendInfo extends Fragment {
     private boolean isFriend;
     private View view;
 
-    public FriendInfo(Friend friend, boolean isFriend) {
+    public FriendInfo(Friend friend) {
         this.friend = friend;
-        this.isFriend = isFriend;
         // Required empty public constructor
     }
 
@@ -47,8 +54,8 @@ public class FriendInfo extends Fragment {
      * @return A new instance of fragment FriendInfo.
      */
     // TODO: Rename and change types and number of parameters
-    public static FriendInfo newInstance(Friend friend,boolean isFriend) {
-        FriendInfo fragment = new FriendInfo(friend,isFriend);
+    public static FriendInfo newInstance(Friend friend) {
+        FriendInfo fragment = new FriendInfo(friend);
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
@@ -74,10 +81,33 @@ public class FriendInfo extends Fragment {
     }
 
     private void init(){
+        isFriend();
         setPicture();
-        setButton();
         setNickname();
         setAboutMe();
+
+    }
+
+    private void isFriend(){
+        String userId = SessionManager.getInstance().getUserId();
+        String jwt = SessionManager.getInstance().getToken();
+        Observable<List<Friend>> resp = FriendsPersistence.getInstance().getFriendsOfUser(userId);
+        isFriend = false;
+        resp.subscribeOn(Schedulers.io())
+                .subscribe(friends -> {
+                    getActivity().runOnUiThread(()->{
+                        System.out.println(friend.toString());
+                        for (Friend f:friends) {
+                            if(f.equals(friend)){
+                                isFriend = true;
+                                break;
+                            }
+                        }
+                        setButton();
+                    });
+
+                }, error -> Log.e("FriendTabs", error.getMessage()));
+
     }
 
     private void setNickname(){
@@ -93,12 +123,12 @@ public class FriendInfo extends Fragment {
     private void setButton(){
         Button addOdel = view.findViewById(R.id.addORemove);
         if(isFriend){
-            addOdel.setText("Remove friend");
+            addOdel.setText("remove friend");
             addOdel.setOnClickListener((l)->{
 
             });
         }else{
-            addOdel.setText("add as Friend");
+            addOdel.setText("add as friend");
             addOdel.setOnClickListener((l)->{
 
             });
