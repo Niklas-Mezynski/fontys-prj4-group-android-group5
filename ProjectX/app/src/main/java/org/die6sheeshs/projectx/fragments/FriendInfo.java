@@ -83,23 +83,31 @@ public class FriendInfo extends Fragment {
     private void init(){
         isFriend();
         setPicture();
-        setButton();
         setNickname();
         setAboutMe();
+
     }
 
     private void isFriend(){
         String userId = SessionManager.getInstance().getUserId();
         String jwt = SessionManager.getInstance().getToken();
         Observable<List<Friend>> resp = FriendsPersistence.getInstance().getFriendsOfUser(userId);
+        isFriend = false;
         resp.subscribeOn(Schedulers.io())
                 .subscribe(friends -> {
-                    if(friends.contains(friend)){
-                        isFriend = true;
-                    }else{
-                        isFriend = false;
-                    }
+                    getActivity().runOnUiThread(()->{
+                        System.out.println(friend.toString());
+                        for (Friend f:friends) {
+                            if(f.equals(friend)){
+                                isFriend = true;
+                                break;
+                            }
+                        }
+                        setButton();
+                    });
+
                 }, error -> Log.e("FriendTabs", error.getMessage()));
+
     }
 
     private void setNickname(){
@@ -115,12 +123,12 @@ public class FriendInfo extends Fragment {
     private void setButton(){
         Button addOdel = view.findViewById(R.id.addORemove);
         if(isFriend){
-            addOdel.setText("Remove friend");
+            addOdel.setText("remove friend");
             addOdel.setOnClickListener((l)->{
 
             });
         }else{
-            addOdel.setText("add as Friend");
+            addOdel.setText("add as friend");
             addOdel.setOnClickListener((l)->{
 
             });

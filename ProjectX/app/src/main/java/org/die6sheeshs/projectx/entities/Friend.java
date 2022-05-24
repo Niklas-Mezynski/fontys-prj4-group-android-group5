@@ -1,5 +1,7 @@
 package org.die6sheeshs.projectx.entities;
 
+import java.util.Objects;
+
 public class Friend {
     String friend_id,nick_name,profile_pic,about_me;
 
@@ -34,5 +36,18 @@ public class Friend {
                 ", profile_pic='" + profile_pic + '\'' +
                 ", about_me='" + about_me + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Friend friend = (Friend) o;
+        return Objects.equals(friend_id, friend.friend_id) && Objects.equals(nick_name, friend.nick_name) && Objects.equals(profile_pic, friend.profile_pic) && Objects.equals(about_me, friend.about_me);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(friend_id, nick_name, profile_pic, about_me);
     }
 }
