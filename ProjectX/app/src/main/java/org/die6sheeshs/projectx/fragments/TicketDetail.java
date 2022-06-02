@@ -142,7 +142,7 @@ public class TicketDetail extends Fragment {
             }
             EventLocation loc = optional.get();
             //This uri starts a navigation to the party location (in walking route mode)
-            Uri gmmIntentUri = Uri.parse(String.format("google.navigation:q=%f,%f&mode=w", loc.getLatitude(), loc.getLongtitude()));
+            Uri gmmIntentUri = Uri.parse(String.format(Locale.ENGLISH, "google.navigation:q=%f,%f&mode=w", loc.getLatitude(), loc.getLongtitude()));
 
             // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
