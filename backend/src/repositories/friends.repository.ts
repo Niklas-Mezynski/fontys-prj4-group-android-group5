@@ -28,7 +28,8 @@ export class FriendsRepository extends DefaultCrudRepository<
   deleteByIds(userId: string, friendId: string, currentUserProfile: UserProfile): Promise<void> {
     const sql = `
         DELETE FROM "friends"
-        WHERE "friends".usera = $1 AND "friends".userb = $2 AND
+        WHERE ("friends".usera = $1 AND "friends".userb = $2) OR
+         ("friends".userb = $1 AND "friends".usera = $2) AND
         ("friends".usera = $3 OR "friends".userb = $3);`;
     return this.dataSource.execute(sql, [userId, friendId, currentUserProfile.id]);
   }
