@@ -102,6 +102,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        //On back press -> go back to home fragment
+        replaceFragment(Home.newInstance("", ""));
+        binding.bottomNavigationView.setSelectedItemId(R.id.homeFragment);
+    }
 
     public void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
