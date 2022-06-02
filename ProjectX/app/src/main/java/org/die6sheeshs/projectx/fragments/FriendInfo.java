@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import org.die6sheeshs.projectx.R;
+import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Friend;
 import org.die6sheeshs.projectx.helpers.ImageConversion;
 import org.die6sheeshs.projectx.helpers.SessionManager;
@@ -124,8 +125,21 @@ public class FriendInfo extends Fragment {
         Button addOdel = view.findViewById(R.id.addORemove);
         if(isFriend){
             addOdel.setText("remove friend");
-            addOdel.setOnClickListener((l)->{
+            addOdel.setOnClickListener((l)-> {
+                String id = SessionManager.getInstance().getUserId();
+                Observable<Void> res = FriendsPersistence.getInstance().deleteFriend(id, friend.getFriend_id());
+                res.subscribeOn(Schedulers.io())
+                        .subscribe(resp -> {
+                            getActivity().runOnUiThread(() -> {
+                                        OurToast.makeToast("Deleted successfully", "#ffff0000", R.drawable.ic_baseline_clear_24, getContext(), getLayoutInflater());
+                                        Fragment frag = new Profile();
+                                        ((MainActivity) getActivity()).replaceFragment(frag);
+                                    }
+                            );
 
+                        }, error -> {
+                            Log.v("User", "Error get User with id " + error.getMessage());
+                        });
             });
         }else{
             addOdel.setText("add as friend");
