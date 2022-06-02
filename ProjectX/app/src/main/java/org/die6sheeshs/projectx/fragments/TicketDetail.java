@@ -1,7 +1,9 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -126,6 +128,29 @@ public class TicketDetail extends Fragment {
         show.setOnClickListener((l) -> {
             Fragment frag = new ShowQR(t);
             ((MainActivity) getActivity()).replaceFragment(frag);
+        });
+
+        //Set event for the "show route button"
+        Optional<EventLocation> optional = EntityHelpers.partyToEnvLocation(party);
+        Button showRouteButton = view.findViewById(R.id.showRouteButton);
+        showRouteButton.setOnClickListener(v -> {
+            // Create a Uri from an intent string. Use the result to create an Intent.
+            if (!optional.isPresent()) {
+                //TODO SHOW ERROR
+                Log.e("Location intend", "ERROR");
+                return;
+            }
+            EventLocation loc = optional.get();
+            //This uri starts a navigation to the party location (in walking route mode)
+            Uri gmmIntentUri = Uri.parse(String.format("google.navigation:q=%f,%f&mode=w", loc.getLatitude(), loc.getLongtitude()));
+
+            // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            // Make the Intent explicit by setting the Google Maps package
+            mapIntent.setPackage("com.google.android.apps.maps");
+
+            // Attempt to start an activity that can handle the Intent
+            startActivity(mapIntent);
         });
     }
 
