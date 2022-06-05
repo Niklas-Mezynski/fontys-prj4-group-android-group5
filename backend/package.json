@@ -49,6 +49,7 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@loopback/cli": "^3.0.1",
     "@firebase/messaging": "^0.9.12",
     "@loopback/authentication": "^8.1.2",
     "@loopback/authentication-jwt": "^0.11.2",
