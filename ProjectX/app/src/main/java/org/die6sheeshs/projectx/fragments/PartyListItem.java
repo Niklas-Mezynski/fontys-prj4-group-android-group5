@@ -115,7 +115,6 @@ public class PartyListItem extends Fragment {
         if (!optionalEventLocation.isPresent())
             return;
         EventLocation eventLocation = optionalEventLocation.get();
-        //TODO (Niklas) get the name of the city where the party location is in
         Observable<City> cityByCoordinate = GeocoderPersistence.getInstance().getCityByCoordinate(eventLocation.getLatitude(), eventLocation.getLongtitude());
         cityByCoordinate.subscribeOn(Schedulers.io())
                 .subscribe(

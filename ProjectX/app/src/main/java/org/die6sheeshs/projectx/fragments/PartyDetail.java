@@ -2,6 +2,7 @@ package org.die6sheeshs.projectx.fragments;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+
 import static android.app.Activity.RESULT_CANCELED;
 
 import android.app.Activity;
@@ -51,6 +52,7 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
+import org.die6sheeshs.projectx.entities.City;
 import org.die6sheeshs.projectx.entities.Count;
 import org.die6sheeshs.projectx.entities.EventLocation;
 import org.die6sheeshs.projectx.entities.Party;
@@ -63,6 +65,7 @@ import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.helpers.SimpleFuture;
 import org.die6sheeshs.projectx.helpers.SimpleObservable;
 import org.die6sheeshs.projectx.helpers.SimpleObserver;
+import org.die6sheeshs.projectx.restAPI.GeocoderPersistence;
 import org.die6sheeshs.projectx.restAPI.PartyPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketPersistence;
 import org.die6sheeshs.projectx.restAPI.TicketRequestPersistence;
@@ -304,19 +307,26 @@ public class PartyDetail extends Fragment {
                         setEnd(v, p.getEnd());
                         setDescription(v, p.getDescription());
 
-                        EventLocation eLoc = p.getEventLocation();
-
-                        double lat;
-                        lat = eLoc.getLatitude();
-                        setPartyCity(v, lat + "");
-
-
+                        setPartyCity(v, "Loading...");
                     });
-
-
+                    //Load the correct party location async
+                    EventLocation eLoc = p.getEventLocation();
+                    loadAndSetCity(v, eLoc);
                 });
 
 
+    }
+
+    private void loadAndSetCity(View v, EventLocation eLoc) {
+        if (eLoc == null) {
+            setPartyCity(v, "Party location error");
+        }
+        Observable<City> cityObservable = GeocoderPersistence.getInstance().getCityByCoordinate(eLoc.getLatitude(), eLoc.getLongtitude());
+        cityObservable.subscribeOn(Schedulers.io())
+                .subscribe(
+                        city -> getActivity().runOnUiThread(() -> setPartyCity(v, city.getLong_name())),
+                        error -> getActivity().runOnUiThread(() -> setPartyCity(v, "Cannot load city name"))
+                );
     }
 
     private SimpleFuture<List<Pictures>> getPictures() {
@@ -757,14 +767,14 @@ public class PartyDetail extends Fragment {
 
     }
 
-    public void initGuestListButton(View v){
+    public void initGuestListButton(View v) {
 
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Button qrButton = v.findViewById(R.id.guestListBtn);
-        qrButton.setOnClickListener((l)-> {
+        qrButton.setOnClickListener((l) -> {
             Guestlist guestList = new Guestlist(partyId);
-            ((MainActivity)getActivity()).replaceFragment(guestList);
+            ((MainActivity) getActivity()).replaceFragment(guestList);
             //todo Show guest list
             System.out.println("TODO: Show GuestList");
         });
