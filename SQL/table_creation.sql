@@ -64,7 +64,7 @@ CREATE TABLE pictures
     event_id varchar(128) NOT NULL,
     img_uuid varchar(128) NOT NULL,
     base64   varchar      NOT NULL,
-    main_img boolean      DEFAULT false,
+    main_img boolean DEFAULT false,
     PRIMARY KEY (event_id, img_uuid)
 );
 CREATE TABLE friends
@@ -145,6 +145,7 @@ Begin
 End;
 $$;
 
+
 CREATE OR REPLACE function getNearbyEvents(user_lat double precision, user_lon double precision,
                                            radiusInKm integer, request_user_id varchar)
     RETURNS TABLE
@@ -156,6 +157,7 @@ CREATE OR REPLACE function getNearbyEvents(user_lat double precision, user_lon d
                 "start"     timestamp,
                 "end"       timestamp,
                 max_people  integer,
+                price       double precision,
                 latitude    double precision,
                 longitude   double precision,
                 event_id    varchar(128)
@@ -174,6 +176,7 @@ Begin
                         event.start,
                         event."end",
                         event.max_people,
+                        event.price,
                         e.latitude,
                         e.longitude,
                         e.event_id
