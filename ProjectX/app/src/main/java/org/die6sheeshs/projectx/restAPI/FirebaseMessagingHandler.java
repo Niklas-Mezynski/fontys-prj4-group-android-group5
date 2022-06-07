@@ -79,6 +79,9 @@ public class FirebaseMessagingHandler extends FirebaseMessagingService {
 
     public static void uploadFirebaseTokenToServer(String token) {
         User user = SessionManager.getInstance().getUser();
+        if(user==null){
+            return;
+        }
         user.setFirebaseToken(token);
         Observable<ResponseBody> response = UserPersistence.getInstance().updateUser(user);
         response.subscribeOn(Schedulers.io())

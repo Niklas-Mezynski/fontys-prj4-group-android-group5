@@ -1,5 +1,6 @@
 package org.die6sheeshs.projectx.fragments;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import static android.app.Activity.RESULT_CANCELED;
 
@@ -7,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,16 +32,22 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.collection.CircularArray;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.google.zxing.qrcode.encoder.QRCode;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanIntentResult;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
@@ -84,7 +92,9 @@ public class PartyDetail extends Fragment {
     private String mParam1;
     private String mParam2;
     private String partyId;
-
+    private ActivityResultLauncher<Intent> intentActivityResultLauncher;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+    private Intent scanIntent;
     private static final int NO_TICKET = 0;
     private static final int TICKET_PENDING = 1;
     private static final int TICKET_ACCEPTED = 2;
@@ -123,6 +133,62 @@ public class PartyDetail extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        ScanOptions options = new ScanOptions();
+        options.setOrientationLocked(false);
+        options.setPrompt("Scan QR code");
+        options.setBeepEnabled(false);
+        options.setBarcodeImageEnabled(true);
+        scanIntent = options.createScanIntent(getContext());
+        intentActivityResultLauncher = registerForActivityResult
+                (new ActivityResultContracts.StartActivityForResult(), result -> {
+                    ScanIntentResult scanIntentResult = ScanIntentResult.parseActivityResult(result.getResultCode(), result.getData());
+                    if (result != null) {
+                        if (scanIntentResult == null) {
+                            Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
+                        } else {
+                            //use result.getContents() um zu gucken ob es das ticket gibt;
+                            Observable<Ticket> response = TicketPersistence.getInstance().getTicketById(scanIntentResult.getContents());
+
+                            response.subscribeOn(Schedulers.io())
+                                    .subscribe(ticket -> {
+                                        if (ticket.getEvent_id().equals(partyId)) {
+                                            Observable<User> response2 = UserPersistence.getInstance().getUserData(ticket.getUser_id());
+                                            response2.subscribeOn(Schedulers.io())
+                                                    .subscribe(user -> {
+                                                        getActivity().runOnUiThread(() -> {
+                                                            OurToast.makeToast("Valid ticket: " + user.getFirstName() + " " + user.getLastName(), "#ff00ff00", R.drawable.ic_baseline_check_24, getContext(), getLayoutInflater());
+                                                        });
+
+                                                    }, error -> Log.v("User", "Error get User with id " + error.getMessage()));
+                                        } else {
+                                            getActivity().runOnUiThread(() -> {
+                                                OurToast.makeToast("Not your party bro", "#ffff0000", R.drawable.ic_baseline_clear_24, getContext(), getLayoutInflater());
+                                            });
+                                        }
+                                    }, (error) -> {
+                                        Log.v("Ticket", "Error get Ticket with id " + error.getMessage());
+                                        getActivity().runOnUiThread(() -> {
+                                            OurToast.makeToast("Ticket not found", "#ffff0000", R.drawable.ic_baseline_clear_24, getContext(), getLayoutInflater());
+                                        });
+                                    });
+                        }
+                    }
+                });
+
+        requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        // Permission is granted. Continue the action or workflow in your app.
+                        intentActivityResultLauncher.launch(scanIntent);
+                    } else {
+                        // Explain to the user that the feature is unavailable because the
+                        // features requires a permission that the user has denied. At the
+                        // same time, respect the user's decision. Don't link to system
+                        // settings in an effort to convince the user to change their
+                        // decision.
+                        Toast.makeText(getContext(), "Cannot take a new profile picture without permission", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -707,52 +773,22 @@ public class PartyDetail extends Fragment {
     public void initQRCodeScanButton(View v) {
         Button qrButton = v.findViewById(R.id.scanQRButton);
         qrButton.setOnClickListener((l) -> {
-
-            IntentIntegrator integrator = IntentIntegrator.forSupportFragment(PartyDetail.this);
-
-            integrator.setOrientationLocked(false);
-            integrator.setPrompt("Scan QR code");
-            integrator.setBeepEnabled(false);
-            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
-
-
-            integrator.initiateScan();
+            if (ContextCompat.checkSelfPermission(
+                    getContext(), Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // You can use the API that requires the permission.
+                intentActivityResultLauncher.launch(scanIntent);
+            } else {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+            }
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
-            if (result.getContents() == null) {
-                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
-            } else {
-                //use result.getContents() um zu gucken ob es das ticket gibt;
-                Observable<Ticket> response = TicketPersistence.getInstance().getTicketById(result.getContents());
+    private void askPermAndTakeImg(View clickedView) {
+        //Checking for camera permissions
 
-                response.subscribeOn(Schedulers.io())
-                        .subscribe(ticket -> {
-                            if (ticket.getEvent_id().equals(partyId)) {
-                                Observable<User> response2 = UserPersistence.getInstance().getUserData(ticket.getUser_id());
-                                response2.subscribeOn(Schedulers.io())
-                                        .subscribe(user -> {
-                                            getActivity().runOnUiThread(() -> {
-                                                OurToast.makeToast("Valid ticket: " + user.getFirstName() + " " + user.getLastName(), "#ff00ff00", R.drawable.ic_baseline_check_24, getContext(), getLayoutInflater());
-                                            });
-
-                                        }, error -> Log.v("User", "Error get User with id " + error.getMessage()));
-                            } else {
-                                getActivity().runOnUiThread(() -> {
-                                    OurToast.makeToast("Not your party bro", "#ffff0000", R.drawable.ic_baseline_clear_24, getContext(), getLayoutInflater());
-                                });
-                            }
-                        }, (error) -> {
-                            Log.v("Ticket", "Error get Ticket with id " + error.getMessage());
-                            getActivity().runOnUiThread(() -> {
-                                OurToast.makeToast("Ticket not found", "#ffff0000", R.drawable.ic_baseline_clear_24, getContext(), getLayoutInflater());
-                            });
-                        });
-            }
-        }
     }
+
 }
