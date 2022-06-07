@@ -68,6 +68,9 @@ ON CONFLICT DO NOTHING;
 INSERT INTO friends (usera, userb)
 VALUES ('12', '34')
 ON CONFLICT DO NOTHING;
+INSERT INTO friendrequest (usersent, userreceived, created_on)
+VALUES ('12', '5243fwersdgerv', current_timestamp)
+ON CONFLICT DO NOTHING;
 
 INSERT INTO ticketrequest (user_id, event_id, created_on)
 VALUES ('12', 'abc', current_timestamp)

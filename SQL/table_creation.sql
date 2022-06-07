@@ -83,6 +83,14 @@ CREATE TABLE ticketrequest
     PRIMARY KEY (user_id, event_id)
 );
 
+CREATE TABLE friendrequest
+(
+    userSent varchar(128) NOT NULL,
+    userReceived varchar(128) NOT NULL,
+    created_on timestamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (userSent, userReceived)
+);
+
 -- Create relations
 ALTER TABLE pictures
     ADD CONSTRAINT FKPictures14710 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
@@ -104,6 +112,10 @@ ALTER TABLE ticketrequest
     ADD CONSTRAINT FKTicketRequest45367 FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE;
 ALTER TABLE event
     ADD CONSTRAINT FKEvent89432 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+ALTER TABLE friendrequest
+    ADD CONSTRAINT FKFriendRequest34536 FOREIGN KEY (userSent) REFERENCES "user" (id) ON DELETE CASCADE;
+ALTER TABLE friendrequest
+    ADD CONSTRAINT FKFriendRequest45368 FOREIGN KEY (userReceived) REFERENCES "user" (id) ON DELETE CASCADE;
 
 
 -- Check constraints
