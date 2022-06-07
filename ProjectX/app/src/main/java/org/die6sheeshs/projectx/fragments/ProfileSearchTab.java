@@ -1,15 +1,11 @@
 package org.die6sheeshs.projectx.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,10 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Friend;
-import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.FriendsPersistence;
-
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -56,10 +49,13 @@ public class ProfileSearchTab extends Fragment {
         TextInputLayout search = view.findViewById(R.id.nickNameSearchField);
         ImageButton searchButton = view.findViewById(R.id.searchButton);
         searchButton.setOnClickListener((l)->{
+            searchLayout.removeAllViews();
             String nickName = search.getEditText().getText().toString();
             Observable<Friend> resp = FriendsPersistence.getInstance().getFriendByNickName(nickName);
             resp.subscribeOn(Schedulers.io())
                     .subscribe(friend ->{
+                        if (friend == null) return;
+
                         getActivity().runOnUiThread(() ->{
                             FragmentManager fragMan = getChildFragmentManager();
                             FragmentTransaction fragTransaction = fragMan.beginTransaction();
@@ -74,6 +70,8 @@ public class ProfileSearchTab extends Fragment {
                             fragTransaction.commit();
                         });
                     });
+
         });
+
     }
 }

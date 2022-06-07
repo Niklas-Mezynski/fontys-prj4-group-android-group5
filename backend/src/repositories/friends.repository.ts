@@ -21,8 +21,8 @@ export class FriendsRepository extends DefaultCrudRepository<
   }
 
   getFriendByName(username: string): Promise<AnyObject> {
-    const sql = `SELECT "user".id, "user".nick_name, "user".profile_pic, "user".about_me FROM "user" WHERE "user".nick_name = $1;`;
-    return this.dataSource.execute(sql, [username]);
+    const sql = `SELECT "user".id, "user".nick_name, "user".profile_pic, "user".about_me FROM "user" WHERE UPPER("user".nick_name) = $1;`;
+    return this.dataSource.execute(sql, [username.toUpperCase()]);
   }
 
   deleteByIds(userId: string, friendId: string, currentUserProfile: UserProfile): Promise<void> {
