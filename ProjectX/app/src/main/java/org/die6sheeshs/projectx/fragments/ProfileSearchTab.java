@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.die6sheeshs.projectx.R;
 import org.die6sheeshs.projectx.activities.MainActivity;
 import org.die6sheeshs.projectx.entities.Friend;
+import org.die6sheeshs.projectx.helpers.SessionManager;
 import org.die6sheeshs.projectx.restAPI.FriendsPersistence;
 
 import io.reactivex.Observable;
@@ -51,6 +52,9 @@ public class ProfileSearchTab extends Fragment {
         searchButton.setOnClickListener((l)->{
             searchLayout.removeAllViews();
             String nickName = search.getEditText().getText().toString();
+            if (nickName.isEmpty()) return;
+            if (nickName.equalsIgnoreCase(SessionManager.getInstance().getUser().getNick_name())) return;
+
             Observable<Friend> resp = FriendsPersistence.getInstance().getFriendByNickName(nickName);
             resp.subscribeOn(Schedulers.io())
                     .subscribe(friend ->{
